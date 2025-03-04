@@ -1,4 +1,4 @@
-# SGE (Sistema Gestor de Empleados).
+# SGE (Sistema de Gestor de Empleados).
 
 # Aviso
 # Configurado como Standalone para FontEnd
