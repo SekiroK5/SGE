@@ -1,6 +1,6 @@
 # SGE (Sistema de Gestor de Empleados).
 
-# Dependencias instaladas e iniciadas
+# Dependencias instaladas en Backend
 
 - npm install mongoose
 - npm install express cors dotenv
