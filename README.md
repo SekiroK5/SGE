@@ -1,6 +1,11 @@
 # SGE (Sistema de Gestor de Empleados).
 
 # Aviso
+npm install express-validator
+npm install bcryptjs
+npm install multer
+
+
 # Configurado como Standalone para FontEnd
 
 ## Estructura del proyecto.
