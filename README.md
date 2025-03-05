@@ -1,9 +1,12 @@
 # SGE (Sistema de Gestor de Empleados).
 
-# Aviso
-npm install express-validator
-npm install bcryptjs
-npm install multer
+# Dependencias instaladas e iniciadas
+
+#*npm install mongoose*
+#*npm install express cors dotenv*
+#*npm install express-validator*
+#*npm install bcryptjs*
+#*npm install multer*
 
 
 # Configurado como Standalone para FontEnd
