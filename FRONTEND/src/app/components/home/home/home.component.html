@@ -1,16 +1,13 @@
-<!-- Estructura HTML mejorada y profesional -->
+<!-- home.component.html -->
 <div class="navbar">
     <div class="navbar-logo">
-        <img src="https://media.istockphoto.com/id/1393673169/es/vector/icono-de-atenci%C3%B3n-al-cliente-como-relaci%C3%B3n-comercial.jpg" 
+        <img src="https://img.icons8.com/?size=512&id=74402&format=png" 
              alt="SGET Logo" class="logo-img">
-        <span class="logo-text">SGET</span>
-    </div>
-    <div class="navbar-title">
-        Sistema Gestor de Empleados
+        <span class="logo-text">SGE con MongoDB</span>
     </div>
     <div class="navbar-actions">
-        <button mat-icon-button class="login-btn" (click)="openModal()" type="button" aria-label="Iniciar sesión">
-            <mat-icon>account_circle</mat-icon>
+        <button class="login-btn" (click)="openModal()" type="button" aria-label="Iniciar sesión">
+            <i class="material-icons">account_circle</i>
             <span class="btn-text">Iniciar sesión</span>
         </button>
     </div>
@@ -20,20 +17,17 @@
     <section class="hero-section">
         <div class="hero-container">
             <div class="hero-content">
-                <h1 class="main-title">Base De Datos para Cómputo en la Nube</h1>
+                <h1 class="main-title">Sistema de Registro de Empleados con MongoDB</h1>
                 <div class="divider"></div>
                 <h2 class="subtitle">Unidad III: Administración de Base de Datos NoSQL</h2>
                 <p class="description">
-                    Sistema integral para la gestión eficiente de recursos humanos, 
-                    diseñado para optimizar los procesos administrativos en la nube.
+                    Plataforma integral para el registro y administración de empleados utilizando MongoDB.
+                    Gestione de manera eficiente la información completa del personal con generación 
+                    automática de claves y seguimiento profesional.
                 </p>
-                <div class="cta-container">
-                    <button class="cta-button">Comenzar</button>
-                    <button class="cta-button secondary">Más información</button>
-                </div>
             </div>
             <div class="hero-image">
-                <img src="https://media.istockphoto.com/id/1393673169/es/vector/icono-de-atenci%C3%B3n-al-cliente-como-relaci%C3%B3n-comercial.jpg" 
+                <img src="https://dinahosting.com/blog/upload/2019/04/Bases-de-datos3.jpg" 
                      alt="SGET" class="profile-image">
             </div>
         </div>
@@ -42,23 +36,38 @@
     <section class="features-section">
         <div class="section-header">
             <h2>Características principales</h2>
-            <p>Descubra las ventajas de nuestro sistema</p>
+            <p>Funcionalidades del sistema de registro de empleados</p>
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <mat-icon>cloud</mat-icon>
-                <h3>Almacenamiento en la Nube</h3>
-                <p>Acceso seguro desde cualquier dispositivo</p>
+                <i class="material-icons">person_add</i>
+                <h3>Registro de Empleados</h3>
+                <p>Generación automática de claves y captura de datos personales completos</p>
             </div>
             <div class="feature-card">
-                <mat-icon>security</mat-icon>
-                <h3>Seguridad Avanzada</h3>
-                <p>Protección de datos e información confidencial</p>
+                <i class="material-icons">family_restroom</i>
+                <h3>Referencias Familiares</h3>
+                <p>Gestión de contactos y parentescos desde catálogos personalizados</p>
             </div>
             <div class="feature-card">
-                <mat-icon>analytics</mat-icon>
-                <h3>Análisis de Datos</h3>
-                <p>Reportes detallados y estadísticas</p>
+                <i class="material-icons">school</i>
+                <h3>Desarrollo Profesional</h3>
+                <p>Seguimiento de cursos y actividades empresariales</p>
+            </div>
+            <div class="feature-card">
+                <i class="material-icons">cloud_done</i>
+                <h3>Base de Datos NoSQL</h3>
+                <p>Implementación en MongoDB para alta disponibilidad</p>
+            </div>
+            <div class="feature-card">
+                <i class="material-icons">business</i>
+                <h3>Asignación Departamental</h3>
+                <p>Control de departamentos y puestos con catálogos</p>
+            </div>
+            <div class="feature-card">
+                <i class="material-icons">analytics</i>
+                <h3>Consultas Avanzadas</h3>
+                <p>Múltiples criterios para recuperación de datos</p>
             </div>
         </div>
     </section>
@@ -69,6 +78,7 @@
         <div class="footer-info">
             <p>&copy; Marzo, 2025 Universidad Tecnológica del Norte de Guanajuato</p>
             <p>Desarrollado por: Chavero Martínez Noé & Leonel Alejandro Torres Pérez</p>
+            <p>Base de Datos para Cómputo en la Nube - Unidad III</p>
         </div>
         <div class="footer-links">
             <a href="#">Términos</a>
