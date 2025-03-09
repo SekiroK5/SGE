@@ -1,3 +1,4 @@
+/* home.component.css */
 /* Importación de fuentes */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@400;500;600&display=swap');
 
@@ -84,7 +85,7 @@ body {
     box-shadow: 0 4px 8px rgba(17, 85, 250, 0.3);
 }
 
-.login-btn mat-icon {
+.login-btn .material-icons {
     font-size: 1.2rem;
 }
 
@@ -255,7 +256,7 @@ body {
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
-.feature-card mat-icon {
+.feature-card .material-icons {
     font-size: 3rem;
     color: #1155fa;
     margin-bottom: 1rem;
