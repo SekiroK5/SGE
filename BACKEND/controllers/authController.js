@@ -51,7 +51,6 @@ exports.register = async (req, res) => {
             Password: await encript(datos.Password)
         };
         
-
         const newEmpleado = await empleadoService.registroEmpleado(empleadoData);
 
         res.status(201).json({ message: "Empleado registrado con éxito", usuario: newEmpleado });
@@ -82,7 +81,6 @@ exports.login = async (req, res) => {
     }
 };
 
-// Añadir a tu authController.js existente
 exports.getEmpleados = async (req, res) => {
     try {
         const empleados = await empleadoService.getAllEmpleados();
@@ -95,7 +93,7 @@ exports.getEmpleados = async (req, res) => {
 
 exports.getEmpleadoById = async (req, res) => {
     try {
-        const empleado = await empleadoService.getEmpleadoById(req.params.id);
+        const empleado = await empleadoService.getEmpleadoById(req.params.claveEmpleado);
         if (!empleado) {
             return res.status(404).json({ error: "Empleado no encontrado" });
         }
@@ -108,7 +106,7 @@ exports.getEmpleadoById = async (req, res) => {
 
 exports.updateEmpleado = async (req, res) => {
     try {
-        const updatedEmpleado = await empleadoService.updateEmpleado(req.params.id, req.body);
+        const updatedEmpleado = await empleadoService.updateEmpleado(req.params.claveEmpleado, req.body);
         if (!updatedEmpleado) {
             return res.status(404).json({ error: "Empleado no encontrado" });
         }
@@ -121,7 +119,7 @@ exports.updateEmpleado = async (req, res) => {
 
 exports.deleteEmpleado = async (req, res) => {
     try {
-        const result = await empleadoService.deleteEmpleado(req.params.id);
+        const result = await empleadoService.deleteEmpleado(req.params.claveEmpleado);
         if (!result) {
             return res.status(404).json({ error: "Empleado no encontrado" });
         }

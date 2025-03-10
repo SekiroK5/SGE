@@ -16,9 +16,10 @@ router.post("/registrar-cursos", validateRegisterCursos, authControllerCursos.re
 //Ruta para registrar Actividad
 router.post("/registrar-actividad",validateRegisterActividades,authControllerActividades.registrarParticipacionActividad )
 router.get('/empleados', authController.getEmpleados);
-router.get('/empleados/:id', authController.getEmpleadoById);
-router.put('/empleados/:id', authController.updateEmpleado);
-router.delete('/empleados/:id', authController.deleteEmpleado);
+router.get('/empleados/:claveEmpleado', authController.getEmpleadoById);
+router.get('/empleados/:claveEmpleado', authController.getEmpleadoById);
+router.put('/empleados/:claveEmpleado', authController.updateEmpleado);
+router.delete('/empleados/:claveEmpleado', authController.deleteEmpleado);
 
 //Ruta para el login
 router.post("/login",validateLogin, authController.login);
