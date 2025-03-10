@@ -77,3 +77,20 @@ exports.getEmpleadoByClave = async (ClaveEmpleado) => {
         throw new Error(`Error al buscar el empleado: ${error.message}`);
     }
 };
+
+// Añadir a empleadoService.js
+exports.getAllEmpleados = async () => {
+    return await Empleado.find();
+};
+
+exports.getEmpleadoById = async (id) => {
+    return await Empleado.findById(id);
+};
+
+exports.updateEmpleado = async (id, data) => {
+    return await Empleado.findByIdAndUpdate(id, data, { new: true });
+};
+
+exports.deleteEmpleado = async (id) => {
+    return await Empleado.findByIdAndDelete(id);
+};

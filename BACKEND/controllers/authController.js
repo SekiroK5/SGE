@@ -1,6 +1,7 @@
 const { encript, compare } = require("../utils/handlePassword");
 const empleadoService = require("../services/empleadoService");
 const mongoose = require("mongoose");
+
 exports.register = async (req, res) => {
     try {
         // Extraer datos recibidos
@@ -77,6 +78,56 @@ exports.login = async (req, res) => {
 
     } catch (error) {
         console.error("Error en el inicio de sesión:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+// Añadir a tu authController.js existente
+exports.getEmpleados = async (req, res) => {
+    try {
+        const empleados = await empleadoService.getAllEmpleados();
+        res.status(200).json(empleados);
+    } catch (error) {
+        console.error("Error al obtener empleados:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+exports.getEmpleadoById = async (req, res) => {
+    try {
+        const empleado = await empleadoService.getEmpleadoById(req.params.id);
+        if (!empleado) {
+            return res.status(404).json({ error: "Empleado no encontrado" });
+        }
+        res.status(200).json(empleado);
+    } catch (error) {
+        console.error("Error al obtener empleado:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+exports.updateEmpleado = async (req, res) => {
+    try {
+        const updatedEmpleado = await empleadoService.updateEmpleado(req.params.id, req.body);
+        if (!updatedEmpleado) {
+            return res.status(404).json({ error: "Empleado no encontrado" });
+        }
+        res.status(200).json({ message: "Empleado actualizado con éxito", empleado: updatedEmpleado });
+    } catch (error) {
+        console.error("Error al actualizar empleado:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+exports.deleteEmpleado = async (req, res) => {
+    try {
+        const result = await empleadoService.deleteEmpleado(req.params.id);
+        if (!result) {
+            return res.status(404).json({ error: "Empleado no encontrado" });
+        }
+        res.status(200).json({ message: "Empleado eliminado con éxito" });
+    } catch (error) {
+        console.error("Error al eliminar empleado:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
