@@ -1,0 +1,63 @@
+<div class="lista-container">
+    <div class="lista-header">
+      <h2>Lista de Empleados</h2>
+      <p>Consulta avanzada con múltiples criterios de búsqueda</p>
+    </div>
+  
+    <div class="alert error" *ngIf="error">
+      {{ error }}
+    </div>
+  
+    <div class="loading-spinner" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+  
+    <div *ngIf="!loading" class="filtros-container">
+      <div class="filtros-form">
+        <div class="filtro-grupo">
+          <label for="nombreFiltro">Nombre o Apellido</label>
+          <input 
+            type="text" 
+            id="nombreFiltro" 
+            [(ngModel)]="nombreFiltro" 
+            placeholder="Buscar por nombre o apellido"
+          >
+        </div>
+  
+        <div class="filtro-grupo">
+          <label for="departamentoFiltro">Departamento</label>
+          <select id="departamentoFiltro" [(ngModel)]="departamentoFiltro">
+            <option value="">Todos los departamentos</option>
+            <option *ngFor="let depto of departamentos" [value]="depto">{{ depto }}</option>
+          </select>
+        </div>
+  
+        <div class="filtro-acciones">
+          <button class="btn-primary" (click)="aplicarFiltros()">Filtrar</button>
+          <button class="btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+        </div>
+      </div>
+    </div>
+  
+    <div *ngIf="!loading" class="acciones-container">
+      <button class="btn-nuevo" routerLink="/registro-empleado">
+        <span class="plus-icon">+</span> Nuevo Empleado
+      </button>
+    </div>
+  
+    <div *ngIf="!loading && empleadosFiltrados.length === 0" class="no-data">
+      No se encontraron empleados con los criterios de búsqueda especificados.
+    </div>
+  
+    <div *ngIf="!loading && empleadosFiltrados.length > 0" class="tabla-container">
+      <table class="tabla-empleados">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Departamento</th>
+            <th>Posición</th>
+            <th>Fecha Ingreso</th>
+            <th>Acciones

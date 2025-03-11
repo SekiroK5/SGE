@@ -1,0 +1,96 @@
+<div class="navbar">
+    <div class="navbar-logo">
+        <img src="https://img.icons8.com/?size=512&id=74402&format=png" 
+             alt="SGET Logo" class="logo-img">
+        <span class="logo-text">SGE con MongoDB</span>
+    </div>
+    <div class="navbar-title">
+        <span>Dashboard de Recursos Humanos</span>
+    </div>
+    <div class="navbar-actions">
+        <button class="login-btn" routerLink="/home" type="button" aria-label="Volver al inicio">
+            <i class="material-icons">home</i>
+            <span class="btn-text">Inicio</span>
+        </button>
+    </div>
+</div>
+
+<main class="dashboard-content">
+    <div class="dashboard-header">
+        <h1>Panel de Administración - Recursos Humanos</h1>
+        <p>Gestión completa del personal y actividades empresariales</p>
+    </div>
+
+    <div class="dashboard-modules">
+        <div class="modules-grid">
+            <div class="module-card" *ngFor="let module of modules" [routerLink]="module.route">
+                <div class="module-icon">
+                    <i class="material-icons">{{ module.icon }}</i>
+                </div>
+                <h3>{{ module.name }}</h3>
+                <p class="module-description">
+                    {{ getModuleDescription(module.name) }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-stats">
+        <div class="stats-header">
+            <h2>Estadísticas Generales</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="material-icons">people</i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Empleados</h3>
+                    <p class="stat-value">156</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="material-icons">business</i>
+                </div>
+                <div class="stat-info">
+                    <h3>Departamentos</h3>
+                    <p class="stat-value">12</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="material-icons">school</i>
+                </div>
+                <div class="stat-info">
+                    <h3>Cursos Activos</h3>
+                    <p class="stat-value">24</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="material-icons">event</i>
+                </div>
+                <div class="stat-info">
+                    <h3>Actividades</h3>
+                    <p class="stat-value">18</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-info">
+            <p>&copy; Marzo, 2025 Universidad Tecnológica del Norte de Guanajuato</p>
+            <p>Desarrollado por: Chavero Martínez Noé & Leonel Alejandro Torres Pérez</p>
+            <p>Base de Datos para Cómputo en la Nube - Unidad III</p>
+        </div>
+        <div class="footer-links">
+            <a href="#">Términos</a>
+            <a href="#">Privacidad</a>
+            <a href="#">Contacto</a>
+        </div>
+    </div>
+</footer>
