@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+
 // Función de validación para arrays (si se necesita)
 function arrayLimit(val) {
     return val.length >= 1;
@@ -27,14 +28,7 @@ const PActividadSchema = new Schema({
     ClaveEmpleado: {
         type: String,
         required: true,
-        validate: {
-            validator: async function(valor) {
-                const Empleado = mongoose.model('Empleado');
-                const existeEmpleado = await Empleado.exists({ ClaveEmpleado: valor });
-                return existeEmpleado;
-            },
-            message: 'La clave del empleado no existe.'
-        }
+       
     },
     NombreCompletoEmpleado: {
         type: String,
@@ -46,7 +40,7 @@ const PActividadSchema = new Schema({
         validate: [arrayLimit, 'Debe haber al menos una participación registrada']
     }
 }, {
-    timestamps: true
+ 
 });
 
 // Middleware para concatenar automáticamente el nombre del empleado
