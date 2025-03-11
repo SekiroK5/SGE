@@ -1,0 +1,89 @@
+<div class="empleados-container">
+    <div class="header">
+      <h1>Gestión de Empleados</h1>
+      <p>Visualización y gestión completa de la plantilla de personal</p>
+    </div>
+  
+    <div class="search-filters">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="searchEmpleados()"
+          placeholder="Buscar por nombre, apellido o email" 
+          class="form-control"
+        >
+        <button class="search-btn"><i class="fa fa-search"></i></button>
+      </div>
+  
+      <div class="filter-options">
+        <label>Filtrar por departamento:</label>
+        <select [(ngModel)]="filterDepartamento" (change)="filterByDepartamento(filterDepartamento)" class="form-control">
+          <option value="">Todos los departamentos</option>
+          <option *ngFor="let depto of departamentos" [value]="depto">{{ depto }}</option>
+        </select>
+        
+        <button (click)="clearFilters()" class="btn btn-outline-secondary">
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Cargando empleados...</p>
+    </div>
+  
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+  
+    <div *ngIf="!loading && !error" class="employee-list">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Departamento</th>
+            <th>Puesto</th>
+            <th>Fecha de Contratación</th>
+            <th>Salario</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let empleado of filteredEmpleados">
+            <td>{{ empleado.nombre }}</td>
+            <td>{{ empleado.apellido }}</td>
+            <td>{{ empleado.email }}</td>
+            <td>{{ empleado.departamento }}</td>
+            <td>{{ empleado.puesto }}</td>
+            <td>{{ empleado.fechaContratacion | date:'dd/MM/yyyy' }}</td>
+            <td>{{ empleado.salario | currency:'MXN':'symbol':'1.2-2' }}</td>
+            <td>
+              <span [ngClass]="empleado.activo ? 'estado-activo' : 'estado-inactivo'">
+                {{ empleado.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <button class="action-btn edit-btn" title="Editar empleado">
+                <i class="fa fa-edit"></i>
+              </button>
+              <button class="action-btn delete-btn" title="Eliminar empleado">
+                <i class="fa fa-trash"></i>
+              </button>
+              <button class="action-btn details-btn" title="Ver detalles">
+                <i class="fa fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <div *ngIf="filteredEmpleados.length === 0" class="no-results">
+        No se encontraron empleados con los filtros seleccionados.
+      </div>
+    </div>
+  </div>
