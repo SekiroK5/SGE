@@ -17,7 +17,9 @@ const CursoTomadoSchema = new Schema({
         required: true,
         validate: [arrayLimit, 'Debe tener al menos algún documento']
     }
-});
+},
+{ collection: 'CursosTomados' },
+{ timestamps: true }); 
 
 // Esquema principal CursosTomados
 const CursosTomadosSchema = new Schema({
@@ -28,7 +30,7 @@ const CursosTomadosSchema = new Schema({
         required: true,
         validate: [arrayLimit, 'Debe tener al menos un curso tomado']
     }
-});
+},{ collection: 'CursosTomados' });
 
 // Función de validación para arrays (validar que haya al menos un elemento)
 function arrayLimit(val) {
