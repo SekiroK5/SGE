@@ -11,10 +11,26 @@ import { CommonModule } from '@angular/common';
 })
 export class DashboardComponent {
   modules = [
-    { name: 'Empleados', route: '/rh/empleados', icon: 'people' },
-    { name: 'Registro', route: '/rh/registro', icon: 'person_add' },
-    { name: 'Edición', route: '/rh/edicion', icon: 'edit' },
-    { name: 'Lista', route: '/rh/lista', icon: 'list' }
+    {
+      name: 'Empleados',
+      icon: 'people',
+      route: '/rh/empleados'
+    },
+    {
+      name: 'Registro',
+      icon: 'person_add',
+      route: '/rh/empleados/registro'
+    },
+    {
+      name: 'Edición',
+      icon: 'edit',
+      route: '/rh/empleados/edicion'
+    },
+    {
+      name: 'Lista',
+      icon: 'list',
+      route: '/rh/empleados/lista'
+    }
   ];
 
   constructor() {}
