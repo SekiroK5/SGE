@@ -1,0 +1,114 @@
+<div class="registro-container">
+    <div class="registro-header">
+      <h2>Registro de Curso</h2>
+      <p>Alta de nuevos cursos para capacitación del personal</p>
+    </div>
+  
+    <div class="alert success" *ngIf="success">
+      Curso registrado exitosamente.
+    </div>
+    
+    <div class="alert error" *ngIf="error">
+      {{ error }}
+    </div>
+  
+    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="titulo">Título del Curso</label>
+          <input type="text" id="titulo" formControlName="titulo" 
+                 [ngClass]="{ 'invalid': submitted && f['titulo'].errors }">
+          <div class="error-message" *ngIf="submitted && f['titulo'].errors">
+            El título es requerido
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="instructor">Instructor</label>
+          <input type="text" id="instructor" formControlName="instructor"
+                 [ngClass]="{ 'invalid': submitted && f['instructor'].errors }">
+          <div class="error-message" *ngIf="submitted && f['instructor'].errors">
+            El instructor es requerido
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" rows="4" formControlName="descripcion"
+                   [ngClass]="{ 'invalid': submitted && f['descripcion'].errors }"></textarea>
+          <div class="error-message" *ngIf="submitted && f['descripcion'].errors">
+            La descripción es requerida
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group">
+          <label for="duracion">Duración (horas)</label>
+          <input type="number" id="duracion" formControlName="duracion"
+                 [ngClass]="{ 'invalid': submitted && f['duracion'].errors }">
+          <div class="error-message" *ngIf="submitted && f['duracion'].errors?.['required']">
+            La duración es requerida
+          </div>
+          <div class="error-message" *ngIf="submitted && f['duracion'].errors?.['min']">
+            La duración debe ser mayor a 0
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="capacidad">Capacidad (personas)</label>
+          <input type="number" id="capacidad" formControlName="capacidad"
+                 [ngClass]="{ 'invalid': submitted && f['capacidad'].errors }">
+          <div class="error-message" *ngIf="submitted && f['capacidad'].errors?.['required']">
+            La capacidad es requerida
+          </div>
+          <div class="error-message" *ngIf="submitted && f['capacidad'].errors?.['min']">
+            La capacidad debe ser mayor a 0
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fechaInicio">Fecha de Inicio</label>
+          <input type="date" id="fechaInicio" formControlName="fechaInicio"
+                 [ngClass]="{ 'invalid': submitted && f['fechaInicio'].errors }">
+          <div class="error-message" *ngIf="submitted && f['fechaInicio'].errors">
+            La fecha de inicio es requerida
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="fechaFin">Fecha de Finalización</label>
+          <input type="date" id="fechaFin" formControlName="fechaFin"
+                 [ngClass]="{ 'invalid': submitted && f['fechaFin'].errors }">
+          <div class="error-message" *ngIf="submitted && f['fechaFin'].errors">
+            La fecha de finalización es requerida
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group">
+          <label for="modalidad">Modalidad</label>
+          <select id="modalidad" formControlName="modalidad"
+                  [ngClass]="{ 'invalid': submitted && f['modalidad'].errors }">
+            <option value="">Seleccione una modalidad</option>
+            <option value="Presencial">Presencial</option>
+            <option value="Virtual">Virtual</option>
+            <option value="Híbrido">Híbrido</option>
+          </select>
+          <div class="error-message" *ngIf="submitted && f['modalidad'].errors">
+            La modalidad es requerida
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Registrar Curso</button>
+        <button type="button" class="btn-secondary" routerLink="/cursos">Cancelar</button>
+      </div>
+    </form>
+  </div>

@@ -1,0 +1,108 @@
+<div class="edicion-container">
+    <div class="edicion-header">
+      <h2>Edición de Empleado</h2>
+      <p>Modificación de datos personales y profesionales</p>
+    </div>
+  
+    <div class="loading-spinner" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+  
+    <div class="alert success" *ngIf="success">
+      Datos del empleado actualizados exitosamente. Redirigiendo...
+    </div>
+    
+    <div class="alert error" *ngIf="error">
+      {{ error }}
+    </div>
+  
+    <form *ngIf="!loading" [formGroup]="edicionForm" (ngSubmit)="onSubmit()" class="edicion-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" formControlName="nombre" 
+                 [ngClass]="{ 'invalid': submitted && f['nombre'].errors }">
+          <div class="error-message" *ngIf="submitted && f['nombre'].errors">
+            El nombre es requerido
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="apellido">Apellido</label>
+          <input type="text" id="apellido" formControlName="apellido"
+                 [ngClass]="{ 'invalid': submitted && f['apellido'].errors }">
+          <div class="error-message" *ngIf="submitted && f['apellido'].errors">
+            El apellido es requerido
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <input type="email" id="email" formControlName="email"
+                 [ngClass]="{ 'invalid': submitted && f['email'].errors }">
+          <div class="error-message" *ngIf="submitted && f['email'].errors?.['required']">
+            El correo electrónico es requerido
+          </div>
+          <div class="error-message" *ngIf="submitted && f['email'].errors?.['email']">
+            Ingrese un correo electrónico válido
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="telefono">Teléfono</label>
+          <input type="text" id="telefono" formControlName="telefono"
+                 [ngClass]="{ 'invalid': submitted && f['telefono'].errors }">
+          <div class="error-message" *ngIf="submitted && f['telefono'].errors">
+            El teléfono es requerido
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group">
+          <label for="departamento">Departamento</label>
+          <select id="departamento" formControlName="departamento"
+                  [ngClass]="{ 'invalid': submitted && f['departamento'].errors }">
+            <option value="">Seleccione un departamento</option>
+            <option value="Recursos Humanos">Recursos Humanos</option>
+            <option value="TI">TI</option>
+            <option value="Finanzas">Finanzas</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Ventas">Ventas</option>
+            <option value="Operaciones">Operaciones</option>
+          </select>
+          <div class="error-message" *ngIf="submitted && f['departamento'].errors">
+            El departamento es requerido
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="posicion">Posición</label>
+          <input type="text" id="posicion" formControlName="posicion"
+                 [ngClass]="{ 'invalid': submitted && f['posicion'].errors }">
+          <div class="error-message" *ngIf="submitted && f['posicion'].errors">
+            La posición es requerida
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fechaIngreso">Fecha de Ingreso</label>
+          <input type="date" id="fechaIngreso" formControlName="fechaIngreso"
+                 [ngClass]="{ 'invalid': submitted && f['fechaIngreso'].errors }">
+          <div class="error-message" *ngIf="submitted && f['fechaIngreso'].errors">
+            La fecha de ingreso es requerida
+          </div>
+        </div>
+      </div>
+  
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Guardar Cambios</button>
+        <button type="button" class="btn-secondary" routerLink="/lista-empleados">Cancelar</button>
+      </div>
+    </form>
+  </div>

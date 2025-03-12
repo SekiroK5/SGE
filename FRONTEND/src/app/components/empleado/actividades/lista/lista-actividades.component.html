@@ -1,0 +1,31 @@
+<!-- lista-actividades.component.html -->
+<div class="container mt-4">
+    <h2>Lista de Actividades</h2>
+    <button class="btn btn-primary mb-3" (click)="nuevaActividad()">Nueva Actividad</button>
+    
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let actividad of actividades">
+            <td>{{ actividad.id }}</td>
+            <td>{{ actividad.nombre }}</td>
+            <td>{{ actividad.descripcion }}</td>
+            <td>{{ actividad.fecha }}</td>
+            <td>
+              <button class="btn btn-info btn-sm me-2" (click)="editarActividad(actividad.id)">Editar</button>
+              <button class="btn btn-danger btn-sm" (click)="eliminarActividad(actividad.id)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
