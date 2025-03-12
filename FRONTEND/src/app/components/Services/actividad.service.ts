@@ -14,53 +14,41 @@ export interface Actividad {
   responsableId?: string;
 }
 
-export interface AsignacionActividad {
-  actividadId: string;
-  empleadoId: string;
-  fechaAsignacion: Date;
-  comentarios?: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class ActividadesService {
-  private apiUrl = `${environment.baseURL}/api/participacionActividad`;
-  
+  private apiUrl = `${environment.baseURL}/auth/participacionActividad`;
+
   constructor(private http: HttpClient) {}
-  
-  // Get all activities
+
+  // Obtener todas las actividades
   getActividades(): Observable<Actividad[]> {
     return this.http.get<Actividad[]>(this.apiUrl);
   }
-  
-  // Get activity by ID
-  getActividad(id: string): Observable<Actividad> {
-    return this.http.get<Actividad>(`${this.apiUrl}/${id}`);
+
+  // Obtener actividad por claveEmpleado
+  getActividad(claveEmpleado: string): Observable<Actividad[]> {
+    return this.http.get<Actividad[]>(`${this.apiUrl}/${claveEmpleado}`);
   }
-  
-  // Create new activity
+
+  // Crear nueva actividad (corregida para coincidir con la ruta del backend)
   crearActividad(actividad: Actividad): Observable<Actividad> {
-    return this.http.post<Actividad>(this.apiUrl, actividad);
+    return this.http.post<Actividad>(`${environment.baseURL}/auth/registrar-actividad`, actividad);
   }
-  
-  // Update activity
+
+  // Actualizar actividad
   actualizarActividad(id: string, actividad: Actividad): Observable<Actividad> {
     return this.http.put<Actividad>(`${this.apiUrl}/${id}`, actividad);
   }
-  
-  // Delete activity
+
+  // Eliminar actividad
   eliminarActividad(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-  
-  // Assign activity to employee
-  asignarActividad(asignacion: AsignacionActividad): Observable<any> {
-    return this.http.post(`${this.apiUrl}/asignar`, asignacion);
-  }
-  
-  // Get activities assigned to specific employee
-  getActividadesEmpleado(empleadoId: string): Observable<Actividad[]> {
-    return this.http.get<Actividad[]>(`${this.apiUrl}/empleado/${empleadoId}`);
+
+  // Obtener actividades de un empleado específico
+  getActividadesEmpleado(claveEmpleado: string): Observable<Actividad[]> {
+    return this.http.get<Actividad[]>(`${this.apiUrl}/${claveEmpleado}`);
   }
 }
