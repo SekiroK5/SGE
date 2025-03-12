@@ -39,7 +39,7 @@ export class EmpleadosComponent implements OnInit {
 
   loadEmpleados(): void {
     this.loading = true;
-    this.http.get<Empleado[]>('http://localhost:3000/api/empleados')
+    this.http.get<Empleado[]>('http://localhost:3000/auth/empleados')
       .subscribe({
         next: (data) => {
           this.empleados = data;
