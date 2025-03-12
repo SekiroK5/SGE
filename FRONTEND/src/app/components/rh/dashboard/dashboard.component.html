@@ -8,7 +8,7 @@
         <span>Dashboard de Recursos Humanos</span>
     </div>
     <div class="navbar-actions">
-        <button class="login-btn" routerLink="/home" type="button" aria-label="Volver al inicio">
+        <button class="login-btn" [routerLink]="['/home']" type="button" aria-label="Volver al inicio">
             <i class="material-icons">home</i>
             <span class="btn-text">Inicio</span>
         </button>
@@ -23,7 +23,7 @@
 
     <div class="dashboard-modules">
         <div class="modules-grid">
-            <div class="module-card" *ngFor="let module of modules" [routerLink]="module.route">
+            <div class="module-card" *ngFor="let module of modules" (click)="navigateTo(module.route)">
                 <div class="module-icon">
                     <i class="material-icons">{{ module.icon }}</i>
                 </div>
