@@ -3,12 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../enviroments/enviroments';
 
-export interface ParticipacionActividad {
-  _id?: string;  // Optional, si el _id se asigna automáticamente en MongoDB
-  ClaveEmpleado: string;
-  NombreCompletoEmpleado: string;
-  ParticipacionActividad: Participacion[];
-}
 
 export interface Participacion {
   NombreActividad: string;
