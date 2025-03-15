@@ -1,0 +1,81 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>Gestión de Cursos</h2>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="card-body">
+      <!-- Mensaje de carga -->
+      <div class="text-center my-5" *ngIf="loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando Cursos...</p>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="alert alert-danger" *ngIf="error">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ error }}
+      </div>
+
+      <!-- Sin resultados -->
+      <div class="alert alert-info" *ngIf="!loading && !error && cursostomados.length === 0">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        No se encontraron Cursos
+      </div>
+
+      <!-- Lista de Cursos Tomados -->
+      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && !error && cursostomados.length > 0">
+        <div class="col" *ngFor="let ctomado of cursostomados">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">{{ ctomado.ClaveEmpleado }}</h5>
+              <h5 class="card-title mb-0">{{ ctomado.NombreCompletoEmpleado }}</h5>
+            </div>
+
+            <div class="card-body">
+              <!-- Mostrar Nombre del Curso -->
+              <h5 class="card-title mb-0">
+                Nombre del Curso: {{ ctomado.CursosTomados[0]?.NombreCurso || 'No disponible' }}
+              </h5>
+
+              <!-- Mostrar Descripción del Tipo de Documento -->
+              <h5 class="card-title mb-0">
+                Descripción: {{ ctomado.CursosTomados[0].TipoDocumento[0].Descripcion }} 
+              </h5>
+
+              <div class="row mt-3">
+                <div class="col-6">
+                  <small class="text-muted">Fecha de Inicio:</small>
+                  <p class="mb-0">
+                    {{ ctomado.CursosTomados[0].FechaInicio | date: 'yyyy/MM/dd'  }}
+                  </p>
+                  
+                  
+                
+              </div>
+              <div class="col-6">
+                <small class="text-muted">Fecha de Termino:</small>
+                <p class="mb-0">
+                  {{ ctomado.CursosTomados[0].FechaTermino | date: 'yyyy/MM/dd' }}
+                </p>
+                
+              </div>
+            </div>
+
+            <div class="card-footer bg-transparent d-flex justify-content-end">
+              <button class="btn btn-outline-primary btn-sm me-2">
+                <i class="bi bi-pencil-fill me-1"></i> Editar
+              </button>
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash-fill me-1"></i> Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,15 +1,19 @@
 <div class="perfil-container">
     <div class="profile-header">
       <div class="profile-avatar">
-        <img *ngIf="empleado?.foto" [src]="empleado?.foto" alt="Foto de perfil">
-        <span *ngIf="!empleado?.foto">{{getInitials()}}</span>
+        <img *ngIf="empleado?.Foto" [src]="empleado?.Foto" alt="Foto de perfil">
+        <span *ngIf="!empleado?.Foto">{{getInitials()}}</span>
       </div>
       
       <div class="profile-info">
-        <h2>{{empleado?.nombre || 'Nombre del Empleado'}}</h2>
-        <div class="profile-title">{{empleado?.cargo || 'Cargo del Empleado'}}</div>
-        <div class="profile-meta">{{empleado?.departamento || 'Departamento'}} · {{empleado?.sede || 'Sede'}}</div>
+        <h2>{{empleado?.Nombre || 'Nombre del Empleado'}}</h2>
+        <div class="profile-title">{{empleado?.Puesto || 'Cargo del Empleado'}}</div>
+        <div class="profile-meta">{{empleado?.Departamento || 'Departamento'}} · {{empleado?.Ciudad || 'Ciudad'}}</div>
       </div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Sexo:</div>
+      <div class="info-value">{{empleado?.Sexo || 'N/A'}}</div>
     </div>
     
     <div class="profile-sections">
@@ -18,22 +22,26 @@
         
         <div class="info-item">
           <div class="info-label">ID:</div>
-          <div class="info-value">{{empleado?.id || 'N/A'}}</div>
+          <div class="info-value">{{empleado?.ClaveEmpleado || 'N/A'}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">RFC:</div>
+          <div class="info-value">{{empleado?.RFC || 'N/A'}}</div>
         </div>
         
         <div class="info-item">
           <div class="info-label">Email:</div>
-          <div class="info-value">{{empleado?.email || 'N/A'}}</div>
+          <div class="info-value">{{empleado?.CorreoElectronico || 'N/A'}}</div>
         </div>
         
         <div class="info-item">
           <div class="info-label">Teléfono:</div>
-          <div class="info-value">{{empleado?.telefono || 'N/A'}}</div>
+          <div class="info-value">{{empleado?.Telefonos || 'N/A'}}</div>
         </div>
         
         <div class="info-item">
           <div class="info-label">Dirección:</div>
-          <div class="info-value">{{empleado?.direccion || 'N/A'}}</div>
+          <div class="info-value">{{empleado?.Calle || 'N/A'}}· {{empleado?.Colonia || 'N/A'}} {{empleado?.NumeroExterior || 'N/A'}}· {{empleado?.NumeroInterior || 'N/A'}}</div>
         </div>
       </div>
       
@@ -41,38 +49,14 @@
         <h3>Información Laboral</h3>
         
         <div class="info-item">
-          <div class="info-label">Fecha Ingreso:</div>
-          <div class="info-value">
-            <ng-container *ngIf="empleado && empleado.fechaIngreso; else noFechaIngreso">
-              {{empleado.fechaIngreso | date:'dd/MM/yyyy'}}
-            </ng-container>
-            <ng-template #noFechaIngreso>N/A</ng-template>
-          </div>
+          <div class="info-label">Departamento:</div>
+          <div class="info-value">{{empleado?.Departamento || 'N/A'}}</div>
         </div>
         
         <div class="info-item">
-          <div class="info-label">Supervisor:</div>
-          <div class="info-value">{{empleado?.supervisor || 'N/A'}}</div>
+          <div class="info-label">Puesto:</div>
+          <div class="info-value">{{empleado?.Puesto || 'N/A'}}</div>
         </div>
         
-        <div class="info-item">
-          <div class="info-label">Tipo Contrato:</div>
-          <div class="info-value">{{empleado?.tipoContrato || 'N/A'}}</div>
-        </div>
         
-        <div class="info-item">
-          <div class="info-label">Estado:</div>
-          <div class="info-value">
-            <span [ngClass]="{'active': empleado?.estado === 'Activo'}">
-              {{empleado?.estado || 'N/A'}}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
     
-    <div class="profile-section">
-      <h3>Resumen Profesional</h3>
-      <p>{{empleado?.resumen || 'No hay información disponible.'}}</p>
-    </div>
-  </div>

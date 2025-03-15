@@ -1,113 +1,71 @@
 <div class="container mt-4">
-    <div class="card shadow-sm">
-      <div class="card-header bg-primary text-white text-center">
-        <h2>Gestión de Actividades</h2>
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>Gestión de Actividades</h2>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="card-body">
+      <!-- Mensaje de carga -->
+      <div class="text-center my-5" *ngIf="loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando actividades...</p>
       </div>
-      
-      <!-- Filtros y búsqueda -->
-      <div class="card-body bg-light">
-        <div class="row mb-3">
-          <div class="col-md-3">
-            <label for="filtroEstado" class="form-label">Estado:</label>
-            <select id="filtroEstado" class="form-select" [(ngModel)]="filtroEstado">
-              <option value="todos">Todos</option>
-              <option value="pendiente">Pendiente</option>
-              <option value="en progreso">En progreso</option>
-              <option value="completada">Completada</option>
-              <option value="cancelada">Cancelada</option>
-            </select>
-          </div>
-          
-          <div class="col-md-3">
-            <label for="filtroPrioridad" class="form-label">Prioridad:</label>
-            <select id="filtroPrioridad" class="form-select" [(ngModel)]="filtroPrioridad">
-              <option value="todos">Todas</option>
-              <option value="baja">Baja</option>
-              <option value="media">Media</option>
-              <option value="alta">Alta</option>
-            </select>
-          </div>
-          
-          <div class="col-md-6">
-            <label for="busqueda" class="form-label">Buscar:</label>
-            <input type="text" id="busqueda" class="form-control" placeholder="Buscar actividad..." [(ngModel)]="busqueda">
-          </div>
-        </div>
+
+      <!-- Mensaje de error -->
+      <div class="alert alert-danger" *ngIf="error">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ error }}
       </div>
-      
-      <!-- Contenido principal -->
-      <div class="card-body">
-        <!-- Mensaje de carga -->
-        <div class="text-center my-5" *ngIf="loading">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
-          </div>
-          <p class="mt-2">Cargando actividades...</p>
-        </div>
-        
-        <!-- Mensaje de error -->
-        <div class="alert alert-danger" *ngIf="error">
-          <i class="bi bi-exclamation-triangle-fill me-2"></i>
-          {{ error }}
-        </div>
-        
-        <!-- Sin resultados -->
-        <div class="alert alert-info" *ngIf="!loading && !error && actividadesFiltradas().length === 0">
-          <i class="bi bi-info-circle-fill me-2"></i>
-          No se encontraron actividades con los filtros seleccionados
-        </div>
-        
-        <!-- Lista de actividades -->
-        <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && !error && actividadesFiltradas().length > 0">
-          <div class="col" *ngFor="let actividad of actividadesFiltradas()">
-            <div class="card h-100 shadow-sm">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">{{ actividad.nombre }}</h5>
-                <div>
-                  <span class="badge rounded-pill me-1" [ngClass]="{
-                    'bg-warning text-dark': actividad.estado === 'pendiente',
-                    'bg-info text-white': actividad.estado === 'en progreso',
-                    'bg-success': actividad.estado === 'completada',
-                    'bg-danger': actividad.estado === 'cancelada'
-                  }">
-                    {{ actividad.estado }}
-                  </span>
-                  <span class="badge rounded-pill" [ngClass]="{
-                    'bg-success': actividad.prioridad === 'baja',
-                    'bg-warning text-dark': actividad.prioridad === 'media',
-                    'bg-danger': actividad.prioridad === 'alta'
-                  }">
-                    {{ actividad.prioridad }}
-                  </span>
+
+      <!-- Sin resultados -->
+      <div class="alert alert-info" *ngIf="!loading && !error && actividades.length === 0">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        No se encontraron actividades
+      </div>
+
+      <!-- Lista de actividades -->
+      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && !error && actividades.length > 0">
+        <div class="col" *ngFor="let actividad of actividades">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">{{ actividad.ClaveEmpleado }}</h5>
+              <h5 class="card-title mb-0">{{ actividad.NombreCompletoEmpleado }}</h5>
+              <div>
+                <span class="badge rounded-pill me-1" [ngClass]="{
+                  'bg-warning text-dark': actividad.ParticipacionActividad[0]?.Estatus === false,
+                  'bg-info text-white': actividad.ParticipacionActividad[0]?.Estatus === true
+                }">
+                  {{ actividad.ParticipacionActividad[0]?.Estatus ? 'Completada' : 'Pendiente' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="card-body">
+              
+              <p class="card-text">{{ actividad.ParticipacionActividad[0]?.NombreActividad }}</p>
+
+              <div class="row mt-3">
+                <div class="col-6">
+                  <small class="text-muted">Fecha:</small>
+                  <p class="mb-0">{{ actividad.ParticipacionActividad[0]?.FechaActividad | date:'yyyy/MM/dd' }}</p>
                 </div>
               </div>
-              
-              <div class="card-body">
-                <p class="card-text">{{ actividad.descripcion }}</p>
-                
-                <div class="row mt-3">
-                  <div class="col-6">
-                    <small class="text-muted">Inicio:</small>
-                    <p class="mb-0">{{ actividad.fechaInicio | date:'dd/MM/yyyy' }}</p>
-                  </div>
-                  <div class="col-6">
-                    <small class="text-muted">Fin:</small>
-                    <p class="mb-0">{{ actividad.fechaFin | date:'dd/MM/yyyy' }}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="card-footer bg-transparent d-flex justify-content-end">
-                <button class="btn btn-outline-primary btn-sm me-2">
-                  <i class="bi bi-pencil-fill me-1"></i> Editar
-                </button>
-                <button class="btn btn-outline-danger btn-sm">
-                  <i class="bi bi-trash-fill me-1"></i> Eliminar
-                </button>
-              </div>
+            </div>
+
+            <div class="card-footer bg-transparent d-flex justify-content-end">
+              <button class="btn btn-outline-primary btn-sm me-2">
+                <i class="bi bi-pencil-fill me-1"></i> Editar
+              </button>
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash-fill me-1"></i> Eliminar
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
