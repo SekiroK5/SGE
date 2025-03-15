@@ -53,7 +53,7 @@ exports.registrarParticipacionActividad = async (req, res) => {
     }
 };
 
-// GetCursosTomados
+
 exports.getactividadesParticipacion = async (req, res) => {
     try {
         const actividadesParticipacion = await participacionActividadService.getAllActividadesParticipacion();

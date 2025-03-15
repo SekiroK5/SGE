@@ -3,64 +3,51 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../enviroments/enviroments';
 
-export interface Actividad {
-  _id?: string;
-  nombre: string;
-  descripcion: string;
-  fechaInicio: Date;
-  fechaFin: Date;
-  estado: 'pendiente' | 'en progreso' | 'completada' | 'cancelada';
-  prioridad: 'baja' | 'media' | 'alta';
-  responsableId?: string;
+export interface ParticipacionActividad {
+  _id?: string;  // Optional, si el _id se asigna automáticamente en MongoDB
+  ClaveEmpleado: string;
+  NombreCompletoEmpleado: string;
+  ParticipacionActividad: Participacion[];
 }
 
-export interface AsignacionActividad {
-  actividadId: string;
-  empleadoId: string;
-  fechaAsignacion: Date;
-  comentarios?: string;
+export interface Participacion {
+  NombreActividad: string;
+  Estatus: boolean;  // true = participó, false = no participó
+  FechaActividad: string;  // Puede ser un string o Date dependiendo del formato que utilices
+  Descripcion?: string;  // Si la descripción es opcional
 }
+
 
 @Injectable({
   providedIn: 'root'
 })
-export class ActividadesService {
-  private apiUrl = `${environment.baseURL}/api/participacionActividad`;
+export class ParticipacionActividadService {
+  private apiUrl = `${environment.baseURL}/auth/participacionActividad`;
   
   constructor(private http: HttpClient) {}
   
-  // Get all activities
-  getActividades(): Observable<Actividad[]> {
-    return this.http.get<Actividad[]>(this.apiUrl);
+ // Obtener todas las participaciones
+  getParticipaciones(): Observable<ParticipacionActividad[]> {
+    return this.http.get<ParticipacionActividad[]>(`${this.apiUrl}`);
   }
-  
-  // Get activity by ID
-  getActividad(id: string): Observable<Actividad> {
-    return this.http.get<Actividad>(`${this.apiUrl}/${id}`);
+
+  // Crear una nueva participación
+  createParticipacion(participacion: ParticipacionActividad): Observable<ParticipacionActividad> {
+    return this.http.post<ParticipacionActividad>(`${this.apiUrl}/registrar-actividad`, participacion);//Posible error aquí :p
   }
-  
-  // Create new activity
-  crearActividad(actividad: Actividad): Observable<Actividad> {
-    return this.http.post<Actividad>(this.apiUrl, actividad);
+
+  // Obtener una participación por clave de empleado
+  getParticipacionByClave(claveEmpleado: string): Observable<ParticipacionActividad> {
+    return this.http.get<ParticipacionActividad>(`${this.apiUrl}/${claveEmpleado}`);
   }
-  
-  // Update activity
-  actualizarActividad(id: string, actividad: Actividad): Observable<Actividad> {
-    return this.http.put<Actividad>(`${this.apiUrl}/${id}`, actividad);
+
+  // Actualizar una participación
+  updateParticipacion(id: string, participacion: ParticipacionActividad): Observable<ParticipacionActividad> {
+    return this.http.put<ParticipacionActividad>(`${this.apiUrl}/${id}`, participacion);
   }
-  
-  // Delete activity
-  eliminarActividad(id: string): Observable<any> {
+
+  // Eliminar una participación
+  deleteParticipacion(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
-  }
-  
-  // Assign activity to employee
-  asignarActividad(asignacion: AsignacionActividad): Observable<any> {
-    return this.http.post(`${this.apiUrl}/asignar`, asignacion);
-  }
-  
-  // Get activities assigned to specific employee
-  getActividadesEmpleado(empleadoId: string): Observable<Actividad[]> {
-    return this.http.get<Actividad[]>(`${this.apiUrl}/empleado/${empleadoId}`);
   }
 }

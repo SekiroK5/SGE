@@ -41,7 +41,7 @@ const FamiliarSchema = new Schema({
         validate: [arrayLimit, 'Debe tener al menos un número telefónico']
     },
     CorreoElectronico: {
-        type: String,
+        type: [CorreoSchema],
         required: true,
         match: /^\S+@\S+\.\S+$/
     }
