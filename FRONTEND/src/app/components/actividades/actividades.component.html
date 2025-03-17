@@ -31,26 +31,26 @@
         <div class="col" *ngFor="let actividad of actividades">
           <div class="card h-100 shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0">{{ actividad.ClaveEmpleado }}</h5>
-              <h5 class="card-title mb-0">{{ actividad.NombreCompletoEmpleado }}</h5>
+              <h5 class="card-title mb-0">{{ actividad?.ClaveEmpleado || 'Sin clave' }}</h5>
+              <h5 class="card-title mb-0">{{ actividad?.NombreCompletoEmpleado || 'Sin nombre' }}</h5>
               <div>
                 <span class="badge rounded-pill me-1" [ngClass]="{
-                  'bg-warning text-dark': actividad.ParticipacionActividad[0]?.Estatus === false,
-                  'bg-info text-white': actividad.ParticipacionActividad[0]?.Estatus === true
+                  'bg-warning text-dark': actividad?.ParticipacionActividad?.[0]?.Estatus === false,
+                  'bg-info text-white': actividad?.ParticipacionActividad?.[0]?.Estatus === true
                 }">
-                  {{ actividad.ParticipacionActividad[0]?.Estatus ? 'Completada' : 'Pendiente' }}
+                  {{ actividad?.ParticipacionActividad?.[0]?.Estatus ? 'Completada' : 'Pendiente' }}
                 </span>
               </div>
             </div>
 
             <div class="card-body">
               
-              <p class="card-text">{{ actividad.ParticipacionActividad[0]?.NombreActividad }}</p>
+              <p class="card-text">{{ actividad?.ParticipacionActividad?.[0]?.NombreActividad || 'Sin nombre de actividad' }}</p>
 
               <div class="row mt-3">
                 <div class="col-6">
                   <small class="text-muted">Fecha:</small>
-                  <p class="mb-0">{{ actividad.ParticipacionActividad[0]?.FechaActividad | date:'yyyy/MM/dd' }}</p>
+                  <p class="mb-0">{{ actividad?.ParticipacionActividad?.[0]?.FechaActividad | date:'yyyy/MM/dd' || 'Sin fecha' }}</p>
                 </div>
               </div>
             </div>

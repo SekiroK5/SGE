@@ -3,14 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../enviroments/enviroments';
 
-
-export interface ParticipacionActividad {
+// Actualizamos la interfaz para que coincida con los datos reales
+export interface ActividadDetalle {
   NombreActividad: string;
-  Estatus: boolean;  // true = participó, false = no participó
-  FechaActividad: string;  // Puede ser un string o Date dependiendo del formato que utilices
-  Descripcion?: string;  // Si la descripción es opcional
+  Estatus: boolean;
+  FechaActividad: string;
+  Descripcion?: string;
 }
 
+export interface ParticipacionActividad {
+  ClaveEmpleado: string;
+  NombreCompletoEmpleado: string;
+  ParticipacionActividad: ActividadDetalle[];
+  // Otras propiedades si existen
+}
 
 @Injectable({
   providedIn: 'root'
@@ -20,14 +26,14 @@ export class ParticipacionActividadService {
   
   constructor(private http: HttpClient) {}
   
- // Obtener todas las participaciones
+  // Obtener todas las participaciones
   getParticipaciones(): Observable<ParticipacionActividad[]> {
     return this.http.get<ParticipacionActividad[]>(`${this.apiUrl}`);
   }
 
   // Crear una nueva participación
   createParticipacion(participacion: ParticipacionActividad): Observable<ParticipacionActividad> {
-    return this.http.post<ParticipacionActividad>(`${this.apiUrl}/registrar-actividad`, participacion);//Posible error aquí :p
+    return this.http.post<ParticipacionActividad>(`${this.apiUrl}/registrar-actividad`, participacion);
   }
 
   // Obtener una participación por clave de empleado
