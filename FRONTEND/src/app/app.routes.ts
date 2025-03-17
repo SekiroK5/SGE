@@ -2,11 +2,13 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home/home.component';
 // Importamos el componente del dashboard de RH
 import { DashboardComponent } from './components/rh/dashboard/dashboard.component';
+import { LoginComponent } from './components/home/login/login.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Ruta predeterminada
   { path: 'home', component: HomeComponent },
-  
+  {path: 'login', component: LoginComponent},
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   // Ruta para el dashboard de RH
   { path: 'rh/dashboard', component: DashboardComponent },
   

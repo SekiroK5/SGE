@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../enviroments/enviroments';
 
 
-export interface Participacion {
+export interface ParticipacionActividad {
   NombreActividad: string;
   Estatus: boolean;  // true = participó, false = no participó
   FechaActividad: string;  // Puede ser un string o Date dependiendo del formato que utilices

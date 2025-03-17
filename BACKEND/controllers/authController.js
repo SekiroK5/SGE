@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
 
         const { ClaveEmpleado, Password } = req.body;
 
-        const empleado = await empleadoService.getEmpleadoByClave(ClaveEmpleado);
+        const empleado = await empleadoService.getEmpleadoById(ClaveEmpleado);
 
         if (!empleado || !(await compare(Password, empleado.Password))) {
             return res.status(401).json({ error: "Clave de empleado o contraseña incorrectos" });
