@@ -1,12 +1,16 @@
+// Al principio de authController.js
+require('dotenv').config();
 const { encript, compare } = require("../utils/handlePassword");
 const empleadoService = require("../services/empleadoService");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET || "GIAVANA8721";
 
 exports.register = async (req, res) => {
     try {
         // Extraer datos recibidos
         const datos = req.body;
-
+        
         const camposObligatorios = [
             "Nombre", "ApellidoPaterno", "ApellidoMaterno", "FechaNacimiento", 
             "Sexo", "Calle", "NumeroExterior", "Colonia", "CodigoPostal", "Ciudad",
@@ -73,7 +77,30 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: "Clave de empleado o contraseña incorrectos" });
         }
 
-        res.status(200).json({ message: "Sesión iniciada con éxito" });
+        // Generar token JWT
+        const token = jwt.sign(
+            {
+                id: empleado._id,
+                claveEmpleado: empleado.ClaveEmpleado,
+                nombre: empleado.Nombre,
+                departamento: empleado.Departamento,
+                puesto: empleado.Puesto
+            },
+            JWT_SECRET,
+            { expiresIn: '20s' } // El token expira en 8 horas
+        );
+
+        // Devolver token y datos básicos del empleado
+        res.status(200).json({
+            message: "Sesión iniciada con éxito",
+            token,
+            usuario: {
+                claveEmpleado: empleado.ClaveEmpleado,
+                nombre: empleado.Nombre,
+                departamento: empleado.Departamento,
+                puesto: empleado.Puesto
+            }
+        });
 
     } catch (error) {
         console.error("Error en el inicio de sesión:", error);

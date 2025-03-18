@@ -15,16 +15,24 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
         tap(response => {
-          // Guardar token si tu backend lo devuelve
+          // Guardar token
           if (response.token) {
             localStorage.setItem('token', response.token);
           }
-          // Guardar info del usuario logueado si es necesario
-          if (response.empleado) {
-            localStorage.setItem('currentUser', JSON.stringify(response.empleado));
+          // Guardar info del usuario incluyendo rol/departamento
+          if (response.usuario) {
+            localStorage.setItem('currentUser', JSON.stringify(response.usuario));
+            // Guardar el departamento o rol por separado para fácil acceso
+            localStorage.setItem('userDepartment', response.usuario.departamento);
           }
         })
       );
+  }
+  
+  // Método para obtener el departamento o rol del usuario
+  getUserDepartment(): string {
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    return user.departamento || '';
   }
 
   logout(): void {
