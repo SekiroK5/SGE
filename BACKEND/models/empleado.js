@@ -41,7 +41,7 @@ const FamiliarSchema = new Schema({
         validate: [arrayLimit, 'Debe tener al menos un número telefónico']
     },
     CorreoElectronico: {
-        type: [CorreoSchema],
+        type: String,
         required: true,
         match: /^\S+@\S+\.\S+$/
     }
@@ -82,8 +82,9 @@ const EmpleadoSchema = new Schema({
         enum: ['M', 'F']
     },
     Foto: {
-        type: Buffer,  // Se usa Buffer en lugar de BinData
-        required: true
+        type: String,
+        required: false,
+        default: "https://as2.ftcdn.net/jpg/05/86/91/55/220_F_586915596_gPqgxPdgdJ4OXjv6GCcDWNxTjKDWZ3JD.jpg"
     },
     Calle: {
         type: String,
@@ -102,7 +103,7 @@ const EmpleadoSchema = new Schema({
         required: true
     },
     CodigoPostal: {
-        type: String,  // Se cambia de int a String
+        type: String,
         required: true,
         match: /^\d{5}$/ 
     },

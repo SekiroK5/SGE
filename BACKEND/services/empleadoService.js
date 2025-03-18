@@ -2,6 +2,7 @@ const Empleado = require("../models/empleado");
 const {Binary} = require("mongodb");
 
 // Middleware para generar ClaveEmpleado y RFC automáticamente
+// Modificamos la función generarDatosEmpleado para manejar URLs de fotos
 const generarDatosEmpleado = async (userData) => {
     const { Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento } = userData;
 
@@ -10,7 +11,7 @@ const generarDatosEmpleado = async (userData) => {
     }
 
     // Generar ClaveEmpleado con iniciales y un consecutivo
-    const nombres = Nombre.split(" "); // Separa los nombres en caso de que haya más de uno
+    const nombres = Nombre.split(" ");
     const iniciales = (nombres[0][0] + (nombres[1] ? nombres[1][0] : 'X') + ApellidoPaterno[0] + ApellidoMaterno[0]).toUpperCase().slice(0, 4);
 
     const lastEmpleado = await Empleado.findOne().sort({ ClaveEmpleado: -1 }).select("ClaveEmpleado");
@@ -27,13 +28,28 @@ const generarDatosEmpleado = async (userData) => {
     }
     
     const rfcFecha = FechaNacimiento.getFullYear().toString().slice(2, 4) + 
-                     String(FechaNacimiento.getMonth() + 1).padStart(2, '0') + 
-                     String(FechaNacimiento.getDate()).padStart(2, '0');
+                    String(FechaNacimiento.getMonth() + 1).padStart(2, '0') + 
+                    String(FechaNacimiento.getDate()).padStart(2, '0');
     
     userData.RFC = `${iniciales}-${rfcFecha}`;    
 
-    //Convertimos la foto a bin data
-    userData.Foto = userData.Foto ? new Binary(userData.Foto) : new Binary(Buffer.alloc(0));
+    // Si no hay foto, usar una por defecto
+    if (!userData.Foto) {
+        userData.Foto = "https://as2.ftcdn.net/jpg/05/86/91/55/220_F_586915596_gPqgxPdgdJ4OXjv6GCcDWNxTjKDWZ3JD.jpg";
+    }
+
+    // Asegurar que hay al menos una referencia familiar
+    if (!userData.ReferenciaFamiliar || !userData.ReferenciaFamiliar.length) {
+        userData.ReferenciaFamiliar = [{
+            NombreCompleto: "Por especificar",
+            Parentesco: "Por especificar",
+            Telefono: [{
+                Lada: "000",
+                Numero: "0000000"
+            }],
+            CorreoElectronico: "por.especificar@example.com"
+        }];
+    }
 
     return userData;
 };
@@ -88,7 +104,7 @@ exports.updateEmpleado = async (claveEmpleado, updateData) => {
         const camposDirectos = [
             'Nombre', 'ApellidoPaterno', 'ApellidoMaterno', 'Sexo', 'Calle',
             'NumeroExterior', 'NumeroInterior', 'Colonia', 'CodigoPostal',
-            'Ciudad', 'Departamento', 'Puesto'
+            'Ciudad', 'Departamento', 'Puesto', 'Foto'
         ];
         
         camposDirectos.forEach(campo => {
@@ -174,5 +190,95 @@ exports.deleteEmpleado = async (claveEmpleado) => {
         return result;
     } catch (error) {
         throw new Error(`Error al eliminar el empleado: ${error.message}`);
+    }
+};
+
+exports.deleteEmpleadoTemporaly = async (claveEmpleado) => {
+    try {
+        // Buscar al empleado
+        const empleado = await Empleado.findOne({ ClaveEmpleado: claveEmpleado });
+
+        if (!empleado) {
+            return null; // Empleado no encontrado
+        }
+
+        // Guardar el departamento original antes de cambiarlo
+        const departamentoOriginal = empleado.Departamento;
+
+        // Cambiar el departamento a "Sin asignar"
+        empleado.Departamento = "Sin asignar";
+
+        // Guardar al empleado con el departamento actualizado
+        await empleado.save();
+
+        return {
+            empleado,
+            departamentoOriginal
+        };
+    } catch (error) {
+        console.error("Error al eliminar temporalmente al empleado:", error);
+        throw error;
+    }
+};
+
+// Método para activar temporalmente al empleado
+exports.activateEmpleadoTemporaly = async (claveEmpleado, departamentoOriginal) => {
+    try {
+        // Buscar al empleado
+        const empleado = await Empleado.findOne({ ClaveEmpleado: claveEmpleado });
+
+        if (!empleado) {
+            return null; // Empleado no encontrado
+        }
+
+        // Verificar si el departamento original es válido
+        if (!departamentoOriginal || departamentoOriginal === "Sin asignar") {
+            // Si no hay departamento original, puedes asignar un valor por defecto o mantener "Sin asignar"
+            empleado.Departamento = "Sin asignar"; // O el departamento que se desee
+        } else {
+            // Restaurar el departamento original
+            empleado.Departamento = departamentoOriginal;
+        }
+
+        // Guardar al empleado reactivado
+        await empleado.save();
+
+        return empleado;
+    } catch (error) {
+        console.error("Error al activar empleado temporal:", error);
+        throw error;
+    }
+};
+
+
+exports.getEmpleadoByFilters = async(nombre,departamento) => {
+    try{
+        var matchStage = {};
+
+        if(nombre){
+            matchStage["NombreCompleto"] = {$regex: new RegExp(nombre,'i')};
+        }
+
+        if(departamento){
+            matchStage["Departamento"] = departamento;
+        }
+
+        const results = await Empleado.aggregate([
+            {
+                $addFields:{
+                    NombreCompleto:{
+                        $concat: ["$Nombre", " ", "$ApellidoPaterno", " ", "$ApellidoMaterno"]
+                    }
+                }
+            },
+            {
+                $match: matchStage
+            }
+        ]);
+        
+        return results;
+    }catch(error){
+        console.error("Error al obtener empleado.");
+        throw new Error("Error al buscar personas: "+ error.message);
     }
 };
