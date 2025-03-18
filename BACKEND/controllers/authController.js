@@ -156,3 +156,59 @@ exports.deleteEmpleado = async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
+
+// En authController.js
+
+exports.deleteEmpleadoTemporaly = async (req, res) => {
+    try {
+        const { ClaveEmpleado } = req.params;
+
+        // Llamar al servicio de eliminación temporal
+        const { empleado, departamentoOriginal } = await empleadoService.deleteEmpleadoTemporaly(ClaveEmpleado);
+
+        if (!empleado) {
+            return res.status(404).json({ error: "Empleado no encontrado" });
+        }
+
+        // Enviar el departamento original para restaurarlo al reactivar
+        res.status(200).json({
+            message: "Empleado eliminado temporalmente",
+            departamentoOriginal
+        });
+    } catch (error) {
+        console.error("Error al eliminar temporalmente al empleado:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+exports.activateEmpleadoTemporaly = async (req, res) => {
+    try {
+        const { ClaveEmpleado } = req.params;
+        const { departamentoOriginal } = req.body;  // El departamento original debe venir desde el cuerpo de la solicitud
+
+        const empleado = await empleadoService.activateEmpleadoTemporaly(ClaveEmpleado, departamentoOriginal);
+
+        if (!empleado) {
+            return res.status(404).json({ error: "Empleado no encontrado o no se pudo restaurar el departamento" });
+        }
+
+        res.status(200).json({ message: "Empleado activado temporalmente" });
+    } catch (error) {
+        console.error("Error al activar empleado temporal:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+
+
+exports.getEmpleadoByFilters = async (req,res) => {
+    try{
+        const{nombre, departamento} = req.query;
+
+        const results = await empleadoService.getEmpleadoByFilters(nombre,departamento);
+        res.json(results);
+    }catch(error){
+        console.error("Error al obtener empleado:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
