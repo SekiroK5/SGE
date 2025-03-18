@@ -5,7 +5,6 @@ import { DashboardComponent } from './components/rh/dashboard/dashboard.componen
 import { LoginComponent } from './components/home/login/login.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent }, // Ruta predeterminada
   { path: 'home', component: HomeComponent },
   {path: 'login', component: LoginComponent},
   { path: '', redirectTo: '/login', pathMatch: 'full' },
