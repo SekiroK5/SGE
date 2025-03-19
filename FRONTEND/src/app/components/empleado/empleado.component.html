@@ -1,16 +1,209 @@
-<div class="empleado-container">
+<div class="navbar">
+  <div class="navbar-logo">
+    <img src="https://img.icons8.com/?size=512&id=74402&format=png" alt="SGET Logo" class="logo-img">
+    <span class="logo-text">SGE con MongoDB</span>
+  </div>
+  <div class="navbar-title">
+    <span>Perfil de Empleado</span>
+  </div>
+  <div class="navbar-actions">
+    <button class="logout-btn" (click)="cerrarSesion()" type="button" aria-label="Cerrar sesión">
+      <i class="material-icons">exit_to_app</i>
+      <span class="btn-text">Cerrar Sesión</span>
+    </button>
+  </div>
+</div>
+
+<main class="dashboard-content">
+  <div class="dashboard-header">
     <h1>Perfil de Empleado</h1>
-    
-    <div class="profile-nav">
-      <ul>
-        <li><a routerLink="/empleado">Información General</a></li>
-        <li><a routerLink="/empleado/perfil">Perfil Detallado</a></li>
-        <li><a routerLink="/empleado/actividades">Actividades</a></li>
-        <li><a routerLink="/empleado/cursos">Cursos</a></li>
-      </ul>
+    <p>Visualización y gestión de información personal</p>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="!claveEmpleado" class="message-container">
+    <div class="empty-message">No se ha seleccionado ningún empleado</div>
+  </div>
+
+  <!-- Perfil del Empleado -->
+  <section class="content-section">
+    <div class="section-header">
+      <h2>Datos Personales</h2>
     </div>
     
-    <div class="content-area">
-      <router-outlet></router-outlet>
+    <div *ngIf="loading.perfil" class="loading">
+      <i class="material-icons">refresh</i> Cargando perfil...
+    </div>
+    
+    <div *ngIf="error.perfil" class="error-message">
+      <i class="material-icons">error_outline</i> {{ error.perfil }}
+    </div>
+    
+    <div *ngIf="empleado && !loading.perfil" class="profile-data">
+      <div class="profile-photo">
+        <!-- Imagen con manejo de errores -->
+        <img [src]="empleado.Foto || defaultProfileImage" 
+             alt="Foto de perfil" 
+             (error)="handleImageError($event)">
+      </div>
+      <div class="profile-info">
+        <div class="info-group">
+          <p><strong>Clave:</strong> {{ empleado.ClaveEmpleado }}</p>
+          <p><strong>Nombre:</strong> {{ empleado.Nombre }} {{ empleado.ApellidoPaterno }} {{ empleado.ApellidoMaterno }}</p>
+          <p><strong>RFC:</strong> {{ empleado.RFC }}</p>
+          <p><strong>Fecha de Nacimiento:</strong> {{ empleado.FechaNacimiento | date }}</p>
+          <p><strong>Sexo:</strong> {{ empleado.Sexo }}</p>
+        </div>
+        
+        <div class="info-group">
+          <p><strong>Dirección:</strong> {{ empleado.Calle }} {{ empleado.NumeroExterior }}, 
+            {{ empleado.NumeroInterior ? 'Int. ' + empleado.NumeroInterior + ', ' : '' }}
+            {{ empleado.Colonia }}, {{ empleado.CodigoPostal }}, {{ empleado.Ciudad }}</p>
+          <p><strong>Departamento:</strong> {{ empleado.Departamento }}</p>
+          <p><strong>Puesto:</strong> {{ empleado.Puesto }}</p>
+        </div>
+        
+        <div *ngIf="empleado.Telefonos && empleado.Telefonos.length > 0" class="info-group">
+          <p><strong>Teléfonos:</strong></p>
+          <ul class="data-list">
+            <li *ngFor="let telefono of empleado.Telefonos">
+              <i class="material-icons">phone</i> {{ telefono.Lada }} {{ telefono.Numero }}
+            </li>
+          </ul>
+        </div>
+        
+        <div *ngIf="empleado.CorreoElectronico && empleado.CorreoElectronico.length > 0" class="info-group">
+          <p><strong>Correo Electrónico:</strong></p>
+          <ul class="data-list">
+            <li *ngFor="let correo of empleado.CorreoElectronico">
+              <i class="material-icons">email</i> {{ correo.Direccion }}
+            </li>
+          </ul>
+        </div>
+        
+        <div *ngIf="empleado.ReferenciaFamiliar && empleado.ReferenciaFamiliar.length > 0" class="info-group">
+          <p><strong>Referencias Familiares:</strong></p>
+          <div *ngFor="let referencia of empleado.ReferenciaFamiliar" class="referencia">
+            <p><i class="material-icons">person</i> {{ referencia.NombreCompleto }} ({{ referencia.Parentesco }})</p>
+            <p *ngIf="referencia.Telefono && referencia.Telefono.length > 0">
+              <i class="material-icons">phone</i> {{ referencia.Telefono[0].Lada }} {{ referencia.Telefono[0].Numero }}
+            </p>
+            <!-- Proteger acceso al correo con verificación de existencia segura -->
+            <p *ngIf="referencia.CorreoElectronico && 
+                     referencia.CorreoElectronico.length > 0 && 
+                     referencia.CorreoElectronico[0] && 
+                     referencia.CorreoElectronico[0].Direccion">
+              <i class="material-icons">email</i> {{ referencia.CorreoElectronico[0].Direccion }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cursos Tomados -->
+  <section class="content-section">
+    <div class="section-header">
+      <h2>Cursos Tomados</h2>
+    </div>
+    
+    <div *ngIf="loading.cursos" class="loading">
+      <i class="material-icons">refresh</i> Cargando cursos...
+    </div>
+    
+    <div *ngIf="error.cursos" class="error-message">
+      <i class="material-icons">error_outline</i> {{ error.cursos }}
+    </div>
+    
+    <div *ngIf="cursosTomados && cursosTomados.CursosTomados && cursosTomados.CursosTomados.length > 0 && !loading.cursos" class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre del Curso</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Término</th>
+            <th>Tipo de Documento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let curso of cursosTomados.CursosTomados">
+            <td>{{ curso.NombreCurso }}</td>
+            <td>{{ curso.FechaInicio | date }}</td>
+            <td>{{ curso.FechaTermino | date }}</td>
+            <td>
+              <span *ngFor="let doc of curso.TipoDocumento || []; let last = last">
+                {{ doc?.Descripcion || 'No especificado' }}{{ !last ? ', ' : '' }}
+              </span>
+              <span *ngIf="!curso.TipoDocumento || curso.TipoDocumento.length === 0">No especificado</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div *ngIf="(!cursosTomados || !cursosTomados.CursosTomados || cursosTomados.CursosTomados.length === 0) && !loading.cursos" class="message-container">
+      <div class="empty-message">
+        <i class="material-icons">info</i> No hay cursos registrados para este empleado
+      </div>
+    </div>
+  </section>
+
+  <!-- Actividades -->
+  <section class="content-section">
+    <div class="section-header">
+      <h2>Participación en Actividades</h2>
+    </div>
+    
+    <div *ngIf="loading.actividades" class="loading">
+      <i class="material-icons">refresh</i> Cargando actividades...
+    </div>
+    
+    <div *ngIf="error.actividades" class="error-message">
+      <i class="material-icons">error_outline</i> {{ error.actividades }}
+    </div>
+    
+    <div *ngIf="participacionActividad && participacionActividad.ParticipacionActividad && participacionActividad.ParticipacionActividad.length > 0 && !loading.actividades" class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre de la Actividad</th>
+            <th>Fecha de Actividad</th>
+            <th>Estatus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let actividad of participacionActividad.ParticipacionActividad">
+            <td>{{ actividad.NombreActividad }}</td>
+            <td>{{ actividad.FechaActividad | date }}</td>
+            <td>
+              <span [ngClass]="actividad.Estatus ? 'status-complete' : 'status-pending'">
+                {{ actividad.Estatus ? 'Completada' : 'Pendiente' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div *ngIf="(!participacionActividad || !participacionActividad.ParticipacionActividad || participacionActividad.ParticipacionActividad.length === 0) && !loading.actividades" class="message-container">
+      <div class="empty-message">
+        <i class="material-icons">info</i> No hay actividades registradas para este empleado
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-info">
+      <p>&copy; Marzo, 2025 Universidad Tecnológica del Norte de Guanajuato</p>
+      <p>Desarrollado por: Chavero Martínez Noé & Leonel Alejandro Torres Pérez</p>
+      <p>Base de Datos para Cómputo en la Nube - Unidad III</p>
+    </div>
+    <div class="footer-links">
+      <a href="#">Términos</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Contacto</a>
     </div>
   </div>
+</footer>

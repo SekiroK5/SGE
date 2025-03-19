@@ -1,26 +1,25 @@
 import { Component } from '@angular/core';
-import {MatIconModule} from '@angular/material/icon'; //me marca error de localizacion
-import { LoginComponent } from '../login/login.component';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; //me marca error de localizacion
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatIconModule],
-  templateUrl:'./home.component.html',
-  providers:[NgbModal],
+  imports: [MatIconModule, CommonModule],
+  templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  constructor(private modalService: NgbModal, private router: Router) {} //me marca error con el modalService
+  constructor(private modalService: NgbModal, private router: Router) {}
 
-    openModal() {
-      const modalRef = this.modalService.open(LoginComponent, {
-        backdrop: 'static',
-        size: 'md',
-        centered: true
-      });
-    }
+  openModal() {
+    // Limpiar cualquier token de autenticación existente
+    localStorage.removeItem('token'); // Ajusta esto según la clave que uses
+    sessionStorage.clear();
+    
+    // Navegar a la página de login en lugar de abrir un modal
+    this.router.navigate(['/login']);
+  }
 }

@@ -16,6 +16,7 @@ export class AuthService {
       .pipe(
         tap(response => {
           // Guardar token
+          localStorage.setItem('claveEmpleado', credentials.ClaveEmpleado);
           if (response.token) {
             localStorage.setItem('token', response.token);
           }

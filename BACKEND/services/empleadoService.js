@@ -1,6 +1,6 @@
 const Empleado = require("../models/empleado");
 const {Binary} = require("mongodb");
-
+const Departamento = require('../models/departamento');
 // Middleware para generar ClaveEmpleado y RFC automáticamente
 // Modificamos la función generarDatosEmpleado para manejar URLs de fotos
 const generarDatosEmpleado = async (userData) => {
@@ -193,6 +193,11 @@ exports.deleteEmpleado = async (claveEmpleado) => {
     }
 };
 
+// Servicio para eliminar temporalmente un empleado
+// Importar los modelos necesarios
+
+
+// Servicio para eliminar temporalmente un empleado
 exports.deleteEmpleadoTemporaly = async (claveEmpleado) => {
     try {
         // Buscar al empleado
@@ -204,16 +209,36 @@ exports.deleteEmpleadoTemporaly = async (claveEmpleado) => {
 
         // Guardar el departamento original antes de cambiarlo
         const departamentoOriginal = empleado.Departamento;
+        
+        // Guardar la información del puesto original si existe
+        let puestoOriginal = null;
+        
+        if (departamentoOriginal && departamentoOriginal !== "Sin asignar") {
+            // Buscar el departamento actual para conservar la información del puesto
+            const departamentoActual = await Departamento.findOne({ 
+                nombreDepartamento: departamentoOriginal 
+            });
+            
+            // Guardar el puesto del empleado en este departamento si existe
+            if (departamentoActual && departamentoActual.puestos) {
+                // Buscar el puesto del empleado (asumiendo que hay algún identificador del empleado en el puesto)
+                puestoOriginal = departamentoActual.puestos.find(
+                    puesto => puesto.empleadoId === claveEmpleado || 
+                              puesto.ClaveEmpleado === claveEmpleado
+                );
+            }
+        }
 
-        // Cambiar el departamento a "Sin asignar"
+        // Cambiar el departamento del empleado a "Sin asignar"
         empleado.Departamento = "Sin asignar";
-
+        
         // Guardar al empleado con el departamento actualizado
         await empleado.save();
 
         return {
             empleado,
-            departamentoOriginal
+            departamentoOriginal,
+            puestoOriginal: puestoOriginal ? puestoOriginal : null
         };
     } catch (error) {
         console.error("Error al eliminar temporalmente al empleado:", error);
@@ -222,7 +247,7 @@ exports.deleteEmpleadoTemporaly = async (claveEmpleado) => {
 };
 
 // Método para activar temporalmente al empleado
-exports.activateEmpleadoTemporaly = async (claveEmpleado, departamentoOriginal) => {
+exports.activateEmpleadoTemporaly = async (claveEmpleado, departamentoOriginal, puestoOriginal) => {
     try {
         // Buscar al empleado
         const empleado = await Empleado.findOne({ ClaveEmpleado: claveEmpleado });
@@ -233,11 +258,32 @@ exports.activateEmpleadoTemporaly = async (claveEmpleado, departamentoOriginal) 
 
         // Verificar si el departamento original es válido
         if (!departamentoOriginal || departamentoOriginal === "Sin asignar") {
-            // Si no hay departamento original, puedes asignar un valor por defecto o mantener "Sin asignar"
-            empleado.Departamento = "Sin asignar"; // O el departamento que se desee
+            // Si no hay departamento original, mantener "Sin asignar"
+            empleado.Departamento = "Asignado";
         } else {
             // Restaurar el departamento original
             empleado.Departamento = departamentoOriginal;
+            
+            // Si tenemos información del puesto original, asegurarse de que siga existiendo en el departamento
+            if (puestoOriginal) {
+                const departamento = await Departamento.findOne({ 
+                    nombreDepartamento: departamentoOriginal 
+                });
+                
+                if (departamento) {
+                    // Verificar si el puesto ya existe o necesita ser restaurado
+                    const puestoExiste = departamento.puestos.some(
+                        puesto => puesto.empleadoId === claveEmpleado || 
+                                  puesto.ClaveEmpleado === claveEmpleado
+                    );
+                    
+                    // Si el puesto no existe, restaurarlo
+                    if (!puestoExiste) {
+                        departamento.puestos.push(puestoOriginal);
+                        await departamento.save();
+                    }
+                }
+            }
         }
 
         // Guardar al empleado reactivado
@@ -249,7 +295,6 @@ exports.activateEmpleadoTemporaly = async (claveEmpleado, departamentoOriginal) 
         throw error;
     }
 };
-
 
 exports.getEmpleadoByFilters = async(nombre,departamento) => {
     try{

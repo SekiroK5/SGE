@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule]
 })
 export class PerfilComponent implements OnInit {
-  empleadoId: string | null = null;
+  claveEmpleado: string | null = null;
   empleado: Empleado | null = null;
   loading = true;
   error: string | null = null;
@@ -26,16 +26,16 @@ export class PerfilComponent implements OnInit {
   ngOnInit(): void {
 
     this.route.paramMap.subscribe(params => {
-      this.empleadoId = params.get('_id');
-      if (this.empleadoId) {
+      this.claveEmpleado = params.get('claveEmplead');
+      if (this.claveEmpleado) {
         this.loadEmpleadoData();
       }
     });
   }
 
   loadEmpleadoData(): void {
-    if (this.empleadoId) {
-      this.empleadoService.getEmpleadoByClave(this.empleadoId).subscribe(
+    if (this.claveEmpleado) {
+      this.empleadoService.getEmpleadoByClave(this.claveEmpleado).subscribe(
         (data) => {
           this.empleado = data;
           this.loading = false;

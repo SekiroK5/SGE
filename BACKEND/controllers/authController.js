@@ -158,22 +158,22 @@ exports.deleteEmpleado = async (req, res) => {
 };
 
 // En authController.js
-
 exports.deleteEmpleadoTemporaly = async (req, res) => {
     try {
         const { ClaveEmpleado } = req.params;
 
         // Llamar al servicio de eliminación temporal
-        const { empleado, departamentoOriginal } = await empleadoService.deleteEmpleadoTemporaly(ClaveEmpleado);
+        const { empleado, departamentoOriginal, puestoOriginal } = await empleadoService.deleteEmpleadoTemporaly(ClaveEmpleado);
 
         if (!empleado) {
             return res.status(404).json({ error: "Empleado no encontrado" });
         }
 
-        // Enviar el departamento original para restaurarlo al reactivar
+        // Enviar el departamento original y la información del puesto para restaurarlos al reactivar
         res.status(200).json({
             message: "Empleado eliminado temporalmente",
-            departamentoOriginal
+            departamentoOriginal,
+            puestoOriginal
         });
     } catch (error) {
         console.error("Error al eliminar temporalmente al empleado:", error);
@@ -184,21 +184,31 @@ exports.deleteEmpleadoTemporaly = async (req, res) => {
 exports.activateEmpleadoTemporaly = async (req, res) => {
     try {
         const { ClaveEmpleado } = req.params;
-        const { departamentoOriginal } = req.body;  // El departamento original debe venir desde el cuerpo de la solicitud
+        const { departamentoOriginal, puestoOriginal } = req.body;  // Recibimos tanto el departamento como el puesto original
 
-        const empleado = await empleadoService.activateEmpleadoTemporaly(ClaveEmpleado, departamentoOriginal);
+        const empleado = await empleadoService.activateEmpleadoTemporaly(
+            ClaveEmpleado, 
+            departamentoOriginal, 
+            puestoOriginal
+        );
 
         if (!empleado) {
             return res.status(404).json({ error: "Empleado no encontrado o no se pudo restaurar el departamento" });
         }
 
-        res.status(200).json({ message: "Empleado activado temporalmente" });
+        res.status(200).json({ 
+            message: "Empleado activado temporalmente",
+            empleado: {
+                ClaveEmpleado: empleado.ClaveEmpleado,
+                Nombre: empleado.Nombre,
+                Departamento: empleado.Departamento
+            }
+        });
     } catch (error) {
         console.error("Error al activar empleado temporal:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
-
 
 
 exports.getEmpleadoByFilters = async (req,res) => {

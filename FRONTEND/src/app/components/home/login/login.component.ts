@@ -38,8 +38,15 @@ export class LoginComponent implements OnInit {
         // Usamos getUserDepartment() en lugar de getUserData()
         const departamento = this.authService.getUserDepartment().toUpperCase();
         
+        // Verificar si el departamento es "Sin asignar" - en ese caso cerrar sesión
+        if (departamento === 'SIN ASIGNAR') {
+          this.error = 'Su cuenta está temporalmente inactiva. Contacte a Recursos Humanos.';
+          this.authService.logout();
+          return;
+        }
+        
         if (departamento) {
-          if (departamento === 'RH' || departamento === 'Recursos Humanos') {
+          if (departamento === 'RH' || departamento === 'RECURSOS HUMANOS') {
             this.router.navigate(['/rh/dashboard']);
           } else {
             this.router.navigate(['/empleado']);
@@ -51,6 +58,7 @@ export class LoginComponent implements OnInit {
       }
     }
   }
+  
   onLogin(): void {
     if (!this.authData.claveEmpleado || !this.authData.password) {
       this.error = 'Por favor, complete todos los campos';
@@ -69,16 +77,27 @@ export class LoginComponent implements OnInit {
     this.authService.login(credentials)
     .subscribe({
       next: (response) => {
-        console.log('Login exitoso:', response);
         this.loading = false;
         
-        // Cerrar el modal primero
-        this.closeModal();
-        
-        // Redirigir según el departamento
+        // Verificar si el departamento es "Sin asignar"
         if (response.usuario && response.usuario.departamento) {
           const departamento = response.usuario.departamento.toUpperCase();
           
+          if (departamento === 'SIN ASIGNAR') {
+            // El empleado está temporalmente dado de baja
+            this.error = 'Su cuenta está temporalmente inactiva. Contacte a Recursos Humanos.';
+            
+            // Cerrar la sesión que se acaba de crear
+            this.authService.logout();
+            return;
+          }
+          
+          console.log('Login exitoso:', response);
+          
+          // Cerrar el modal primero
+          this.closeModal();
+          
+          // Redirigir según el departamento
           if (departamento === 'RH' || departamento === 'RECURSOS HUMANOS') {
             this.router.navigate(['/rh/dashboard'])
               .then(() => console.log('Navegación a RH exitosa'))
@@ -90,8 +109,8 @@ export class LoginComponent implements OnInit {
           }
         } else {
           console.warn('No se recibió información de departamento');
-          // Cerrar el modal y redirigir a la ruta por defecto
-          this.router.navigate(['/empleado']);
+          this.error = 'Error al obtener información del usuario.';
+          this.authService.logout();
         }
       },
       error: (err) => {
@@ -111,6 +130,10 @@ export class LoginComponent implements OnInit {
   }
 
   closeModal(): void {
+    // Primero cierra el modal
     this.modalService.dismissAll();
+    
+    // Luego navega a la página de inicio
+    this.router.navigate(['/home']);
   }
 }
