@@ -63,7 +63,7 @@ export class EmpleadoService {
 
   // Crear un Empleado
   createEmpleados(empleado: Empleado): Observable<Empleado> {
-    return this.http.post<Empleado>(`${this.apiUrl}/register`, empleado); //Posible error aquí :p
+    return this.http.post<Empleado>(`${this.apiUrl}/empleados/register`, empleado); 
   }
 
   // Obtener una Empleado por su clave
@@ -72,12 +72,12 @@ export class EmpleadoService {
   }
 
   // Actualizar un Empleado
-  updateEmpleado(id: string, empleado: Empleado): Observable<Empleado> {
-    return this.http.put<Empleado>(`${this.apiUrl}/${id}`, empleado);
+  updateEmpleado(claveEmpleado: string, empleado: Empleado): Observable<Empleado> {
+    return this.http.put<Empleado>(`${this.apiUrl}/${claveEmpleado}`, empleado);
   }
 
   // Eliminar un Empleado
-  deleteEmpleado(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteEmpleado(claveEmpleado: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${claveEmpleado}`);
   }
 }
