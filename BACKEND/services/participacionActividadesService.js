@@ -21,7 +21,8 @@ exports.registrarParticipacionActividad = async (userData) => {
         const nuevaParticipacion = new ParticipacionActividad({
             ClaveEmpleado: userData.ClaveEmpleado,
             NombreCompletoEmpleado: nombreCompleto,
-            ParticipacionActividad: userData.ParticipacionActividad
+            ParticipacionActividad: userData.ParticipacionActividad,
+            Descripcion: userData.Descripcion
         });
         
         try {

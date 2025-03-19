@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ParticipacionActividadService, ParticipacionActividad } from '../Services/actividad.service'; // Importa el servicio y la interfaz
+import { ParticipacionActividadService, ParticipacionActividad } from '../Services/actividad.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';  // Importar Router
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -13,28 +13,52 @@ import { HttpClientModule } from '@angular/common/http';
   styleUrls: ['./actividades.component.css']
 })
 export class ActividadesComponent implements OnInit {
-  actividades: ParticipacionActividad[] = [];  // Array para almacenar las actividades
-  loading = true;  // Variable para mostrar el estado de carga
-  error = '';  // Variable para almacenar errores
+  actividades: ParticipacionActividad[] = [];
+  loading = true;
+  error = '';
 
-  constructor(private actividadesService: ParticipacionActividadService) {}
+  constructor(
+    private actividadesService: ParticipacionActividadService,
+    private router: Router  // Inyectamos el Router para navegar
+  ) {}
 
   ngOnInit(): void {
-    this.cargarActividades();  // Llama al método para cargar las actividades cuando se inicializa el componente
+    this.cargarActividades();
   }
 
-  // Método para cargar todas las actividades desde el servicio
   cargarActividades(): void {
     this.loading = true;
     this.actividadesService.getParticipaciones().subscribe(
       (data) => {
-        this.actividades = data;  // Guarda los datos obtenidos en la propiedad actividades
-        this.loading = false;  // Cambia el estado de carga a falso
+        this.actividades = data;
+        this.loading = false;
       },
       (error) => {
-        this.error = 'Error al cargar las actividades';  // Si ocurre un error, muestra un mensaje
-        this.loading = false;  // Cambia el estado de carga a falso
+        this.error = 'Error al cargar las actividades';
+        this.loading = false;
       }
     );
+  }
+
+  eliminarActividadTomada(id: string | undefined): void {
+    if (!id) {
+      this.error = 'ID de curso no válido';
+      return;
+    }
+
+    this.actividadesService.deleteParticipacion(id).subscribe(
+      () => {
+        this.actividades = this.actividades.filter(actividad => actividad._id !== id);
+        console.log(`La actividad tomada con id ${id} eliminada correctamente`);
+      },
+      (error) => {
+        this.error = 'Error al eliminar la actividad';
+      }
+    );
+  }
+
+  // Función para redirigir al formulario de actualización con la claveEmpleado
+  seleccionarActividad(claveEmpleado: string,nombrecompletoempleado:string): void {
+    this.router.navigate([`actividades/edicion`, claveEmpleado, nombrecompletoempleado]);
   }
 }

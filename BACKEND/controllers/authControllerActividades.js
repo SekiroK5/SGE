@@ -39,6 +39,7 @@ exports.registrarParticipacionActividad = async (req, res) => {
             ParticipacionActividad: datos.ParticipacionActividad.map(actividad => ({
                 NombreActividad: actividad.NombreActividad,
                 Estatus: actividad.Estatus,
+                Descripcion: actividad.Descripcion,
                 FechaActividad: new Date(actividad.FechaActividad)
             }))
         };

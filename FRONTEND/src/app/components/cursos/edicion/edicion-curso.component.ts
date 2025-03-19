@@ -57,7 +57,7 @@ export class EdicionCursoComponent implements OnInit {
   }
 
   cargarCurso(): void {
-    this.http.get<Curso>(`api/cursos/${this.cursoId}`)
+    this.http.get<Curso>(`auth/cursos/${this.cursoId}`)
       .subscribe({
         next: (curso) => {
           this.edicionForm.patchValue({
@@ -89,7 +89,7 @@ export class EdicionCursoComponent implements OnInit {
       return;
     }
 
-    this.http.put(`api/cursos/${this.cursoId}`, this.edicionForm.value)
+    this.http.put(`auth/cursos/${this.cursoId}`, this.edicionForm.value)
       .subscribe({
         next: () => {
           this.success = true;

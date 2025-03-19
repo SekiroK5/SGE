@@ -36,6 +36,24 @@ export class CursosTomadosComponent implements OnInit {
         this.error = 'Error al cargar los cursos';  // Si ocurre un error, muestra un mensaje
         this.loading = false;  // Cambia el estado de carga a falso
       }
+      
+    );
+  }
+  eliminarCurso(id: string | undefined): void {
+    if (!id) {
+      this.error = 'ID de curso no válido';
+      return;  // Si el ID no es válido, termina la ejecución del método.
+    }
+  
+    this.cursosTomadosService.eliminarCursosTomados(id).subscribe(
+      () => {
+        // Si la eliminación fue exitosa, eliminamos el curso de la lista
+        this.cursostomados = this.cursostomados.filter(curso => curso._id !== id);
+        console.log(`Curso con id ${id} eliminado correctamente`);
+      },
+      (error) => {
+        this.error = 'Error al eliminar el curso';
+      }
     );
   }
 }
