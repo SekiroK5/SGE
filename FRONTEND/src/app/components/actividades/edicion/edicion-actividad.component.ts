@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { ParticipacionActividad, ParticipacionActividadService } from '../../Services/actividad.service';
 
 @Component({
   selector: 'app-edicion-actividad',
@@ -13,70 +14,80 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 })
 export class EdicionActividadComponent implements OnInit {
   formulario: FormGroup;
-  id: number = 0;
-  actividad: any = null;
+  actividad: ParticipacionActividad | undefined;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private participacionActividadService: ParticipacionActividadService
   ) {
     this.formulario = this.fb.group({
-      nombre: ['', [Validators.required]],
-      descripcion: ['', [Validators.required]],
-      fecha: ['', [Validators.required]],
-      duracion: ['', [Validators.required, Validators.min(1)]],
-      responsable: ['', [Validators.required]]
+      claveempleado: [{value: '', disabled: true}, Validators.required],  // Disabled para que no se pueda editar
+      nombrecompletoempleado: [{value: '', disabled: true}, Validators.required], // Disabled también aquí
+      nombreactividad: ['', Validators.required],
+      descripcionactividad: ['', Validators.required],
+      estatus: [true, Validators.required],
+      fechaactividad: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      if (params['id']) {
-        this.id = +params['id'];
-        // Aquí cargarías los datos de la actividad desde un servicio
-        this.cargarActividad(this.id);
-      }
-    });
+    const claveEmpleado = this.route.snapshot.paramMap.get('claveEmpleado');
+    
+    if (claveEmpleado) {
+      this.obtenerParticipacion(claveEmpleado);
+    }
   }
 
-  cargarActividad(id: number): void {
-    // Simular carga desde un servicio
-    this.actividad = {
-      id: id,
-      nombre: 'Actividad ' + id,
-      descripcion: 'Descripción de la actividad ' + id,
-      fecha: '2025-03-20',
-      duracion: 2,
-      responsable: 'Responsable de la actividad ' + id
-    };
-
-    this.formulario.patchValue({
-      nombre: this.actividad.nombre,
-      descripcion: this.actividad.descripcion,
-      fecha: this.actividad.fecha,
-      duracion: this.actividad.duracion,
-      responsable: this.actividad.responsable
-    });
+  obtenerParticipacion(claveEmpleado: string): void {
+    this.participacionActividadService.getParticipacionByClave(claveEmpleado).subscribe(
+      (data) => {
+        this.actividad = data;
+        this.formulario.patchValue({
+          claveempleado: data.ClaveEmpleado,
+          nombrecompletoempleado: data.NombreCompletoEmpleado,
+          nombreactividad: data.ParticipacionActividad[0]?.NombreActividad,
+          descripcionactividad: data.ParticipacionActividad[0]?.Descripcion,
+          estatus: data.ParticipacionActividad[0]?.Estatus,
+          fechaactividad: new Date(data.ParticipacionActividad[0]?.FechaActividad).toISOString().slice(0, 16)
+        });
+      },
+      (error) => {
+        console.error('Error al obtener la participación:', error);
+      }
+    );
   }
 
   guardar(): void {
     if (this.formulario.valid) {
-      // Aquí actualizarías la actividad usando un servicio
-      console.log('Datos actualizados:', {
-        id: this.id,
-        ...this.formulario.value
-      });
-      this.router.navigate(['/actividades/lista']);
-    } else {
-      // Marcar todos los campos como tocados para mostrar errores
-      Object.keys(this.formulario.controls).forEach(key => {
-        this.formulario.get(key)?.markAsTouched();
-      });
+      const updatedData: ParticipacionActividad = {
+        ClaveEmpleado: this.formulario.value.claveempleado,  // Mantener el ClaveEmpleado
+        NombreCompletoEmpleado: this.formulario.value.nombrecompletoempleado,  // Mantener el NombreCompletoEmpleado
+        ParticipacionActividad: [{
+          NombreActividad: this.formulario.value.nombreactividad,
+          Estatus: this.formulario.value.estatus,
+          FechaActividad: this.formulario.value.fechaactividad,
+          Descripcion: this.formulario.value.descripcionactividad
+        }]
+      };
+  
+      if (this.actividad) {
+        this.participacionActividadService.updateParticipacion(this.actividad._id!, updatedData).subscribe(
+          (data) => {
+            console.log('Actividad actualizada:', data);
+            this.router.navigate(['/actividades']); // Redirigir a la lista de actividades o a otro lugar
+          },
+          (error) => {
+            console.error('Error al actualizar la actividad:', error);
+          }
+        );
+      }
     }
   }
+  
 
   cancelar(): void {
-    this.router.navigate(['/actividades/lista']);
+    this.router.navigate(['/actividades']); // Redirigir a la lista de actividades o a otro lugar
   }
 }

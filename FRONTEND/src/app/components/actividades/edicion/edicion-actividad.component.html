@@ -1,55 +1,57 @@
-<!-- edicion-actividad.component.html -->
-<div class="container mt-4">
-    <h2>Edición de Actividad</h2>
-    
-    <div *ngIf="!actividad && id !== 0" class="alert alert-info">
-      Cargando información de la actividad...
-    </div>
-    
-    <form *ngIf="actividad || id === 0" [formGroup]="formulario" (ngSubmit)="guardar()">
+<div class="registro-container">
+  <div class="registro-header">
+    <h2>Actualizar Actividad</h2>
+  </div>
+
+  <div class="container mt-4">
+    <h2>Actualizar Información de la Actividad</h2>
+
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+      <!-- Campo ClaveEmpleado (solo lectura) -->
       <div class="mb-3">
-        <label for="nombre" class="form-label">Nombre:</label>
-        <input type="text" id="nombre" class="form-control" formControlName="nombre">
-        <div *ngIf="formulario.get('nombre')?.touched && formulario.get('nombre')?.invalid" class="text-danger">
-          El nombre es requerido
+        <label for="claveempleado" class="form-label">ClaveEmpleado:</label>
+        <input type="text" id="claveempleado" class="form-control" formControlName="claveempleado" [value]="actividad?.ClaveEmpleado" readonly>
+      </div>
+
+      <!-- Campo Nombre Completo del Empleado (solo lectura) -->
+      <div class="mb-3">
+        <label for="nombrecompletoempleado" class="form-label">Nombre Completo del Empleado:</label>
+        <input type="text" id="nombrecompletoempleado" class="form-control" formControlName="nombrecompletoempleado" [value]="actividad?.NombreCompletoEmpleado" readonly>
+      </div>
+
+      <!-- Campo Nombre de la Actividad -->
+      <div class="mb-3">
+        <label for="nombreactividad" class="form-label">Nombre de la Actividad:</label>
+        <input type="text" id="nombreactividad" class="form-control" formControlName="nombreactividad" required>
+        <div *ngIf="formulario.get('nombreactividad')?.touched && formulario.get('nombreactividad')?.invalid" class="text-danger">
+          El nombre de la actividad es requerido.
         </div>
       </div>
-      
+
+      <!-- Campo Descripción -->
       <div class="mb-3">
-        <label for="descripcion" class="form-label">Descripción:</label>
-        <textarea id="descripcion" class="form-control" formControlName="descripcion" rows="3"></textarea>
-        <div *ngIf="formulario.get('descripcion')?.touched && formulario.get('descripcion')?.invalid" class="text-danger">
-          La descripción es requerida
+        <label for="descripcionactividad" class="form-label">Descripción:</label>
+        <textarea id="descripcionactividad" class="form-control" formControlName="descripcionactividad" rows="3" required></textarea>
+        <div *ngIf="formulario.get('descripcionactividad')?.touched && formulario.get('descripcionactividad')?.invalid" class="text-danger">
+          La descripción es requerida.
         </div>
       </div>
-      
+
+      <!-- Campo Estatus -->
       <div class="mb-3">
-        <label for="fecha" class="form-label">Fecha:</label>
-        <input type="date" id="fecha" class="form-control" formControlName="fecha">
-        <div *ngIf="formulario.get('fecha')?.touched && formulario.get('fecha')?.invalid" class="text-danger">
-          La fecha es requerida
-        </div>
+        <label for="estatus" class="form-label">Estatus:</label>
+        <select id="estatus" formControlName="estatus" required>
+          <option [value]="true">Activo</option>
+          <option [value]="false">Inactivo</option>
+        </select>
       </div>
-      
-      <div class="mb-3">
-        <label for="duracion" class="form-label">Duración (horas):</label>
-        <input type="number" id="duracion" class="form-control" formControlName="duracion" min="1">
-        <div *ngIf="formulario.get('duracion')?.touched && formulario.get('duracion')?.invalid" class="text-danger">
-          La duración es requerida y debe ser al menos 1
-        </div>
-      </div>
-      
-      <div class="mb-3">
-        <label for="responsable" class="form-label">Responsable:</label>
-        <input type="text" id="responsable" class="form-control" formControlName="responsable">
-        <div *ngIf="formulario.get('responsable')?.touched && formulario.get('responsable')?.invalid" class="text-danger">
-          El responsable es requerido
-        </div>
-      </div>
-      
-      <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+
+     
+      <!-- Botones -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid">Guardar</button>
         <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
       </div>
     </form>
   </div>
+</div>

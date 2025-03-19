@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
@@ -16,10 +16,12 @@ export class RegistroEmpleadoComponent implements OnInit {
   submitted = false;
   success = false;
   error = '';
+ 
 
   constructor(
     private formBuilder: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {
     this.registroForm = this.formBuilder.group({
       nombre: ['', [Validators.required]],
@@ -69,5 +71,8 @@ export class RegistroEmpleadoComponent implements OnInit {
     const apellido = this.registroForm.get('apellido')?.value.substring(0, 3).toUpperCase() || '';
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     return `${apellido}${random}`;
+  }
+  cancelar(): void {
+    this.router.navigate(['rh/dashboard/']);
   }
 }

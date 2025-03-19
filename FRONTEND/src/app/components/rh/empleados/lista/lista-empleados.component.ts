@@ -40,7 +40,7 @@ export class ListaEmpleadosComponent implements OnInit {
   }
 
   cargarEmpleados(): void {
-    this.http.get<Empleado[]>('api/empleados')
+    this.http.get<Empleado[]>('auth/empleados')
       .subscribe({
         next: (data) => {
           this.empleados = data;
@@ -77,7 +77,7 @@ export class ListaEmpleadosComponent implements OnInit {
 
   eliminarEmpleado(id: string): void {
     if (confirm('¿Está seguro que desea eliminar este empleado?')) {
-      this.http.delete(`api/empleados/${id}`)
+      this.http.delete(`auth/empleados/${id}`)
         .subscribe({
           next: () => {
             this.empleados = this.empleados.filter(emp => emp._id !== id);

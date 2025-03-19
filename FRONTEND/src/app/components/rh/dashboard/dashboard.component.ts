@@ -22,10 +22,12 @@ export class DashboardComponent implements OnInit {
     { name: 'Registrar Empleado', icon: 'person_add', route: '/rh/empleados/registro' },
     { name: 'Editar Empleado', icon: 'edit', route: '/rh/empleados/edicion' },
     { name: 'Actividades', icon: 'assignment', route: '/actividades' },
-    { name: 'Crear Actividad', icon: 'add_task', route: '/actividades/edicion' },
+    { name: 'Crear Actividad', icon: 'add_task', route: '/actividades/registro' },
+    //{ name: 'Editar Actividad', icon: 'edit', route: '/actividades/edicion' },
     { name: 'Registrar Actividad', icon: 'assignment_turned_in', route: '/actividades/registro' },
     { name: 'Cursos', icon: 'school', route: '/cursos' },
-    { name: 'Crear Curso', icon: 'add_circle', route: '/cursos/edicion' },
+    { name: 'Crear Curso', icon: 'add_circle', route: '/cursos/registro' },
+   // {name: 'Editar Curso', icon:'edit', route:'/cursos/edicion'},
     { name: 'Registrar Curso', icon: 'book', route: '/cursos/registro' }
   ];
 
@@ -43,6 +45,7 @@ export class DashboardComponent implements OnInit {
       'Registrar Actividad': 'Registrar y asignar actividades específicas a empleados o grupos de trabajo.',
       'Cursos': 'Gestionar el catálogo de cursos de capacitación disponibles.',
       'Crear Curso': 'Desarrollar un nuevo curso de formación para el personal.',
+      //'Editar Curso': 'Modificar la información de los cursos existentes dentro del sistema.',
       'Registrar Curso': 'Registrar y asignar cursos específicos a empleados según sus necesidades de desarrollo.'
     };
 

@@ -3,6 +3,8 @@ import { HomeComponent } from './components/home/home/home.component';
 // Importamos el componente del dashboard de RH
 import { DashboardComponent } from './components/rh/dashboard/dashboard.component';
 import { LoginComponent } from './components/home/login/login.component';
+import { ActividadesComponent } from './components/actividades/actividades.component';
+import {EdicionActividadComponent} from './components/actividades/edicion/edicion-actividad.component'
 
 export const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -33,5 +35,11 @@ export const routes: Routes = [
   { path: 'empleado/cursos', loadChildren: () => import('./components/empleado/cursos/lista/lista-cursos.routes').then(r => r.LISTA_CURSOS_ROUTES) },
   { path: 'empleado/perfil', loadChildren: () => import('./components/empleado/perfil/perfil.routes').then(r => r.PERFIL_ROUTES) },
   
-  { path: '**', redirectTo: '' } // Redirección para rutas no encontradas
+  { path: '**', redirectTo: '' }, // Redirección para rutas no encontradas
+
+  { path: 'actividades', component: ActividadesComponent },
+  { path: 'actividad-update/:claveEmpleado', component: EdicionActividadComponent },  // Ruta para la actualización
+  { path: '', redirectTo: '/actividades', pathMatch: 'full' }
+
+
 ];

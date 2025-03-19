@@ -1,114 +1,82 @@
+<!-- registro-actividad.component.html -->
+<!-- registro-actividad.component.html -->
+
+<div class="alert success" *ngIf="success">
+  Empleado registrado exitosamente. Se ha generado una clave automática.
+</div>
+
+<div class="alert error" *ngIf="error">
+  {{ error }}
+</div>
+
 <div class="registro-container">
-    <div class="registro-header">
-      <h2>Registro de Curso</h2>
-      <p>Alta de nuevos cursos para capacitación del personal</p>
-    </div>
+  <div class="registro-header">
+    <h2>Cursos Tomados</h2>
+  </div>
+
+  <div class="alert success" *ngIf="success">
+    Empleado registrado exitosamente. Se ha generado una clave automática.
+  </div>
   
-    <div class="alert success" *ngIf="success">
-      Curso registrado exitosamente.
-    </div>
+  <div class="alert error" *ngIf="error">
+    {{ error }}
+  </div>
+
+
+<div class="container mt-4">
+    <h2>Registro de Nuevao curso tomado</h2>
     
-    <div class="alert error" *ngIf="error">
-      {{ error }}
-    </div>
-  
-    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="titulo">Título del Curso</label>
-          <input type="text" id="titulo" formControlName="titulo" 
-                 [ngClass]="{ 'invalid': submitted && f['titulo'].errors }">
-          <div class="error-message" *ngIf="submitted && f['titulo'].errors">
-            El título es requerido
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="instructor">Instructor</label>
-          <input type="text" id="instructor" formControlName="instructor"
-                 [ngClass]="{ 'invalid': submitted && f['instructor'].errors }">
-          <div class="error-message" *ngIf="submitted && f['instructor'].errors">
-            El instructor es requerido
-          </div>
+    <form [formGroup]="registroForm" (ngSubmit)="guardar()">
+      <div class="mb-3">
+        <label for="claveempleado" class="form-label">ClaveEmpleado:</label>
+        <input type="text" id="claveempleado" class="form-control" formControlName="claveempleado">
+        <div *ngIf="registroForm.get('claveempleado')?.touched && registroForm.get('claveempleado')?.invalid" class="text-danger">
+          La clave del empleado es requerido
         </div>
       </div>
-  
-      <div class="form-row">
-        <div class="form-group full-width">
-          <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" rows="4" formControlName="descripcion"
-                   [ngClass]="{ 'invalid': submitted && f['descripcion'].errors }"></textarea>
-          <div class="error-message" *ngIf="submitted && f['descripcion'].errors">
-            La descripción es requerida
-          </div>
+      <div class="mb-3">
+        <label for="nombrecompletoempleado" class="form-label">Nombre Completo del Empleado:</label>
+        <input type="text" id="nombrecompletoempleado" class="form-control" formControlName="nombrecompletoempleado">
+        <div *ngIf="registroForm.get('nombrecompletoempleado')?.touched && registroForm.get('nombrecompletoempleado')?.invalid" class="text-danger">
+          El nombre del empleado es requerido
         </div>
       </div>
-  
-      <div class="form-row">
-        <div class="form-group">
-          <label for="duracion">Duración (horas)</label>
-          <input type="number" id="duracion" formControlName="duracion"
-                 [ngClass]="{ 'invalid': submitted && f['duracion'].errors }">
-          <div class="error-message" *ngIf="submitted && f['duracion'].errors?.['required']">
-            La duración es requerida
-          </div>
-          <div class="error-message" *ngIf="submitted && f['duracion'].errors?.['min']">
-            La duración debe ser mayor a 0
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="capacidad">Capacidad (personas)</label>
-          <input type="number" id="capacidad" formControlName="capacidad"
-                 [ngClass]="{ 'invalid': submitted && f['capacidad'].errors }">
-          <div class="error-message" *ngIf="submitted && f['capacidad'].errors?.['required']">
-            La capacidad es requerida
-          </div>
-          <div class="error-message" *ngIf="submitted && f['capacidad'].errors?.['min']">
-            La capacidad debe ser mayor a 0
-          </div>
+      
+      <div class="mb-3">
+        <label for="nombrecurso" class="form-label">Nombre del Curso:</label>
+        <input type="text" id="nombrecurso" class="form-control" formControlName="nombrecurso" rows="3">
+        <div *ngIf="registroForm.get('nombrecurso')?.touched && registroForm.get('nombrecurso')?.invalid" class="text-danger">
+          el nombre del curso es requerido
         </div>
       </div>
-  
-      <div class="form-row">
-        <div class="form-group">
-          <label for="fechaInicio">Fecha de Inicio</label>
-          <input type="date" id="fechaInicio" formControlName="fechaInicio"
-                 [ngClass]="{ 'invalid': submitted && f['fechaInicio'].errors }">
-          <div class="error-message" *ngIf="submitted && f['fechaInicio'].errors">
-            La fecha de inicio es requerida
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="fechaFin">Fecha de Finalización</label>
-          <input type="date" id="fechaFin" formControlName="fechaFin"
-                 [ngClass]="{ 'invalid': submitted && f['fechaFin'].errors }">
-          <div class="error-message" *ngIf="submitted && f['fechaFin'].errors">
-            La fecha de finalización es requerida
-          </div>
+      <div class="mb-3">
+        <label for="fechainicio" class="form-label">Fecha de inicio del curso:</label>
+        <input type="datetime-local" id="fechainicio" class="form-control" formControlName="fechainicio" required>
+        <div *ngIf="registroForm.get('fechainicio')?.touched && registroForm.get('fechainicio')?.invalid" class="text-danger">
+          Fecha de Inicio de Curso requerida
         </div>
       </div>
-  
-      <div class="form-row">
-        <div class="form-group">
-          <label for="modalidad">Modalidad</label>
-          <select id="modalidad" formControlName="modalidad"
-                  [ngClass]="{ 'invalid': submitted && f['modalidad'].errors }">
-            <option value="">Seleccione una modalidad</option>
-            <option value="Presencial">Presencial</option>
-            <option value="Virtual">Virtual</option>
-            <option value="Híbrido">Híbrido</option>
-          </select>
-          <div class="error-message" *ngIf="submitted && f['modalidad'].errors">
-            La modalidad es requerida
-          </div>
+      <div class="mb-3">
+        <label for="fechatermino" class="form-label">Fecha de inicio del curso:</label>
+        <input type="datetime-local" id="fechatermino" class="form-control" formControlName="fechatermino" required>
+        <div *ngIf="registroForm.get('fechatermino')?.touched && registroForm.get('fechatermino')?.invalid" class="text-danger">
+          Fecha Final  de Curso requerida
         </div>
       </div>
-  
+      <div class="mb-3">
+        <label for="descripcion" class="form-label">Nombre del Curso:</label>
+        <input type="text" id="descripcion" class="form-control" formControlName="descripcion" rows="3">
+        <div *ngIf="registroForm.get('descripcion')?.touched && registroForm.get('descripcion')?.invalid" class="text-danger">
+          La descripción es necesaria
+        </div>
+      </div>
+
       <div class="form-actions">
-        <button type="submit" class="btn-primary">Registrar Curso</button>
-        <button type="button" class="btn-secondary" routerLink="/cursos">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
       </div>
+      
     </form>
   </div>
+
+  

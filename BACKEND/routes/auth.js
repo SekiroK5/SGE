@@ -23,24 +23,24 @@ router.put('/empleados/:claveEmpleado', verifyToken, authController.updateEmplea
 router.delete('/empleados/:claveEmpleado', verifyToken, authController.deleteEmpleado);
 
 // Cursos
-router.post("/cursosTomados/registrar-cursos", verifyToken, validateRegisterCursos, authControllerCursos.registrarCurso);
-router.get('/cursosTomados', verifyToken, authControllerCursos.getCursosTomados);
+router.post("/cursosTomados/registrar-cursos", validateRegisterCursos, authControllerCursos.registrarCurso);
+router.get('/cursosTomados', authControllerCursos.getCursosTomados);
 router.get('/cursosTomados/:claveEmpleado', verifyToken, authControllerCursos.getCursoTomadoById);
 router.put('/cursosTomados/:id', verifyToken, authControllerCursos.updateCursoTomado);
-router.delete('/cursosTomados/:id', verifyToken, authControllerCursos.deleteCursoTomado);
+router.delete('/cursosTomados/:id', authControllerCursos.deleteCursoTomado);
 
 // Participación en actividad
-router.post("/participacionActividadS/registrar-actividad", verifyToken, validateRegisterActividades, authControllerActividades.registrarParticipacionActividad);
-router.get('/participacionActividad/', verifyToken, authControllerActividades.getactividadesParticipacion);
-router.get('/participacionActividad/:claveEmpleado', verifyToken, authControllerActividades.getactividadesParticipacionById);
-router.put('/participacionActividad/:id', verifyToken, authControllerActividades.updateactividadesParticipacion);
-router.delete('/participacionActividad/:id', verifyToken, authControllerActividades.deleteactividadesParticipacion);
+router.post("/participacionActividad/registrar-actividad", validateRegisterActividades, authControllerActividades.registrarParticipacionActividad);
+router.get('/participacionActividad/', authControllerActividades.getactividadesParticipacion);
+router.get('/participacionActividad/:claveEmpleado',  authControllerActividades.getactividadesParticipacionById);
+router.put('/participacionActividad/:id',  authControllerActividades.updateactividadesParticipacion);
+router.delete('/participacionActividad/:id', authControllerActividades.deleteactividadesParticipacion);
 
 // Catálogo de actividades
-router.post("/actividades/registrar", verifyToken, validateRegistrarActividad, actividadController.registrarActividad);
-router.get('/actividades', verifyToken, actividadController.getActividades);
-router.get('/actividades/:id', verifyToken, actividadController.getActividadById);
-router.put('/actividades/:id', verifyToken, validateRegistrarActividad, actividadController.updateActividad);
-router.delete('/actividades/:id', verifyToken, actividadController.deleteActividad);
+router.post("/actividades/registrar",  validateRegistrarActividad, actividadController.registrarActividad);
+router.get('/actividades', actividadController.getActividades);
+router.get('/actividades/:id', actividadController.getActividadById);
+router.put('/actividades/:id', validateRegistrarActividad, actividadController.updateActividad);
+router.delete('/actividades/:id', actividadController.deleteActividad);
 
 module.exports = router;
