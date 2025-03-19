@@ -14,12 +14,12 @@ const catalogosController = require('../controllers/catalogoController');
 // Importar el middleware
 
 // Ruta pública para autenticación
-router.post("/register", upload.single("Foto"), validateRegister, authController.register);
+router.post("/empleados/register", upload.single("Foto"), validateRegister, authController.register);
 router.post("/login", validateLogin, authController.login);
 
 // Rutas protegidas por token
 // Empleados
-router.get('/empleados/register', authController.getEmpleados);
+router.get('/empleados', authController.getEmpleados);
 router.get('/empleados/:claveEmpleado',  authController.getEmpleadoById);
 router.put('/empleados/:claveEmpleado',  authController.updateEmpleado);
 router.delete('/empleados/:claveEmpleado',  authController.deleteEmpleado);

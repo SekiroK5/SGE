@@ -165,8 +165,8 @@ export class RegistroEmpleadoComponent implements OnInit {
           setTimeout(() => this.success = false, 3000);
         },
         error: (err) => {
-          this.error = 'Error al registrar empleado. Intente nuevamente.';
-          console.error(err);
+          this.error = `Error al registrar empleado: ${err.message || JSON.stringify(err)}`;
+          console.error('Error completo:', err);
         }
       });
   }
