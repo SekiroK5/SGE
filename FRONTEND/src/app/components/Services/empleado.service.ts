@@ -63,7 +63,7 @@ export class EmpleadoService {
 
   // Crear un Empleado
   createEmpleados(empleado: Empleado): Observable<Empleado> {
-    return this.http.post<Empleado>(`${this.apiUrl}/empleados/register`, empleado); 
+    return this.http.post<Empleado>(`${this.apiUrl}/register`, empleado); 
   }
 
   // Obtener una Empleado por su clave
