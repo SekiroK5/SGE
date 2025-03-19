@@ -20,7 +20,7 @@
     <form *ngIf="!loading" [formGroup]="edicionForm" (ngSubmit)="onSubmit()" class="edicion-form">
       <div class="form-row">
         <div class="form-group">
-          <label for="nombre">Nombre</label>
+          <label for="nombre">NombreE</label>
           <input type="text" id="nombre" formControlName="nombre" 
                  [ngClass]="{ 'invalid': submitted && f['nombre'].errors }">
           <div class="error-message" *ngIf="submitted && f['nombre'].errors">
@@ -102,7 +102,7 @@
   
       <div class="form-actions">
         <button type="submit" class="btn-primary">Guardar Cambios</button>
-        <button type="button" class="btn-secondary" routerLink="/lista-empleados">Cancelar</button>
+        <button type="button" class="btn-secondary" (click)="cancelar()">Cancelar</button>
       </div>
     </form>
   </div>

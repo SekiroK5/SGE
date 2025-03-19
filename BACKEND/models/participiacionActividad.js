@@ -10,7 +10,8 @@ function arrayLimit(val) {
 // Esquema ParticipaciónActividad (individual)
 const ParticipacionActividadSchema = new Schema({
     NombreActividad: { type: String, required: true },
-    Estatus: { type: Boolean, required: true },           // true = participó, false = no participó
+    Estatus: { type: Boolean, required: true },     
+    Descripcion:{type: String,required:true},      // true = participó, false = no participó
     FechaActividad: { 
         type: Date, 
         required: true,
@@ -21,6 +22,7 @@ const ParticipacionActividadSchema = new Schema({
             message: 'La fecha de actividad debe ser una fecha válida.'
         }
     }
+    
 });
 
 // Esquema principal (registro de participaciones del empleado)

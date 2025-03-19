@@ -101,4 +101,7 @@ export class EdicionEmpleadoComponent implements OnInit {
         }
       });
   }
+  cancelar(): void {
+    this.router.navigate(['/rh/dashboard']);
+  }
 }

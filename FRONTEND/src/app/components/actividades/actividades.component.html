@@ -50,16 +50,16 @@
               <div class="row mt-3">
                 <div class="col-6">
                   <small class="text-muted">Fecha:</small>
-                  <p class="mb-0">{{ actividad?.ParticipacionActividad?.[0]?.FechaActividad | date:'yyyy/MM/dd' || 'Sin fecha' }}</p>
+                  <p class="mb-0">{{ actividad?.ParticipacionActividad?.[0]?.FechaActividad | date:'yyyy/MM/dd'}}</p>
                 </div>
               </div>
             </div>
 
             <div class="card-footer bg-transparent d-flex justify-content-end">
-              <button class="btn btn-outline-primary btn-sm me-2">
+              <button class="btn btn-outline-primary btn-sm me-2 " routerLink="/actividades/edicion">
                 <i class="bi bi-pencil-fill me-1"></i> Editar
               </button>
-              <button class="btn btn-outline-danger btn-sm">
+              <button class="btn btn-outline-danger btn-sm" (click)="eliminarActividadTomada(actividad._id)">
                 <i class="bi bi-trash-fill me-1"></i> Eliminar
               </button>
             </div>

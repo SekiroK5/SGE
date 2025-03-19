@@ -20,7 +20,7 @@ export interface CursosTomado{
   FechaInicio: string;
   FechaTermino: string;
   TipoDocumento: TipoDocumento[];
-  Descripcion:  string;
+ 
 
 }
 
@@ -44,7 +44,7 @@ export class CursosTomadosService {
   
   // Create new activity
   crearCursosTomados(cursostomados: CursosTomados): Observable<CursosTomados> {
-    return this.http.post<CursosTomados>(this.apiUrl, cursostomados);
+    return this.http.post<CursosTomados>(`${this.apiUrl}/registrar-cursos`, cursostomados);
   }
   
   // Update activity

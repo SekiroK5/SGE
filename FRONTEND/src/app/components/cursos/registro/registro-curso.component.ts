@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
+import { CursosTomado, CursosTomados, CursosTomadosService } from '../../Services/curso.service';
 
 @Component({
   selector: 'app-registro-curso',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, ],
   templateUrl: './registro-curso.component.html',
   styleUrls: ['./registro-curso.component.css']
 })
@@ -19,44 +20,66 @@ export class RegistroCursoComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router,
+    private cursosTomadosService: CursosTomadosService
+
   ) {
     this.registroForm = this.formBuilder.group({
-      titulo: ['', [Validators.required]],
+      claveempleado: ['', [Validators.required]],
+      nombrecompletoempleado: ['', [Validators.required]],
+      nombrecurso: ['', [Validators.required]],
+      fechainicio: ['', [Validators.required]],
+      fechatermino: ['', [Validators.required]],
       descripcion: ['', [Validators.required]],
-      instructor: ['', [Validators.required]],
-      duracion: ['', [Validators.required, Validators.min(1)]],
-      fechaInicio: ['', [Validators.required]],
-      fechaFin: ['', [Validators.required]],
-      capacidad: ['', [Validators.required, Validators.min(1)]],
-      modalidad: ['', [Validators.required]]
     });
   }
+  get f(){return this.registroForm.controls;}
 
   ngOnInit(): void {
   }
+guardar():void{
+  if(this.registroForm.valid){
+    const nuevoCursoTomado: CursosTomados ={
+      ClaveEmpleado: this.registroForm.value.claveempleado,
+      NombreCompletoEmpleado: this.registroForm.value.nombrecompletoempleado,
+      CursosTomados: [{
+        NombreCurso: this.registroForm.value.nombrecurso,
+        FechaInicio: this.registroForm.value.fechainicio ,
+        FechaTermino: this.registroForm.value.fechatermino,
+         TipoDocumento: [{
+          Descripcion: this.registroForm.value.descripcion,
+         }]
+      }]
+    };
+    console.log('Datos enviados:',nuevoCursoTomado);
 
-  get f() { return this.registroForm.controls; }
+    this.cursosTomadosService.crearCursosTomados(nuevoCursoTomado).subscribe(
+      (response) =>{
+        this.success = true;
+        this.error = '';
+        this.router.navigate(['/cursos/lista']);
 
-  onSubmit() {
-    this.submitted = true;
 
-    if (this.registroForm.invalid) {
-      return;
-    }
+      },
+      (error) =>{
+        this.error ='Hubo un error al guardar el curso'+ error.message;
+        this.success =false;
 
-    this.http.post('api/cursos', this.registroForm.value)
-      .subscribe({
-        next: () => {
-          this.success = true;
-          this.registroForm.reset();
-          this.submitted = false;
-          setTimeout(() => this.success = false, 3000);
-        },
-        error: (err) => {
-          this.error = 'Error al registrar el curso. Intente nuevamente.';
-          console.error(err);
-        }
-      });
+
+      }
+    );
+
+  }else{
+    Object.keys(this.registroForm.controls).forEach(key =>{
+      this.registroForm.get(key)?.markAsTouched();
+    });
   }
+
+
+}
+
+cancelar():void{
+  this.router.navigate(['/rh/dashboard']);
+}
 }

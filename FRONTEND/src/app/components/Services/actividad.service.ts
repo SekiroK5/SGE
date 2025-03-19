@@ -5,6 +5,7 @@ import { environment } from '../../../enviroments/enviroments';
 
 // Actualizamos la interfaz para que coincida con los datos reales
 export interface ActividadDetalle {
+  _id?: string;
   NombreActividad: string;
   Estatus: boolean;
   FechaActividad: string;
@@ -12,6 +13,7 @@ export interface ActividadDetalle {
 }
 
 export interface ParticipacionActividad {
+  _id?: string;
   ClaveEmpleado: string;
   NombreCompletoEmpleado: string;
   ParticipacionActividad: ActividadDetalle[];
@@ -34,6 +36,7 @@ export class ParticipacionActividadService {
   // Crear una nueva participación
   createParticipacion(participacion: ParticipacionActividad): Observable<ParticipacionActividad> {
     return this.http.post<ParticipacionActividad>(`${this.apiUrl}/registrar-actividad`, participacion);
+  
   }
 
   // Obtener una participación por clave de empleado

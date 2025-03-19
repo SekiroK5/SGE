@@ -28,25 +28,25 @@ router.put("/activa/:ClaveEmpleado", authController.activateEmpleadoTemporaly);
 router.get("/buscar", authController.getEmpleadoByFilters);
 
 // Cursos
-router.post("/cursosTomados/registrar-cursos",  validateRegisterCursos, authControllerCursos.registrarCurso);
+router.post("/cursosTomados/registrar-cursos", validateRegisterCursos, authControllerCursos.registrarCurso);
 router.get('/cursosTomados', authControllerCursos.getCursosTomados);
-router.get('/cursosTomados/:claveEmpleado',  authControllerCursos.getCursoTomadoById);
-router.put('/cursosTomados/:id',  authControllerCursos.updateCursoTomado);
-router.delete('/cursosTomados/:id',  authControllerCursos.deleteCursoTomado);
+router.get('/cursosTomados/:claveEmpleado', verifyToken, authControllerCursos.getCursoTomadoById);
+router.put('/cursosTomados/:id', verifyToken, authControllerCursos.updateCursoTomado);
+router.delete('/cursosTomados/:id', authControllerCursos.deleteCursoTomado);
 
 // Participación en actividad
-router.post("/participacionActividadS/registrar-actividad",  validateRegisterActividades, authControllerActividades.registrarParticipacionActividad);
+router.post("/participacionActividad/registrar-actividad", validateRegisterActividades, authControllerActividades.registrarParticipacionActividad);
 router.get('/participacionActividad/', authControllerActividades.getactividadesParticipacion);
 router.get('/participacionActividad/:claveEmpleado',  authControllerActividades.getactividadesParticipacionById);
 router.put('/participacionActividad/:id',  authControllerActividades.updateactividadesParticipacion);
-router.delete('/participacionActividad/:id',  authControllerActividades.deleteactividadesParticipacion);
+router.delete('/participacionActividad/:id', authControllerActividades.deleteactividadesParticipacion);
 
 // Catálogo de actividades
-router.post("/actividades/registrar", validateRegistrarActividad, actividadController.registrarActividad);
+router.post("/actividades/registrar",  validateRegistrarActividad, actividadController.registrarActividad);
 router.get('/actividades', actividadController.getActividades);
-router.get('/actividades/:id',  actividadController.getActividadById);
-router.put('/actividades/:id',  validateRegistrarActividad, actividadController.updateActividad);
-router.delete('/actividades/:id',  actividadController.deleteActividad);
+router.get('/actividades/:id', actividadController.getActividadById);
+router.put('/actividades/:id', validateRegistrarActividad, actividadController.updateActividad);
+router.delete('/actividades/:id', actividadController.deleteActividad);
 
 
 // Catalogos
