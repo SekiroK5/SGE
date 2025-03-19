@@ -9,7 +9,9 @@ const authControllerCursos = require("../controllers/authControllerCursos");
 const authController = require("../controllers/authController");
 const actividadController = require("../controllers/actividadController");
 const upload = require("../middlewares/uploadMiddleware");
-const verifyToken = require("../middlewares/verifyTokenMiddleware"); // Importar el middleware
+const verifyToken = require("../middlewares/verifyTokenMiddleware"); 
+const catalogosController = require('../controllers/catalogoController');
+// Importar el middleware
 
 // Ruta pública para autenticación
 router.post("/register", upload.single("Foto"), validateRegister, authController.register);
@@ -17,10 +19,13 @@ router.post("/login", validateLogin, authController.login);
 
 // Rutas protegidas por token
 // Empleados
-router.get('/empleados/register', verifyToken, authController.getEmpleados);
-router.get('/empleados/:claveEmpleado', verifyToken, authController.getEmpleadoById);
-router.put('/empleados/:claveEmpleado', verifyToken, authController.updateEmpleado);
-router.delete('/empleados/:claveEmpleado', verifyToken, authController.deleteEmpleado);
+router.get('/empleados/register', authController.getEmpleados);
+router.get('/empleados/:claveEmpleado',  authController.getEmpleadoById);
+router.put('/empleados/:claveEmpleado',  authController.updateEmpleado);
+router.delete('/empleados/:claveEmpleado',  authController.deleteEmpleado);
+router.put("/desactiva/:ClaveEmpleado", authController.deleteEmpleadoTemporaly);
+router.put("/activa/:ClaveEmpleado", authController.activateEmpleadoTemporaly);
+router.get("/buscar", authController.getEmpleadoByFilters);
 
 // Cursos
 router.post("/cursosTomados/registrar-cursos", validateRegisterCursos, authControllerCursos.registrarCurso);
@@ -43,4 +48,10 @@ router.get('/actividades/:id', actividadController.getActividadById);
 router.put('/actividades/:id', validateRegistrarActividad, actividadController.updateActividad);
 router.delete('/actividades/:id', actividadController.deleteActividad);
 
+
+// Catalogos
+router.get("/departamento",catalogosController.getDepartamentos);
+router.get("/puesto/:NombreDepartamento",catalogosController.getPuestos);
+router.get("/parentesco",catalogosController.getParentescos);
+router.get("/actividad",catalogosController.getActividades);
 module.exports = router;

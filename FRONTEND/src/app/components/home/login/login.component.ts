@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
         const departamento = this.authService.getUserDepartment().toUpperCase();
         
         if (departamento) {
-          if (departamento === 'RH' || departamento === 'RECURSOS HUMANOS') {
+          if (departamento === 'RH' || departamento === 'Recursos Humanos') {
             this.router.navigate(['/rh/dashboard']);
           } else {
             this.router.navigate(['/empleado']);
