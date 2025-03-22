@@ -1,377 +1,417 @@
-<div class="registro-container">
-  <div class="registro-header">
-    <h2>Registro de Empleados</h2>
-    <p>Alta de nuevos empleados con generación automática de claves</p>
-  </div>
-
-  <div class="alert success" *ngIf="success">
-    <i class="fas fa-check-circle"></i> Empleado registrado exitosamente. Se ha generado una clave automática.
-  </div>
-  
-  <div class="alert error" *ngIf="error">
-    <i class="fas fa-exclamation-circle"></i> {{ error }}
-  </div>
-
-  <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
-    <!-- Información Personal -->
-    <div class="section">
-      <div class="section-header">
-        <h3><i class="fas fa-user"></i> Información Personal</h3>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input type="text" id="nombre" formControlName="Nombre" placeholder="Nombre del empleado"
-                [ngClass]="{ 'invalid': submitted && f['Nombre'].errors }">
-          <div class="error-message" *ngIf="submitted && f['Nombre'].errors">
-            El nombre es requerido
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="apellidoPaterno">Apellido Paterno</label>
-          <input type="text" id="apellidoPaterno" formControlName="ApellidoPaterno" placeholder="Apellido paterno"
-                [ngClass]="{ 'invalid': submitted && f['ApellidoPaterno'].errors }">
-          <div class="error-message" *ngIf="submitted && f['ApellidoPaterno'].errors">
-            El apellido paterno es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="apellidoMaterno">Apellido Materno</label>
-          <input type="text" id="apellidoMaterno" formControlName="ApellidoMaterno" placeholder="Apellido materno"
-                [ngClass]="{ 'invalid': submitted && f['ApellidoMaterno'].errors }">
-          <div class="error-message" *ngIf="submitted && f['ApellidoMaterno'].errors">
-            El apellido materno es requerido
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="fechaNacimiento">Fecha de Nacimiento</label>
-          <input type="date" id="fechaNacimiento" formControlName="FechaNacimiento"
-                [ngClass]="{ 'invalid': submitted && f['FechaNacimiento'].errors }">
-          <div class="error-message" *ngIf="submitted && f['FechaNacimiento'].errors">
-            La fecha de nacimiento es requerida
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="sexo">Sexo</label>
-          <select id="sexo" formControlName="Sexo"
-                 [ngClass]="{ 'invalid': submitted && f['Sexo'].errors }">
-            <option value="">Seleccione</option>
-            <option value="M">Masculino</option>
-            <option value="F">Femenino</option>
-          </select>
-          <div class="error-message" *ngIf="submitted && f['Sexo'].errors">
-            El sexo es requerido
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="foto">Foto (URL)</label>
-          <input type="text" id="foto" formControlName="Foto" placeholder="https://ejemplo.com/foto.jpg">
-        </div>
-      </div>
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Registro de Nuevo Empleado</h2>
     </div>
-
-    <!-- Dirección -->
-    <div class="section">
-      <div class="section-header">
-        <h3><i class="fas fa-map-marker-alt"></i> Dirección</h3>
+    
+    <div class="card-body">
+      <!-- Mensaje de éxito -->
+      <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+        Empleado registrado exitosamente.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="calle">Calle</label>
-          <input type="text" id="calle" formControlName="Calle" placeholder="Nombre de la calle"
-                [ngClass]="{ 'invalid': submitted && f['Calle'].errors }">
-          <div class="error-message" *ngIf="submitted && f['Calle'].errors">
-            La calle es requerida
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="numeroExterior">Número Exterior</label>
-          <input type="text" id="numeroExterior" formControlName="NumeroExterior" placeholder="123"
-                [ngClass]="{ 'invalid': submitted && f['NumeroExterior'].errors }">
-          <div class="error-message" *ngIf="submitted && f['NumeroExterior'].errors">
-            El número exterior es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="numeroInterior">Número Interior</label>
-          <input type="text" id="numeroInterior" formControlName="NumeroInterior" placeholder="Opcional">
-        </div>
+      
+      <!-- Mensaje de error -->
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{error}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="colonia">Colonia</label>
-          <input type="text" id="colonia" formControlName="Colonia" placeholder="Nombre de la colonia"
-                [ngClass]="{ 'invalid': submitted && f['Colonia'].errors }">
-          <div class="error-message" *ngIf="submitted && f['Colonia'].errors">
-            La colonia es requerida
+      
+      <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+        <!-- Sección de información personal -->
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <h4>Información Personal</h4>
           </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="codigoPostal">Código Postal</label>
-          <input type="text" id="codigoPostal" formControlName="CodigoPostal" placeholder="12345"
-                [ngClass]="{ 'invalid': submitted && f['CodigoPostal'].errors }">
-          <div class="error-message" *ngIf="submitted && f['CodigoPostal'].errors">
-            El código postal es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="ciudad">Ciudad</label>
-          <input type="text" id="ciudad" formControlName="Ciudad" placeholder="Nombre de la ciudad"
-                [ngClass]="{ 'invalid': submitted && f['Ciudad'].errors }">
-          <div class="error-message" *ngIf="submitted && f['Ciudad'].errors">
-            La ciudad es requerida
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Información Laboral -->
-    <div class="section">
-      <div class="section-header">
-        <h3><i class="fas fa-briefcase"></i> Información Laboral</h3>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="departamento">Departamento</label>
-          <select id="departamento" formControlName="Departamento"
-                 [ngClass]="{ 'invalid': submitted && f['Departamento'].errors }">
-            <option value="">Seleccione un departamento</option>
-            <option value="Recursos Humanos">Recursos Humanos</option>
-            <option value="TI">TI</option>
-            <option value="Finanzas">Finanzas</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Ventas">Ventas</option>
-            <option value="Operaciones">Operaciones</option>
-          </select>
-          <div class="error-message" *ngIf="submitted && f['Departamento'].errors">
-            El departamento es requerido
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="puesto">Puesto</label>
-          <input type="text" id="puesto" formControlName="Puesto" placeholder="Cargo del empleado"
-                [ngClass]="{ 'invalid': submitted && f['Puesto'].errors }">
-          <div class="error-message" *ngIf="submitted && f['Puesto'].errors">
-            El puesto es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" formControlName="Password" placeholder="••••••"
-                [ngClass]="{ 'invalid': submitted && f['Password'].errors }">
-          <div class="error-message" *ngIf="submitted && f['Password'].errors?.['required']">
-            La contraseña es requerida
-          </div>
-          <div class="error-message" *ngIf="submitted && f['Password'].errors?.['minlength']">
-            La contraseña debe tener al menos 6 caracteres
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Teléfonos -->
-    <div class="section">
-      <div class="section-header-with-button">
-        <div class="section-title">
-          <h3><i class="fas fa-phone"></i> Teléfonos</h3>
-        </div>
-        <button type="button" class="btn-add" (click)="agregarTelefono()">
-          <i class="fas fa-plus"></i> Agregar teléfono
-        </button>
-      </div>
-
-      <div formArrayName="Telefonos">
-        <div *ngFor="let telefono of telefonosArray.controls; let i = index" class="form-row form-row-with-action" [formGroupName]="i">
-          <div class="form-group">
-            <label [for]="'lada' + i">Lada</label>
-            <input type="text" [id]="'lada' + i" formControlName="Lada" placeholder="52"
-                  [ngClass]="{ 'invalid': submitted && telefono.get('Lada')?.errors }">
-            <div class="error-message" *ngIf="submitted && telefono.get('Lada')?.errors">
-              La lada es requerida
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="nombre" class="form-label">Nombre*</label>
+                <input type="text" class="form-control" id="nombre" formControlName="Nombre"
+                  [ngClass]="{'is-invalid': submitted && f['Nombre'].errors}">
+                <div *ngIf="submitted && f['Nombre'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Nombre'].errors['required']">El nombre es requerido</div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label for="apellidoPaterno" class="form-label">Apellido Paterno*</label>
+                <input type="text" class="form-control" id="apellidoPaterno" formControlName="ApellidoPaterno"
+                  [ngClass]="{'is-invalid': submitted && f['ApellidoPaterno'].errors}">
+                <div *ngIf="submitted && f['ApellidoPaterno'].errors" class="invalid-feedback">
+                  <div *ngIf="f['ApellidoPaterno'].errors['required']">El apellido paterno es requerido</div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label for="apellidoMaterno" class="form-label">Apellido Materno*</label>
+                <input type="text" class="form-control" id="apellidoMaterno" formControlName="ApellidoMaterno"
+                  [ngClass]="{'is-invalid': submitted && f['ApellidoMaterno'].errors}">
+                <div *ngIf="submitted && f['ApellidoMaterno'].errors" class="invalid-feedback">
+                  <div *ngIf="f['ApellidoMaterno'].errors['required']">El apellido materno es requerido</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento*</label>
+                <input type="date" class="form-control" id="fechaNacimiento" formControlName="FechaNacimiento"
+                  [ngClass]="{'is-invalid': submitted && f['FechaNacimiento'].errors}">
+                <div *ngIf="submitted && f['FechaNacimiento'].errors" class="invalid-feedback">
+                  <div *ngIf="f['FechaNacimiento'].errors['required']">La fecha de nacimiento es requerida</div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label for="sexo" class="form-label">Sexo*</label>
+                <select class="form-select" id="sexo" formControlName="Sexo"
+                  [ngClass]="{'is-invalid': submitted && f['Sexo'].errors}">
+                  <option value="">Seleccionar</option>
+                  <option value="M">Masculino</option>
+                  <option value="F">Femenino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+                <div *ngIf="submitted && f['Sexo'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Sexo'].errors['required']">El sexo es requerido</div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label for="foto" class="form-label">Foto</label>
+                <input type="text" class="form-control" id="foto" formControlName="Foto" 
+                  placeholder="URL de la imagen" (input)="previewImage()">
+                
+                <!-- Previsualización de la imagen -->
+                <div *ngIf="registroForm.get('Foto')?.value" class="mt-2">
+                  <img [src]="registroForm.get('Foto')?.value" class="img-thumbnail" 
+                    style="max-height: 100px;" alt="Previsualización de foto">
+                </div>
+              </div>
             </div>
           </div>
-          
-          <div class="form-group">
-            <label [for]="'numero' + i">Número</label>
-            <input type="text" [id]="'numero' + i" formControlName="Numero" placeholder="1234567890"
-                  [ngClass]="{ 'invalid': submitted && telefono.get('Numero')?.errors }">
-            <div class="error-message" *ngIf="submitted && telefono.get('Numero')?.errors">
-              El número es requerido
+        </div>
+        
+        <!-- Sección de dirección -->
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <h4>Dirección</h4>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="calle" class="form-label">Calle*</label>
+                <input type="text" class="form-control" id="calle" formControlName="Calle"
+                  [ngClass]="{'is-invalid': submitted && f['Calle'].errors}">
+                <div *ngIf="submitted && f['Calle'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Calle'].errors['required']">La calle es requerida</div>
+                </div>
+              </div>
+              
+              <div class="col-md-3 mb-3">
+                <label for="numeroExterior" class="form-label">Número Exterior*</label>
+                <input type="text" class="form-control" id="numeroExterior" formControlName="NumeroExterior"
+                  [ngClass]="{'is-invalid': submitted && f['NumeroExterior'].errors}">
+                <div *ngIf="submitted && f['NumeroExterior'].errors" class="invalid-feedback">
+                  <div *ngIf="f['NumeroExterior'].errors['required']">El número exterior es requerido</div>
+                </div>
+              </div>
+              
+              <div class="col-md-3 mb-3">
+                <label for="numeroInterior" class="form-label">Número Interior</label>
+                <input type="text" class="form-control" id="numeroInterior" formControlName="NumeroInterior">
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="colonia" class="form-label">Colonia*</label>
+                <input type="text" class="form-control" id="colonia" formControlName="Colonia"
+                  [ngClass]="{'is-invalid': submitted && f['Colonia'].errors}">
+                <div *ngIf="submitted && f['Colonia'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Colonia'].errors['required']">La colonia es requerida</div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label for="codigoPostal" class="form-label">Código Postal*</label>
+                <input type="text" class="form-control" id="codigoPostal" formControlName="CodigoPostal"
+                  [ngClass]="{'is-invalid': submitted && f['CodigoPostal'].errors}">
+                <div *ngIf="submitted && f['CodigoPostal'].errors" class="invalid-feedback">
+                  <div *ngIf="f['CodigoPostal'].errors['required']">El código postal es requerido</div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label for="ciudad" class="form-label">Ciudad*</label>
+                <input type="text" class="form-control" id="ciudad" formControlName="Ciudad"
+                  [ngClass]="{'is-invalid': submitted && f['Ciudad'].errors}">
+                <div *ngIf="submitted && f['Ciudad'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Ciudad'].errors['required']">La ciudad es requerida</div>
+                </div>
+              </div>
             </div>
           </div>
-          
-          <button type="button" class="btn-remove" *ngIf="telefonosArray.length > 1" (click)="eliminarTelefono(i)">
-            <i class="fas fa-trash"></i>
-          </button>
         </div>
-      </div>
-    </div>
-
-    <!-- Correos Electrónicos -->
-    <div class="section">
-      <div class="section-header-with-button">
-        <div class="section-title">
-          <h3><i class="fas fa-envelope"></i> Correos Electrónicos</h3>
-        </div>
-        <button type="button" class="btn-add" (click)="agregarCorreo()">
-          <i class="fas fa-plus"></i> Agregar correo
-        </button>
-      </div>
-
-      <div formArrayName="CorreoElectronico">
-        <div *ngFor="let correo of correosArray.controls; let i = index" class="form-row form-row-with-action" [formGroupName]="i">
-          <div class="form-group">
-            <label [for]="'direccion' + i">Dirección de correo</label>
-            <input type="email" [id]="'direccion' + i" formControlName="Direccion" placeholder="ejemplo@correo.com"
-                  [ngClass]="{ 'invalid': submitted && correo.get('Direccion')?.errors }">
-            <div class="error-message" *ngIf="submitted && correo.get('Direccion')?.errors?.['required']">
-              El correo electrónico es requerido
-            </div>
-            <div class="error-message" *ngIf="submitted && correo.get('Direccion')?.errors?.['email']">
-              Ingrese un correo electrónico válido
+        
+        <!-- Sección de información laboral -->
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <h4>Información Laboral</h4>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="departamento" class="form-label">Departamento*</label>
+                <select class="form-select" id="departamento" formControlName="Departamento"
+                  [ngClass]="{'is-invalid': submitted && f['Departamento'].errors}">
+                  <option value="">Seleccionar</option>
+                  <option value="Recursos Humanos">Recursos Humanos</option>
+                  <option value="Ventas">Ventas</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Finanzas">Finanzas</option>
+                  <option value="Operaciones">Operaciones</option>
+                  <option value="Tecnología">Tecnología</option>
+                  <option value="Administración">Administración</option>
+                </select>
+                <div *ngIf="submitted && f['Departamento'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Departamento'].errors['required']">El departamento es requerido</div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="puesto" class="form-label">Puesto*</label>
+                <input type="text" class="form-control" id="puesto" formControlName="Puesto"
+                  [ngClass]="{'is-invalid': submitted && f['Puesto'].errors}">
+                <div *ngIf="submitted && f['Puesto'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Puesto'].errors['required']">El puesto es requerido</div>
+                </div>
+              </div>
             </div>
           </div>
-          
-          <button type="button" class="btn-remove" *ngIf="correosArray.length > 1" (click)="eliminarCorreo(i)">
-            <i class="fas fa-trash"></i>
-          </button>
         </div>
-      </div>
-    </div>
-
-    <!-- Referencias Familiares -->
-    <div class="section">
-      <div class="section-header-with-button">
-        <div class="section-title">
-          <h3><i class="fas fa-users"></i> Referencias Familiares</h3>
+        
+        <!-- Sección de contraseña -->
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <h4>Contraseña</h4>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">Contraseña*</label>
+                <input type="password" class="form-control" id="password" formControlName="Password"
+                  [ngClass]="{'is-invalid': submitted && f['Password'].errors}">
+                <div *ngIf="submitted && f['Password'].errors" class="invalid-feedback">
+                  <div *ngIf="f['Password'].errors['required']">La contraseña es requerida</div>
+                  <div *ngIf="f['Password'].errors['minlength']">La contraseña debe tener al menos 6 caracteres</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <button type="button" class="btn-add" (click)="agregarReferencia()">
-          <i class="fas fa-plus"></i> Agregar referencia
-        </button>
-      </div>
-
-      <div formArrayName="ReferenciaFamiliar">
-        <div *ngFor="let referencia of referenciasArray.controls; let i = index" class="referencia-card" [formGroupName]="i">
-          <div class="referencia-header">
-            <h4>Referencia #{{i+1}}</h4>
-            <button type="button" class="btn-remove" *ngIf="referenciasArray.length > 1" (click)="eliminarReferencia(i)">
-              <i class="fas fa-trash"></i> Eliminar
+        
+        <!-- Sección de teléfonos -->
+        <div class="card mb-4">
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Teléfonos</h4>
+            <button type="button" class="btn btn-primary btn-sm" (click)="agregarTelefono()">
+              <i class="bi bi-plus-circle"></i> Agregar Teléfono
             </button>
           </div>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label [for]="'nombreRef' + i">Nombre completo</label>
-              <input type="text" [id]="'nombreRef' + i" formControlName="NombreCompleto" placeholder="Nombre completo"
-                    [ngClass]="{ 'invalid': submitted && referencia.get('NombreCompleto')?.errors }">
-              <div class="error-message" *ngIf="submitted && referencia.get('NombreCompleto')?.errors">
-                El nombre es requerido
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label [for]="'parentesco' + i">Parentesco</label>
-              <input type="text" [id]="'parentesco' + i" formControlName="Parentesco" placeholder="Tipo de parentesco"
-                    [ngClass]="{ 'invalid': submitted && referencia.get('Parentesco')?.errors }">
-              <div class="error-message" *ngIf="submitted && referencia.get('Parentesco')?.errors">
-                El parentesco es requerido
-              </div>
-            </div>
-          </div>
-
-          <!-- Teléfonos de referencia -->
-          <div class="subsection">
-            <div class="subsection-header">
-              <h5><i class="fas fa-phone"></i> Teléfonos de contacto</h5>
-              <button type="button" class="btn-add btn-add-small" (click)="agregarTelefonoReferencia(i)">
-                <i class="fas fa-plus"></i> Agregar
-              </button>
-            </div>
-            
-            <div formArrayName="Telefono">
-              <div *ngFor="let tel of getTelefonosReferencia(i).controls; let j = index" class="form-row form-row-with-action" [formGroupName]="j">
-                <div class="form-group">
-                  <label [for]="'refLada' + i + j">Lada</label>
-                  <input type="text" [id]="'refLada' + i + j" formControlName="Lada" placeholder="52"
-                        [ngClass]="{ 'invalid': submitted && tel.get('Lada')?.errors }">
-                  <div class="error-message" *ngIf="submitted && tel.get('Lada')?.errors">
-                    La lada es requerida
+          <div class="card-body">
+            <div formArrayName="Telefonos">
+              <div *ngFor="let telefono of telefonosArray.controls; let i = index" class="row mb-3 align-items-end" [formGroupName]="i">
+                <div class="col-md-2">
+                  <label [for]="'lada-' + i" class="form-label">Lada*</label>
+                  <input type="text" class="form-control" [id]="'lada-' + i" formControlName="Lada"
+                    [ngClass]="{'is-invalid': submitted && telefono.get('Lada')?.errors}">
+                  <div *ngIf="submitted && telefono.get('Lada')?.errors" class="invalid-feedback">
+                    <div *ngIf="telefono.get('Lada')?.errors?.['required']">La lada es requerida</div>
                   </div>
                 </div>
                 
-                <div class="form-group">
-                  <label [for]="'refNumero' + i + j">Número</label>
-                  <input type="text" [id]="'refNumero' + i + j" formControlName="Numero" placeholder="1234567890"
-                        [ngClass]="{ 'invalid': submitted && tel.get('Numero')?.errors }">
-                  <div class="error-message" *ngIf="submitted && tel.get('Numero')?.errors">
-                    El número es requerido
+                <div class="col-md-6">
+                  <label [for]="'numero-' + i" class="form-label">Número*</label>
+                  <input type="text" class="form-control" [id]="'numero-' + i" formControlName="Numero"
+                    [ngClass]="{'is-invalid': submitted && telefono.get('Numero')?.errors}">
+                  <div *ngIf="submitted && telefono.get('Numero')?.errors" class="invalid-feedback">
+                    <div *ngIf="telefono.get('Numero')?.errors?.['required']">El número es requerido</div>
                   </div>
                 </div>
                 
-                <button type="button" class="btn-remove" *ngIf="getTelefonosReferencia(i).length > 1" (click)="eliminarTelefonoReferencia(i, j)">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Correos de referencia -->
-          <div class="subsection">
-            <div class="subsection-header">
-              <h5><i class="fas fa-envelope"></i> Correos electrónicos</h5>
-              <button type="button" class="btn-add btn-add-small" (click)="agregarCorreoReferencia(i)">
-                <i class="fas fa-plus"></i> Agregar
-              </button>
-            </div>
-            
-            <div formArrayName="CorreoElectronico">
-              <div *ngFor="let mail of getCorreosReferencia(i).controls; let j = index" class="form-row form-row-with-action" [formGroupName]="j">
-                <div class="form-group">
-                  <label [for]="'refCorreo' + i + j">Correo electrónico</label>
-                  <input type="email" [id]="'refCorreo' + i + j" formControlName="Direccion" placeholder="familiar@correo.com"
-                        [ngClass]="{ 'invalid': submitted && mail.get('Direccion')?.errors }">
-                  <div class="error-message" *ngIf="submitted && mail.get('Direccion')?.errors?.['required']">
-                    El correo electrónico es requerido
-                  </div>
-                  <div class="error-message" *ngIf="submitted && mail.get('Direccion')?.errors?.['email']">
-                    Ingrese un correo electrónico válido
-                  </div>
+                <div class="col-md-4 text-end">
+                  <button type="button" class="btn btn-danger" (click)="eliminarTelefono(i)"
+                    [disabled]="telefonosArray.length === 1">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
                 </div>
-                
-                <button type="button" class="btn-remove" *ngIf="getCorreosReferencia(i).length > 1" (click)="eliminarCorreoReferencia(i, j)">
-                  <i class="fas fa-trash"></i>
-                </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        
+        <!-- Sección de correos electrónicos -->
+        <div class="card mb-4">
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Correos Electrónicos</h4>
+            <button type="button" class="btn btn-primary btn-sm" (click)="agregarCorreo()">
+              <i class="bi bi-plus-circle"></i> Agregar Correo
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="CorreoElectronico">
+              <div *ngFor="let correo of correosArray.controls; let i = index" class="row mb-3 align-items-end" [formGroupName]="i">
+                <div class="col-md-8">
+                  <label [for]="'correo-' + i" class="form-label">Dirección de Correo*</label>
+                  <input type="email" class="form-control" [id]="'correo-' + i" formControlName="Direccion"
+                    [ngClass]="{'is-invalid': submitted && correo.get('Direccion')?.errors}">
+                  <div *ngIf="submitted && correo.get('Direccion')?.errors" class="invalid-feedback">
+                    <div *ngIf="correo.get('Direccion')?.errors?.['required']">El correo electrónico es requerido</div>
+                    <div *ngIf="correo.get('Direccion')?.errors?.['email']">Ingrese un correo electrónico válido</div>
+                  </div>
+                </div>
+                
+                <div class="col-md-4 text-end">
+                  <button type="button" class="btn btn-danger" (click)="eliminarCorreo(i)"
+                    [disabled]="correosArray.length === 1">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Sección de referencias familiares -->
+        <div class="card mb-4">
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Referencias Familiares</h4>
+            <button type="button" class="btn btn-primary btn-sm" (click)="agregarReferencia()">
+              <i class="bi bi-plus-circle"></i> Agregar Referencia
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="ReferenciaFamiliar">
+              <div *ngFor="let referencia of referenciasArray.controls; let i = index" [formGroupName]="i" class="border p-3 mb-4 rounded">
+                <h5>Referencia {{i + 1}}</h5>
+                
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label [for]="'nombreRef-' + i" class="form-label">Nombre Completo*</label>
+                    <input type="text" class="form-control" [id]="'nombreRef-' + i" formControlName="NombreCompleto"
+                      [ngClass]="{'is-invalid': submitted && referencia.get('NombreCompleto')?.errors}">
+                    <div *ngIf="submitted && referencia.get('NombreCompleto')?.errors" class="invalid-feedback">
+                      <div *ngIf="referencia.get('NombreCompleto')?.errors?.['required']">El nombre es requerido</div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <label [for]="'parentesco-' + i" class="form-label">Parentesco*</label>
+                    <input type="text" class="form-control" [id]="'parentesco-' + i" formControlName="Parentesco"
+                      [ngClass]="{'is-invalid': submitted && referencia.get('Parentesco')?.errors}">
+                    <div *ngIf="submitted && referencia.get('Parentesco')?.errors" class="invalid-feedback">
+                      <div *ngIf="referencia.get('Parentesco')?.errors?.['required']">El parentesco es requerido</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Teléfonos de la referencia -->
+                <div class="card mb-3">
+                  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Teléfonos</h6>
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="agregarTelefonoReferencia(i)">
+                      <i class="bi bi-plus-circle"></i> Agregar
+                    </button>
+                  </div>
+                  <div class="card-body">
+                    <div formArrayName="Telefono">
+                      <div *ngFor="let tel of getTelefonosReferencia(i).controls; let j = index" [formGroupName]="j" class="row mb-2 align-items-end">
+                        <div class="col-md-2">
+                          <label [for]="'refLada-' + i + '-' + j" class="form-label">Lada*</label>
+                          <input type="text" class="form-control" [id]="'refLada-' + i + '-' + j" formControlName="Lada"
+                            [ngClass]="{'is-invalid': submitted && tel.get('Lada')?.errors}">
+                          <div *ngIf="submitted && tel.get('Lada')?.errors" class="invalid-feedback">
+                            <div *ngIf="tel.get('Lada')?.errors?.['required']">La lada es requerida</div>
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                          <label [for]="'refNumero-' + i + '-' + j" class="form-label">Número*</label>
+                          <input type="text" class="form-control" [id]="'refNumero-' + i + '-' + j" formControlName="Numero"
+                            [ngClass]="{'is-invalid': submitted && tel.get('Numero')?.errors}">
+                          <div *ngIf="submitted && tel.get('Numero')?.errors" class="invalid-feedback">
+                            <div *ngIf="tel.get('Numero')?.errors?.['required']">El número es requerido</div>
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-end">
+                          <button type="button" class="btn btn-sm btn-outline-danger" 
+                            (click)="eliminarTelefonoReferencia(i, j)"
+                            [disabled]="getTelefonosReferencia(i).length === 1">
+                            <i class="bi bi-trash"></i> Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Correos de la referencia -->
+                <div class="card mb-3">
+                  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Correos Electrónicos</h6>
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="agregarCorreoReferencia(i)">
+                      <i class="bi bi-plus-circle"></i> Agregar
+                    </button>
+                  </div>
+                  <div class="card-body">
+                    <div formArrayName="CorreoElectronico">
+                      <div *ngFor="let email of getCorreosReferencia(i).controls; let j = index" [formGroupName]="j" class="row mb-2 align-items-end">
+                        <div class="col-md-8">
+                          <label [for]="'refEmail-' + i + '-' + j" class="form-label">Dirección de Correo*</label>
+                          <input type="email" class="form-control" [id]="'refEmail-' + i + '-' + j" formControlName="Direccion"
+                            [ngClass]="{'is-invalid': submitted && email.get('Direccion')?.errors}">
+                          <div *ngIf="submitted && email.get('Direccion')?.errors" class="invalid-feedback">
+                            <div *ngIf="email.get('Direccion')?.errors?.['required']">El correo es requerido</div>
+                            <div *ngIf="email.get('Direccion')?.errors?.['email']">Ingrese un correo válido</div>
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-end">
+                          <button type="button" class="btn btn-sm btn-outline-danger" 
+                            (click)="eliminarCorreoReferencia(i, j)"
+                            [disabled]="getCorreosReferencia(i).length === 1">
+                            <i class="bi bi-trash"></i> Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Botón para eliminar esta referencia -->
+                <div *ngIf="referenciasArray.length > 1" class="text-end">
+                  <button type="button" class="btn btn-danger" (click)="eliminarReferencia(i)">
+                    <i class="bi bi-trash"></i> Eliminar Referencia
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-between mt-4 mb-2">
+          <button type="button" class="btn btn-secondary" [routerLink]="['/rh/dashboard']">
+            <i class="bi bi-x-circle"></i> Cancelar
+          </button>
+          
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save"></i> Registrar Empleado
+          </button>
+        </div>
+      </form>
     </div>
-
-    <div class="form-actions">
-      <button type="submit" class="btn-primary">
-        <i class="fas fa-save"></i> Registrar Empleado
-      </button>
-      <button type="button" class="btn-secondary" routerLink="/rh/dashboard">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
-    </div>
-  </form>
+  </div>
 </div>
