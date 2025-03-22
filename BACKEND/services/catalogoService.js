@@ -1,6 +1,7 @@
 const Departamento = require("../models/departamento");
 const Actividad = require("../models/actividad");
 const Parentesco = require("../models/parentesco");
+const Documento = require ("../models/documento");
 
 exports.getActividades = async() =>{
     try{
@@ -65,3 +66,18 @@ exports.getPuestos = async(departamento) =>{
         throw new Error("Error al obtener los puestos: "+ error.message);
     }
 }
+
+
+exports.getDocumentos = async () => {
+    try {
+        const documentos = await Documento.find({}, { _id: 0, TipoDocumento: 1, Descripcion: 1 }).sort({ TipoDocumento: 1 });
+
+        if (!documentos || documentos.length === 0) {
+            throw new Error("No se encontraron documentos.");
+        }
+
+        return documentos;
+    } catch (error) {
+        throw new Error("Error al obtener los documentos: " + error.message);
+    }
+};

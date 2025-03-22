@@ -14,7 +14,7 @@ const catalogosController = require('../controllers/catalogoController');
 // Importar el middleware
 
 // Ruta pública para autenticación
-router.post("/empleados/register", upload.single("Foto"), validateRegister, authController.register);
+router.post("/register", upload.single("Foto"), validateRegister, authController.register);
 router.post("/login", validateLogin, authController.login);
 
 // Rutas protegidas por token
@@ -30,7 +30,7 @@ router.get("/buscar", authController.getEmpleadoByFilters);
 // Cursos
 router.post("/cursosTomados/registrar-cursos", validateRegisterCursos, authControllerCursos.registrarCurso);
 router.get('/cursosTomados', authControllerCursos.getCursosTomados);
-router.get('/cursosTomados/:claveEmpleado', verifyToken, authControllerCursos.getCursoTomadoById);
+router.get('/cursosTomados/:claveEmpleado', authControllerCursos.getCursoTomadoById);
 router.put('/cursosTomados/:id', verifyToken, authControllerCursos.updateCursoTomado);
 router.delete('/cursosTomados/:id', authControllerCursos.deleteCursoTomado);
 
@@ -54,4 +54,5 @@ router.get("/departamento",catalogosController.getDepartamentos);
 router.get("/puesto/:NombreDepartamento",catalogosController.getPuestos);
 router.get("/parentesco",catalogosController.getParentescos);
 router.get("/actividad",catalogosController.getActividades);
+router.get('/documentos', catalogosController.getDocumentos);
 module.exports = router;

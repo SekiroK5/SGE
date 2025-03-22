@@ -45,6 +45,7 @@ export class RegistroEmpleadoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Se deja vacío intencionalmente o para futuras inicializaciones
   }
 
   get f() { return this.registroForm.controls; }
@@ -146,35 +147,98 @@ export class RegistroEmpleadoComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
-
+  
     if (this.registroForm.invalid) {
       return;
     }
-
-    const empleadoData: Empleado = {
-      ...this.registroForm.value,
-      ClaveEmpleado: this.generarClave()
+  
+    // Obtener los datos del formulario
+    const empleadoData = this.registroForm.value;
+  
+    // Transformar los datos al formato correcto
+    const transformedData = {
+      Nombre: empleadoData.Nombre,
+      ApellidoPaterno: empleadoData.ApellidoPaterno,
+      ApellidoMaterno: empleadoData.ApellidoMaterno,
+      FechaNacimiento: empleadoData.FechaNacimiento,
+      Sexo: empleadoData.Sexo,
+      Foto: empleadoData.Foto,
+      Calle: empleadoData.Calle,
+      NumeroExterior: empleadoData.NumeroExterior,
+      NumeroInterior: empleadoData.NumeroInterior,
+      Colonia: empleadoData.Colonia,
+      CodigoPostal: empleadoData.CodigoPostal,
+      Ciudad: empleadoData.Ciudad,
+      Departamento: empleadoData.Departamento,
+      Puesto: empleadoData.Puesto,
+      Password: empleadoData.Password,
+      
+      // Agregar estos campos que el backend espera
+      Lada: empleadoData.Telefonos[0]?.Lada || '',
+      Telefono: empleadoData.Telefonos[0]?.Numero || '',
+      Correo: empleadoData.CorreoElectronico[0]?.Direccion || '',
+      
+      // Mantener los arrays como antes
+      Telefonos: empleadoData.Telefonos.map((telefono: any) => ({
+        Lada: telefono.Lada,
+        Numero: telefono.Numero
+      })),
+      CorreoElectronico: empleadoData.CorreoElectronico.map((correo: any) => ({
+        Direccion: correo.Direccion
+      })),
+      ReferenciaFamiliar: empleadoData.ReferenciaFamiliar.map((referencia: any) => ({
+        NombreCompleto: referencia.NombreCompleto,
+        Parentesco: referencia.Parentesco,
+        Telefono: referencia.Telefono.map((telefono: any) => ({
+          Lada: telefono.Lada,
+          Numero: telefono.Numero
+        })),
+        CorreoElectronico: referencia.CorreoElectronico.map((correo: any) => ({
+          Direccion: correo.Direccion
+        }))
+      }))
     };
-
-    this.empleadoService.createEmpleados(empleadoData)
-      .subscribe({
-        next: () => {
-          this.success = true;
-          this.registroForm.reset();
-          this.submitted = false;
-          setTimeout(() => this.success = false, 3000);
-        },
-        error: (err) => {
-          this.error = `Error al registrar empleado: ${err.message || JSON.stringify(err)}`;
-          console.error('Error completo:', err);
-        }
-      });
+  
+    this.empleadoService.createEmpleado(transformedData)
+    .subscribe({
+      next: (response) => {
+        this.success = true;
+        this.registroForm.reset();
+        this.submitted = false;
+        this.reiniciarFormulario();
+        setTimeout(() => this.success = false, 3000);
+      },
+      error: (err) => {
+        this.error = `Error al registrar empleado: ${err.message || JSON.stringify(err)}`;
+        console.error('Error completo:', err);
+      }
+    });
+  
   }
+  // Añade este método a tu componente RegistroEmpleadoComponent
 
-  generarClave(): string {
-    // Generar clave automática basada en apellido e ID aleatorio
-    const apellido = this.registroForm.get('ApellidoPaterno')?.value.substring(0, 3).toUpperCase() || '';
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    return `${apellido}${random}`;
+previewImage() {
+  // Este método se invoca cuando cambia el valor del campo Foto
+  // No necesita hacer nada adicional, ya que la imagen se actualiza automáticamente en el HTML
+  // mediante el binding: [src]="registroForm.get('Foto')?.value"
+}
+
+  // Método para reiniciar el formulario correctamente incluyendo arrays
+  private reiniciarFormulario() {
+    // Limpiar todos los arrays
+    while (this.telefonosArray.length !== 0) {
+      this.telefonosArray.removeAt(0);
+    }
+    while (this.correosArray.length !== 0) {
+      this.correosArray.removeAt(0);
+    }
+    while (this.referenciasArray.length !== 0) {
+      this.referenciasArray.removeAt(0);
+    }
+
+    // Añadir un elemento inicial en cada array
+    this.telefonosArray.push(this.crearTelefono());
+    this.correosArray.push(this.crearCorreo());
+    this.referenciasArray.push(this.crearReferencia());
   }
 }

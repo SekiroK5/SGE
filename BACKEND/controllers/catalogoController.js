@@ -46,3 +46,14 @@ exports.getPuestos = async(req,res) =>{
         res.status(500).json({ error: "Error interno del servidor" });
     }
 }
+
+
+exports.getDocumentos = async (req, res) => {
+    try {
+        const documentos = await catalogosService.getDocumentos();
+        res.json(documentos);
+    } catch (error) {
+        console.error('Error al obtener documentos:', error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
