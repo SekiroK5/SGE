@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
         const camposObligatorios = [
             "Nombre", "ApellidoPaterno", "ApellidoMaterno", "FechaNacimiento", 
             "Sexo", "Calle", "NumeroExterior", "Colonia", "CodigoPostal", "Ciudad",
-            "Departamento", "Puesto", "Lada", "Telefono", "Correo", "Password"
+            "Departamento", "Puesto", "Password"
         ];
 
         const camposFaltantes = camposObligatorios.filter(campo => !datos[campo]);
@@ -23,15 +23,14 @@ exports.register = async (req, res) => {
             return res.status(400).json({ error: `Faltan los siguientes campos: ${camposFaltantes.join(", ")}` });
         }
 
-        let fotoBuffer = req.file ? req.file.buffer : null;
-
+        // Preparar el objeto de empleado
         const empleadoData = {
             Nombre: datos.Nombre,
             ApellidoPaterno: datos.ApellidoPaterno,
             ApellidoMaterno: datos.ApellidoMaterno,
-            FechaNacimiento: new Date(datos.FechaNacimiento), // Convertir a Date
+            FechaNacimiento: new Date(datos.FechaNacimiento),
             Sexo: datos.Sexo,
-            Foto: req.file ? new mongoose.Types.Buffer(req.file.buffer) : Buffer.alloc(0),
+            Foto: datos.Foto || "",
             Calle: datos.Calle,
             NumeroInterior: datos.NumeroInterior || "",
             NumeroExterior: datos.NumeroExterior,
@@ -40,20 +39,59 @@ exports.register = async (req, res) => {
             Ciudad: datos.Ciudad,
             Departamento: datos.Departamento,
             Puesto: datos.Puesto,
-            Telefonos: datos.Lada && datos.Telefono ? [{ Lada: datos.Lada, Numero: datos.Telefono }] : [{ Lada: "000", Numero: "0000000" }],
-            CorreoElectronico: datos.Correo ? [{ Direccion: datos.Correo }] : [{ Direccion: "default@example.com" }],
-            ReferenciaFamiliar: datos.ReferenciaNombre ? [
-                {
-                    NombreCompleto: datos.ReferenciaNombre,
-                    Parentesco: datos.ReferenciaParentesco || "",
-                    Telefono: datos.ReferenciaLada && datos.ReferenciaTelefono ? [
-                        { Lada: datos.ReferenciaLada, Numero: datos.ReferenciaTelefono }
-                    ] : [],
-                    CorreoElectronico: datos.ReferenciaCorreo || ""
-                }
-            ] : [],                  
             Password: await encript(datos.Password)
         };
+
+        // Manejar teléfonos - detectar formato y procesar adecuadamente
+        if (Array.isArray(datos.Telefonos) && datos.Telefonos.length > 0) {
+            // Si ya viene como array, usarlo directamente
+            empleadoData.Telefonos = datos.Telefonos;
+        } else if (datos.Lada && datos.Telefono) {
+            // Si vienen como campos simples, construir el array
+            empleadoData.Telefonos = [{ Lada: datos.Lada, Numero: datos.Telefono }];
+        } else {
+            // Valor por defecto
+            empleadoData.Telefonos = [{ Lada: "000", Numero: "0000000" }];
+        }
+
+        // Manejar correos electrónicos
+        if (Array.isArray(datos.CorreoElectronico) && datos.CorreoElectronico.length > 0) {
+            // Si ya viene como array, usarlo directamente
+            empleadoData.CorreoElectronico = datos.CorreoElectronico;
+        } else if (datos.Correo) {
+            // Si viene como campo simple, construir el array
+            empleadoData.CorreoElectronico = [{ Direccion: datos.Correo }];
+        } else {
+            // Valor por defecto
+            empleadoData.CorreoElectronico = [{ Direccion: "default@example.com" }];
+        }
+
+        // Manejar referencias familiares
+        if (Array.isArray(datos.ReferenciaFamiliar) && datos.ReferenciaFamiliar.length > 0) {
+            // Si ya viene como array, usarlo directamente
+            // Pero asegurarnos que tiene la estructura correcta (CorreoElectronico como string)
+            empleadoData.ReferenciaFamiliar = datos.ReferenciaFamiliar.map(ref => {
+                // Extraer el correo si viene como array de objetos
+                if (Array.isArray(ref.CorreoElectronico) && ref.CorreoElectronico.length > 0) {
+                    return {
+                        ...ref,
+                        CorreoElectronico: ref.CorreoElectronico[0].Direccion || "sin.correo@example.com"
+                    };
+                }
+                return ref;
+            });
+        } else if (datos.ReferenciaNombre) {
+            // Si vienen como campos simples, construir el array
+            empleadoData.ReferenciaFamiliar = [{
+                NombreCompleto: datos.ReferenciaNombre,
+                Parentesco: datos.ReferenciaParentesco || "No especificado",
+                Telefono: datos.ReferenciaLada && datos.ReferenciaTelefono ? 
+                    [{ Lada: datos.ReferenciaLada, Numero: datos.ReferenciaTelefono }] : 
+                    [{ Lada: "000", Numero: "0000000" }],
+                CorreoElectronico: datos.ReferenciaCorreo || "sin.correo@example.com"
+            }];
+        }
+        // Si no hay datos de referencia, el middleware generarDatosEmpleado se encargará
         
         const newEmpleado = await empleadoService.registroEmpleado(empleadoData);
 
@@ -61,7 +99,7 @@ exports.register = async (req, res) => {
 
     } catch (error) {
         console.error("Error en el registro del empleado:", error);
-        res.status(500).json({ error: "Error interno del servidor" });
+        res.status(500).json({ error: "Error interno del servidor: " + error.message });
     }
 };
 
