@@ -1,8 +1,15 @@
+const mongoose = require("mongoose");
 const Empleado = require("../models/empleado");
 const {Binary} = require("mongodb");
 const Departamento = require('../models/departamento');
+
+// Modelo Counter para secuencias numéricas
+const Counter = mongoose.model('Counter', new mongoose.Schema({
+    _id: String,
+    seq: Number
+}));
+
 // Middleware para generar ClaveEmpleado y RFC automáticamente
-// Modificamos la función generarDatosEmpleado para manejar URLs de fotos
 const generarDatosEmpleado = async (userData) => {
     const { Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento } = userData;
 
@@ -14,32 +21,40 @@ const generarDatosEmpleado = async (userData) => {
     const nombres = Nombre.split(" ");
     const iniciales = (nombres[0][0] + (nombres[1] ? nombres[1][0] : 'X') + ApellidoPaterno[0] + ApellidoMaterno[0]).toUpperCase().slice(0, 4);
 
-    const lastEmpleado = await Empleado.findOne().sort({ ClaveEmpleado: -1 }).select("ClaveEmpleado");
-    let consecutivo = "001";
-    if (lastEmpleado) {
-        const lastNum = parseInt(lastEmpleado.ClaveEmpleado.split('-')[1]) || 0;
-        consecutivo = String(lastNum + 1).padStart(3, '0');
-    }
+    // Usar el contador para obtener un consecutivo único
+    const counter = await Counter.findOneAndUpdate(
+        { _id: 'empleadoId' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+    );
+    const consecutivo = String(counter.seq).padStart(3, '0');
+    
     userData.ClaveEmpleado = `${iniciales}-${consecutivo}`;
 
     // Generar RFC con iniciales y fecha de nacimiento (YYMMDD)
-    if (!(FechaNacimiento instanceof Date)) {
-        FechaNacimiento = new Date(FechaNacimiento);
+    let fechaNac = FechaNacimiento;
+    if (!(fechaNac instanceof Date)) {
+        fechaNac = new Date(fechaNac);
     }
     
-    const rfcFecha = FechaNacimiento.getFullYear().toString().slice(2, 4) + 
-                    String(FechaNacimiento.getMonth() + 1).padStart(2, '0') + 
-                    String(FechaNacimiento.getDate()).padStart(2, '0');
+    const rfcFecha = fechaNac.getFullYear().toString().slice(2, 4) + 
+                    String(fechaNac.getMonth() + 1).padStart(2, '0') + 
+                    String(fechaNac.getDate()).padStart(2, '0');
     
     userData.RFC = `${iniciales}-${rfcFecha}`;    
 
-    // Si no hay foto, usar una por defecto
-    if (!userData.Foto) {
+    // Preservar la foto si se proporciona
+    if (!userData.Foto || userData.Foto === "") {
         userData.Foto = "https://as2.ftcdn.net/jpg/05/86/91/55/220_F_586915596_gPqgxPdgdJ4OXjv6GCcDWNxTjKDWZ3JD.jpg";
     }
 
-    // Asegurar que hay al menos una referencia familiar
-    if (!userData.ReferenciaFamiliar || !userData.ReferenciaFamiliar.length) {
+    // Preservar los datos de referencia familiar si existen
+    // NO sobreescribir si ya hay datos válidos
+    if (!userData.ReferenciaFamiliar || 
+        !userData.ReferenciaFamiliar.length || 
+        !userData.ReferenciaFamiliar[0].NombreCompleto || 
+        userData.ReferenciaFamiliar[0].NombreCompleto === "Por especificar") {
+        
         userData.ReferenciaFamiliar = [{
             NombreCompleto: "Por especificar",
             Parentesco: "Por especificar",
