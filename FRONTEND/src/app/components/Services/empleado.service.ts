@@ -78,6 +78,17 @@ export class EmpleadoService {
   deleteEmpleado(claveEmpleado: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${claveEmpleado}`);
   }
+
+  // Desactivar temporalmente un empleado
+desactivarEmpleado(claveEmpleado: string): Observable<any> {
+  return this.http.put(`${environment.baseURL}/auth/desactiva/${claveEmpleado}`, {});
+}
+
+// Activar temporalmente un empleado
+activarEmpleado(claveEmpleado: string): Observable<any> {
+  return this.http.put(`${environment.baseURL}/auth/activa/${claveEmpleado}`, {});
+}
+
   
   // Preparar datos del empleado para asegurar compatibilidad con el backend
   private prepareEmpleadoData(empleado: Empleado): any {
@@ -142,3 +153,4 @@ export class EmpleadoService {
     return this.http.get<Empleado[]>(url);
   }
 }
+

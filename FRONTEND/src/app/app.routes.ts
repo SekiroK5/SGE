@@ -12,13 +12,7 @@ export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   // Ruta para el dashboard de RH
   { path: 'rh/dashboard', component: DashboardComponent },
-  
-  // Rutas hijas para las secciones del dashboard de RH
   { path: 'rh/empleados', loadChildren: () => import('./components/rh/empleados/empleados.routes').then(r => r.EMPLEADOS_ROUTES) },
-  { path: 'rh/empleados/edicion', loadChildren: () => import('./components/rh/empleados/edicion/edicion.routes').then(r => r.EDICION_ROUTES) },
-  { path: 'rh/empleados/lista', loadChildren: () => import('./components/rh/empleados/lista/lista.routes').then(r => r.LISTA_ROUTES) },
-  { path: 'rh/empleados/registro', loadChildren: () => import('./components/rh/empleados/registro/registro.routes').then(r => r.REGISTRO_ROUTES) },
-  
   // Rutas para actividades
   { path: 'actividades', loadChildren: () => import('./components/actividades/actividades.routes').then(r => r.ACTIVIDADES_ROUTES) },
   { path: 'actividades/edicion', loadChildren: () => import('./components/actividades/edicion/edicion-actividad.routes').then(r => r.EDICION_ACTIVIDAD_ROUTES) },

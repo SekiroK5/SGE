@@ -105,6 +105,8 @@ export class RegistroEmpleadoComponent implements OnInit {
     this.referenciasArray.push(this.crearReferencia());
   }
 
+  
+
   agregarTelefonoReferencia(referenciaIndex: number) {
     this.getTelefonosReferencia(referenciaIndex).push(this.crearTelefono());
   }

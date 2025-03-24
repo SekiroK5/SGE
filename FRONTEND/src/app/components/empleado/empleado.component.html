@@ -7,6 +7,12 @@
     <span>Perfil de Empleado</span>
   </div>
   <div class="navbar-actions">
+    <!-- Botón para editar el perfil -->
+    <button class="edit-btn" (click)="editarEmpleado()" type="button" aria-label="Editar perfil">
+      <i class="material-icons">edit</i>
+      <span class="btn-text">Editar Perfil</span>
+    </button>
+    
     <button class="logout-btn" (click)="cerrarSesion()" type="button" aria-label="Cerrar sesión">
       <i class="material-icons">exit_to_app</i>
       <span class="btn-text">Cerrar Sesión</span>
@@ -29,6 +35,10 @@
   <section class="content-section">
     <div class="section-header">
       <h2>Datos Personales</h2>
+      <!-- Botón de edición en la sección de datos personales -->
+      <button class="action-btn" (click)="editarEmpleado()">
+        <i class="material-icons">edit</i> Editar información
+      </button>
     </div>
     
     <div *ngIf="loading.perfil" class="loading">

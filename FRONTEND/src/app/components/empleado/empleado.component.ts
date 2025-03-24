@@ -122,6 +122,17 @@ export class EmpleadoComponent implements OnInit {
     // You might want to navigate to a different route or show a different view
   }
 
+  // Método para navegar a la pantalla de edición
+  editarEmpleado(): void {
+    if (this.claveEmpleado) {
+      // La navegación debe ser relativa a la ruta 'empleado'
+      this.router.navigate(['empleado', 'editar', this.claveEmpleado]);
+      console.log('Navegando a edición del empleado con clave:', this.claveEmpleado);
+    } else {
+      console.error('No hay clave de empleado para editar');
+    }
+  }
+
   cerrarSesion(): void {
     // Usar el método logout del AuthService
     this.authService.logout();

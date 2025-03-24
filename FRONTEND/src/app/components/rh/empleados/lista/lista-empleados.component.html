@@ -1,63 +1,434 @@
-<div class="lista-container">
-    <div class="lista-header">
+<div class="container mt-4">
+  <!-- Botón para regresar al dashboard -->
+  <div class="mb-3">
+    <button class="btn btn-outline-primary" routerLink="/rh/dashboard">
+      <i class="bi bi-arrow-left me-1"></i> Volver al Dashboard
+    </button>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white text-center">
       <h2>Lista de Empleados</h2>
-      <p>Consulta avanzada con múltiples criterios de búsqueda</p>
     </div>
-  
-    <div class="alert error" *ngIf="error">
-      {{ error }}
-    </div>
-  
-    <div class="loading-spinner" *ngIf="loading">
-      <div class="spinner"></div>
-      <p>Cargando datos...</p>
-    </div>
-  
-    <div *ngIf="!loading" class="filtros-container">
-      <div class="filtros-form">
-        <div class="filtro-grupo">
-          <label for="nombreFiltro">Nombre o Apellido</label>
-          <input 
-            type="text" 
-            id="nombreFiltro" 
-            [(ngModel)]="nombreFiltro" 
-            placeholder="Buscar por nombre o apellido"
-          >
+
+    <!-- Contenido principal -->
+    <div class="card-body">
+      <!-- Mensaje de carga -->
+      <div class="text-center my-5" *ngIf="loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
         </div>
-  
-        <div class="filtro-grupo">
-          <label for="departamentoFiltro">Departamento</label>
-          <select id="departamentoFiltro" [(ngModel)]="departamentoFiltro">
-            <option value="">Todos los departamentos</option>
-            <option *ngFor="let depto of departamentos" [value]="depto">{{ depto }}</option>
-          </select>
+        <p class="mt-2">Cargando empleados...</p>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="alert alert-danger" *ngIf="error">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ error }}
+        <button type="button" class="btn-close float-end" aria-label="Close" (click)="error = ''"></button>
+      </div>
+
+      <!-- Búsqueda y Filtros -->
+      <div *ngIf="!loading" class="row g-3 mb-4">
+        <!-- Barra de búsqueda en tiempo real -->
+        <div class="col-md-12 mb-3">
+          <div class="input-group">
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control form-control-lg"
+              placeholder="Buscar por nombre, clave o RFC..."
+              [(ngModel)]="terminoBusqueda" 
+              (input)="buscarEnTiempoReal()"
+            >
+          </div>
+          <small class="text-muted">La búsqueda se realiza mientras escribes</small>
         </div>
-  
-        <div class="filtro-acciones">
-          <button class="btn-primary" (click)="aplicarFiltros()">Filtrar</button>
-          <button class="btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+
+        <!-- Filtros en acordeón -->
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header bg-light" data-bs-toggle="collapse" href="#collapseFilters" role="button" aria-expanded="false">
+              <div class="d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-funnel me-2"></i> Filtros avanzados</span>
+                <i class="bi bi-chevron-down"></i>
+              </div>
+            </div>
+            <div class="collapse" id="collapseFilters">
+              <div class="card-body">
+                <div class="row g-3">
+                  <!-- Filtro por departamento -->
+                  <div class="col-md-4">
+                    <label for="departamentoFiltro" class="form-label">Departamento</label>
+                    <select class="form-select" id="departamentoFiltro" [(ngModel)]="departamentoFiltro" (change)="aplicarFiltros()">
+                      <option value="">Todos los departamentos</option>
+                      <option *ngFor="let depto of departamentos" [value]="depto">{{ depto }}</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Filtro por puesto -->
+                  <div class="col-md-4">
+                    <label for="puestoFiltro" class="form-label">Puesto</label>
+                    <select class="form-select" id="puestoFiltro" [(ngModel)]="puestoFiltro" (change)="aplicarFiltros()">
+                      <option value="">Todos los puestos</option>
+                      <option *ngFor="let puesto of puestos" [value]="puesto">{{ puesto }}</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Ordenamiento -->
+                  <div class="col-md-4">
+                    <label for="ordenFiltro" class="form-label">Ordenar por</label>
+                    <div class="input-group">
+                      <select class="form-select" id="ordenFiltro" [(ngModel)]="ordenPor" (change)="aplicarFiltros()">
+                        <option value="nombre">Nombre</option>
+                        <option value="departamento">Departamento</option>
+                        <option value="puesto">Puesto</option>
+                        <option value="clave">Clave de Empleado</option>
+                      </select>
+                      <button class="btn btn-outline-secondary" type="button" (click)="cambiarOrden()">
+                        <i class="bi" [ngClass]="ordenAscendente ? 'bi-sort-alpha-down' : 'bi-sort-alpha-up'"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Botones de acción -->
+                  <div class="col-12 d-flex justify-content-end mt-3">
+                    <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+                      <i class="bi bi-x-circle me-1"></i> Limpiar filtros
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón para nuevo empleado -->
+      <div *ngIf="!loading" class="d-flex justify-content-end mb-3">
+        <button class="btn btn-success" routerLink="/rh/empleados/registro">
+          <i class="bi bi-plus-circle me-1"></i> Nuevo Empleado
+        </button>
+      </div>
+
+      <!-- Sin resultados -->
+      <div class="alert alert-info" *ngIf="!loading && !error && empleadosFiltrados.length === 0">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        No se encontraron empleados con los criterios de búsqueda especificados.
+      </div>
+
+      <!-- Lista de empleados en fichas -->
+      <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="!loading && !error && empleadosFiltrados.length > 0">
+        <div class="col" *ngFor="let empleado of empleadosFiltrados">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+              <h5 class="card-title mb-0" [ngClass]="{'text-primary': estaActivo(empleado), 'text-muted': !estaActivo(empleado)}">
+                {{ empleado.ClaveEmpleado || 'N/A' }}
+                <span class="badge rounded-pill ms-2" [ngClass]="{'bg-success': estaActivo(empleado), 'bg-danger': !estaActivo(empleado)}">
+                  {{ estaActivo(empleado) ? 'Activo' : 'Inactivo' }}
+                </span>
+              </h5>
+              <div>
+                <button class="btn btn-sm btn-outline-info" (click)="abrirModalDetalles(empleado)">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <div class="flex-shrink-0">
+                  <img [src]="empleado.Foto || '/assets/images/default-avatar.png'" alt="Foto de perfil" 
+                       class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;"
+                       [ngClass]="{'opacity-50': !estaActivo(empleado)}">
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <h6 class="fw-bold mb-0" [ngClass]="{'text-muted': !estaActivo(empleado)}">
+                    {{ empleado.Nombre }} {{ empleado.ApellidoPaterno }} {{ empleado.ApellidoMaterno }}
+                  </h6>
+                  <p class="text-muted small mb-0">{{ empleado.RFC || 'RFC no disponible' }}</p>
+                </div>
+              </div>
+              
+              <!-- Botones de acción para gestión de estados -->
+              <div class="d-flex justify-content-center gap-2 mb-3">
+                <button class="btn btn-sm btn-outline-success" 
+                        (click)="activarEmpleado(empleado.ClaveEmpleado!)"
+                        [disabled]="estaActivo(empleado)"
+                        [ngClass]="{'opacity-50': estaActivo(empleado)}">
+                  <i class="bi bi-check-circle me-1"></i> Activar
+                </button>
+                <button class="btn btn-sm btn-outline-warning" 
+                        (click)="abrirModalDesactivacion(empleado)"
+                        [disabled]="!estaActivo(empleado)"
+                        [ngClass]="{'opacity-50': !estaActivo(empleado)}">
+                  <i class="bi bi-pause-circle me-1"></i> Temporal
+                </button>
+                <button class="btn btn-sm btn-outline-danger"
+                        (click)="eliminarEmpleado(empleado.ClaveEmpleado!)"
+                        [disabled]="!estaActivo(empleado)"
+                        [ngClass]="{'opacity-50': !estaActivo(empleado)}">
+                  <i class="bi bi-trash-fill me-1"></i> Eliminar
+                </button>
+              </div>
+              
+              <div class="border-top pt-3">
+                <div class="row">
+                  <div class="col-6">
+                    <small class="text-muted d-block">Departamento</small>
+                    <p class="mb-2">{{ empleado.Departamento || 'No asignado' }}</p>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted d-block">Puesto</small>
+                    <p class="mb-0">{{ empleado.Puesto || 'No asignado' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  
-    <div *ngIf="!loading" class="acciones-container">
-      <button class="btn-nuevo" routerLink="/registro-empleado">
-        <span class="plus-icon">+</span> Nuevo Empleado
-      </button>
+  </div>
+</div>
+
+<!-- Modal para desactivación temporal -->
+<div class="custom-modal-overlay" *ngIf="mostrarModalDesactivacion">
+  <div class="custom-modal-container">
+    <div class="custom-modal">
+      <div class="custom-modal-header bg-warning text-white">
+        <h5 class="custom-modal-title">Desactivación Temporal</h5>
+        <button type="button" class="custom-modal-close-btn" aria-label="Cerrar" (click)="cerrarModalDesactivacion()">×</button>
+      </div>
+      <div class="custom-modal-body">
+        <p>Está por desactivar temporalmente al empleado: 
+          <strong>{{ empleadoSeleccionado?.Nombre }} {{ empleadoSeleccionado?.ApellidoPaterno }} {{ empleadoSeleccionado?.ApellidoMaterno }}</strong>
+        </p>
+        <div class="mb-3">
+          <label for="razonDesactivacion" class="form-label">Razón de la desactivación:</label>
+          <textarea 
+            class="form-control" 
+            id="razonDesactivacion" 
+            rows="3" 
+            [(ngModel)]="razonDesactivacion"
+            placeholder="Detalle el motivo de la desactivación temporal..."
+          ></textarea>
+        </div>
+      </div>
+      <div class="custom-modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalDesactivacion()">Cancelar</button>
+        <button type="button" class="btn btn-warning" (click)="desactivarEmpleado()" [disabled]="!razonDesactivacion || !razonDesactivacion.trim()">
+          Desactivar temporalmente
+        </button>
+      </div>
     </div>
-  
-    <div *ngIf="!loading && empleadosFiltrados.length === 0" class="no-data">
-      No se encontraron empleados con los criterios de búsqueda especificados.
+  </div>
+</div>
+
+<!-- Modal para ver detalles del empleado -->
+<div class="custom-modal-overlay" *ngIf="mostrarModalDetalles">
+  <div class="custom-modal-container">
+    <div class="custom-modal custom-modal-lg">
+      <div class="custom-modal-header bg-primary text-white">
+        <h5 class="custom-modal-title">Detalles del Empleado</h5>
+        <button type="button" class="custom-modal-close-btn" aria-label="Cerrar" (click)="cerrarModalDetalles()">×</button>
+      </div>
+      <div class="custom-modal-body">
+        <div *ngIf="empleadoSeleccionadoDetalles" class="detalles-empleado">
+          <!-- Encabezado con foto y datos principales -->
+          <div class="row mb-4">
+            <div class="col-md-3 text-center">
+              <img [src]="empleadoSeleccionadoDetalles.Foto || '/assets/images/default-avatar.png'" 
+                   alt="Foto de perfil" class="img-perfil-grande mb-2">
+              <div class="estado-badge" [ngClass]="{'bg-success': estaActivo(empleadoSeleccionadoDetalles), 'bg-danger': !estaActivo(empleadoSeleccionadoDetalles)}">
+                {{ estaActivo(empleadoSeleccionadoDetalles) ? 'Activo' : 'Inactivo' }}
+              </div>
+            </div>
+            <div class="col-md-9">
+              <h4 class="mb-1">{{ empleadoSeleccionadoDetalles.Nombre }} {{ empleadoSeleccionadoDetalles.ApellidoPaterno }} {{ empleadoSeleccionadoDetalles.ApellidoMaterno }}</h4>
+              <p class="text-muted">{{ empleadoSeleccionadoDetalles.Puesto }} - {{ empleadoSeleccionadoDetalles.Departamento }}</p>
+              <div class="identificadores mb-3">
+                <span class="badge bg-secondary me-2">Clave: {{ empleadoSeleccionadoDetalles.ClaveEmpleado }}</span>
+                <span class="badge bg-info">RFC: {{ empleadoSeleccionadoDetalles.RFC || 'No disponible' }}</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary btn-sm" (click)="editarEmpleado(empleadoSeleccionadoDetalles)">
+                  <i class="bi bi-pencil-fill me-1"></i> Editar Empleado
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" routerLink="/rh/dashboard" (click)="cerrarModalDetalles()">
+                  <i class="bi bi-arrow-left me-1"></i> Volver al Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pestañas para diferentes secciones de información -->
+          <ul class="nav nav-tabs mb-3" id="detallesTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" 
+                     role="tab" aria-controls="personal" aria-selected="true">Información Personal</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="contacto-tab" data-bs-toggle="tab" data-bs-target="#contacto" type="button" 
+                     role="tab" aria-controls="contacto" aria-selected="false">Contacto</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="referencias-tab" data-bs-toggle="tab" data-bs-target="#referencias" type="button" 
+                     role="tab" aria-controls="referencias" aria-selected="false">Referencias</button>
+            </li>
+          </ul>
+          
+          <!-- Contenido de las pestañas -->
+          <div class="tab-content" id="detallesTabContent">
+            <!-- Información Personal -->
+            <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="detalle-grupo">
+                    <label>Fecha de Nacimiento</label>
+                    <p>{{ formatearFecha(empleadoSeleccionadoDetalles.FechaNacimiento) }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="detalle-grupo">
+                    <label>Sexo</label>
+                    <p>{{ empleadoSeleccionadoDetalles.Sexo || 'No especificado' }}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <h6 class="mt-3 mb-2 border-bottom pb-2">Dirección</h6>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="detalle-grupo">
+                    <label>Calle</label>
+                    <p>{{ empleadoSeleccionadoDetalles.Calle || 'No disponible' }}</p>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="detalle-grupo">
+                    <label>Número Exterior</label>
+                    <p>{{ empleadoSeleccionadoDetalles.NumeroExterior || 'No disponible' }}</p>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="detalle-grupo">
+                    <label>Número Interior</label>
+                    <p>{{ empleadoSeleccionadoDetalles.NumeroInterior || 'No disponible' }}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="detalle-grupo">
+                    <label>Colonia</label>
+                    <p>{{ empleadoSeleccionadoDetalles.Colonia || 'No disponible' }}</p>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="detalle-grupo">
+                    <label>Código Postal</label>
+                    <p>{{ empleadoSeleccionadoDetalles.CodigoPostal || 'No disponible' }}</p>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="detalle-grupo">
+                    <label>Ciudad</label>
+                    <p>{{ empleadoSeleccionadoDetalles.Ciudad || 'No disponible' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Contacto -->
+            <div class="tab-pane fade" id="contacto" role="tabpanel" aria-labelledby="contacto-tab">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="mb-3">Teléfonos</h6>
+                  <div *ngIf="empleadoSeleccionadoDetalles.Telefonos && empleadoSeleccionadoDetalles.Telefonos.length">
+                    <div *ngFor="let tel of empleadoSeleccionadoDetalles.Telefonos; let i = index" class="mb-2">
+                      <span class="badge bg-secondary me-2">{{ i+1 }}</span>
+                      {{ tel.Lada }} {{ tel.Numero }}
+                    </div>
+                  </div>
+                  <div *ngIf="!empleadoSeleccionadoDetalles.Telefonos || !empleadoSeleccionadoDetalles.Telefonos.length" class="text-muted">
+                    No hay teléfonos registrados
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="mb-3">Correos Electrónicos</h6>
+                  <div *ngIf="empleadoSeleccionadoDetalles.CorreoElectronico && empleadoSeleccionadoDetalles.CorreoElectronico.length">
+                    <div *ngFor="let correo of empleadoSeleccionadoDetalles.CorreoElectronico; let i = index" class="mb-2">
+                      <span class="badge bg-secondary me-2">{{ i+1 }}</span>
+                      {{ correo.Direccion }}
+                    </div>
+                  </div>
+                  <div *ngIf="!empleadoSeleccionadoDetalles.CorreoElectronico || !empleadoSeleccionadoDetalles.CorreoElectronico.length" class="text-muted">
+                    No hay correos registrados
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Referencias -->
+            <div class="tab-pane fade" id="referencias" role="tabpanel" aria-labelledby="referencias-tab">
+              <div *ngIf="empleadoSeleccionadoDetalles.ReferenciaFamiliar && empleadoSeleccionadoDetalles.ReferenciaFamiliar.length">
+                <div *ngFor="let ref of empleadoSeleccionadoDetalles.ReferenciaFamiliar; let i = index" class="card mb-3">
+                  <div class="card-header">
+                    <strong>Referencia #{{ i+1 }}</strong>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="detalle-grupo">
+                          <label>Nombre Completo</label>
+                          <p>{{ ref.NombreCompleto || 'No disponible' }}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="detalle-grupo">
+                          <label>Parentesco</label>
+                          <p>{{ ref.Parentesco || 'No disponible' }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="row mt-2">
+                      <div class="col-md-6">
+                        <div class="detalle-grupo">
+                          <label>Teléfono</label>
+                          <p *ngIf="ref.Telefono && ref.Telefono.length">
+                            {{ ref.Telefono[0].Lada }} {{ ref.Telefono[0].Numero }}
+                          </p>
+                          <p *ngIf="!ref.Telefono || !ref.Telefono.length" class="text-muted">No disponible</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="detalle-grupo">
+                          <label>Correo Electrónico</label>
+                          <p *ngIf="ref.CorreoElectronico && ref.CorreoElectronico.length">
+                            {{ ref.CorreoElectronico[0].Direccion }}
+                          </p>
+                          <p *ngIf="!ref.CorreoElectronico || !ref.CorreoElectronico.length" class="text-muted">No disponible</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!empleadoSeleccionadoDetalles.ReferenciaFamiliar || !empleadoSeleccionadoDetalles.ReferenciaFamiliar.length" class="alert alert-info">
+                No hay referencias familiares registradas
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="custom-modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalDetalles()">Cerrar</button>
+      </div>
     </div>
-  
-    <div *ngIf="!loading && empleadosFiltrados.length > 0" class="tabla-container">
-      <table class="tabla-empleados">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Email</th>
-            <th>Departamento</th>
-            <th>Posición</th>
-            <th>Fecha Ingreso</th>
-            <th>Acciones
+  </div>
+</div>
