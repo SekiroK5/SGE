@@ -56,40 +56,72 @@ exports.getCursoTomadoById = async (claveEmpleado) => {
 
 exports.updateCursoTomado = async (idCursoTomado, updateData) => {
     try {
-        const updateObj = {};
-
-        // Campos simples
-        const camposDirectos = [
-            'ClaveEmpleado', 'NombreCompletoEmpleado',"CursosTomados", 'NombreCurso', 'FechaInicio',
-            'FechaTermino', 'TipoDocumento', 'Descripcion'
-        ];
-
-        camposDirectos.forEach(campo => {
-            if (updateData[campo] !== undefined) {
-                updateObj[campo] = updateData[campo];
+        console.log("Datos recibidos para actualización:", JSON.stringify(updateData, null, 2));
+        
+        // Primero, obtenemos el documento actual para actualizarlo correctamente
+        const cursoActual = await CursosTomados.findById(idCursoTomado);
+        
+        if (!cursoActual) {
+            throw new Error(`Curso con id ${idCursoTomado} no encontrado`);
+        }
+        
+        // Creamos un objeto para la actualización que será una copia del documento actual
+        let updateObj = {};
+        
+        // Actualizamos campos simples si están presentes
+        if (updateData.ClaveEmpleado) {
+            updateObj.ClaveEmpleado = updateData.ClaveEmpleado;
+        }
+        
+        if (updateData.NombreCompletoEmpleado) {
+            updateObj.NombreCompletoEmpleado = updateData.NombreCompletoEmpleado;
+        }
+        
+        // Verificamos si solo estamos actualizando fechas
+        if (updateData.actualizarFechas === true && 
+            updateData.CursosTomados && 
+            Array.isArray(updateData.CursosTomados) && 
+            updateData.CursosTomados.length > 0) {
+            
+            console.log("Actualizando solo fechas");
+            
+            // Creamos una copia profunda de los cursos actuales
+            const cursosTomadosActualizados = JSON.parse(JSON.stringify(cursoActual.CursosTomados));
+            
+            // Actualizamos solo las fechas del primer curso
+            if (updateData.CursosTomados[0].FechaInicio) {
+                cursosTomadosActualizados[0].FechaInicio = new Date(updateData.CursosTomados[0].FechaInicio);
             }
-        });
-
-        if (updateData.FechaInicio) {
-            updateObj.FechaInicio = new Date(updateData.FechaInicio);
+            
+            if (updateData.CursosTomados[0].FechaTermino) {
+                cursosTomadosActualizados[0].FechaTermino = new Date(updateData.CursosTomados[0].FechaTermino);
+            }
+            
+            // Asignamos el array actualizado al objeto de actualización
+            updateObj.CursosTomados = cursosTomadosActualizados;
+            
+        } 
+        // Si no estamos actualizando fechas, asumimos que queremos actualizar todo el objeto CursosTomados
+        else if (updateData.CursosTomados && Array.isArray(updateData.CursosTomados)) {
+            console.log("Actualizando el objeto CursosTomados completo");
+            updateObj.CursosTomados = updateData.CursosTomados;
         }
-        if (updateData.FechaTermino) {
-            updateObj.FechaTermino = new Date(updateData.FechaTermino);
-        }
-
-        // Actualizar el curso tomado
+        
+        console.log("Objeto de actualización:", JSON.stringify(updateObj, null, 2));
+        
+        // Realizamos la actualización con el objeto preparado
         const updatedCursoTomado = await CursosTomados.findByIdAndUpdate(
-            idCursoTomado, // Usamos el ObjectId recibido
+            idCursoTomado,
             updateObj,
-            { new: true } // Esta opción asegura que nos devuelva el documento actualizado
+            { new: true } // Devolver el documento actualizado
         );
-
+        
         return updatedCursoTomado;
     } catch (error) {
+        console.error('Error detallado:', error);
         throw new Error(`Error al actualizar el curso tomado: ${error.message}`);
     }
 };
-
 
 exports.deleteCursoTomado = async (idCursoTomado) => {
     try {

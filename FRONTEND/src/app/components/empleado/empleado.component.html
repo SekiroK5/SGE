@@ -1,209 +1,772 @@
-<div class="navbar">
-  <div class="navbar-logo">
-    <img src="https://img.icons8.com/?size=512&id=74402&format=png" alt="SGET Logo" class="logo-img">
-    <span class="logo-text">SGE con MongoDB</span>
+<div class="dashboard">
+  <!-- Barra de navegación superior -->
+  <header class="app-header">
+    <div class="branding">
+      <div class="logo-container">
+        <img src="https://img.icons8.com/?size=512&id=74402&format=png" alt="SGET Logo" class="logo">
+      </div>
+      <div class="app-title">
+        <h1>TPCM</h1>
+        <span class="subtitle">Sistema Gestion Empleados</span>
+      </div>
+    </div>
+    
+    <div class="header-controls">
+      <!-- Botones de acción principales -->
+      <div class="action-buttons">
+        <!-- En modo visualización -->
+        <button *ngIf="!editMode" class="btn btn-primary" (click)="toggleEditMode()">
+          <i class="material-icons">edit</i>
+          <span>Editar Perfil</span>
+        </button>
+        
+        <!-- En modo edición -->
+        <button *ngIf="editMode" class="btn btn-success" (click)="guardarCambios()" [disabled]="loading.guardando">
+          <i class="material-icons">save</i>
+          <span>Guardar Cambios</span>
+        </button>
+        
+        <button *ngIf="editMode" class="btn btn-danger" (click)="cancelarEdicion()">
+          <i class="material-icons">close</i>
+          <span>Cancelar</span>
+        </button>
+        
+        <!-- Siempre visible -->
+        <button class="btn btn-outline" (click)="cerrarSesion()">
+          <i class="material-icons">exit_to_app</i>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Área de mensajes y alertas -->
+  <div class="notification-area">
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="material-icons">check_circle</i>
+      <span>{{ successMessage }}</span>
+    </div>
+    
+    <div *ngIf="error.guardado" class="alert alert-error">
+      <i class="material-icons">error_outline</i>
+      <span>{{ error.guardado }}</span>
+    </div>
+    
+    <div *ngIf="loading.guardando" class="alert alert-info">
+      <div class="loading-spinner"></div>
+      <span>Procesando su solicitud...</span>
+    </div>
   </div>
-  <div class="navbar-title">
-    <span>Perfil de Empleado</span>
+
+  <!-- Contenido principal -->
+  <main class="main-content">
+    <!-- Título de la página -->
+    <div class="page-header">
+      <h2>{{ editMode ? 'Actualización de Datos' : 'Perfil de Empleado' }}</h2>
+      <p class="breadcrumb">
+        <span>Inicio</span> 
+        <i class="material-icons">chevron_right</i> 
+        <span>Empleados</span> 
+        <i class="material-icons">chevron_right</i> 
+        <span>{{ editMode ? 'Editar Perfil' : 'Ver Perfil' }}</span>
+      </p>
+    </div>
+    <!-- Mensaje cuando no hay empleado seleccionado -->
+    <div *ngIf="!claveEmpleado" class="empty-state">
+      <i class="material-icons">person_off</i>
+      <p>No se ha seleccionado ningún empleado</p>
+      <button class="btn btn-outline">Volver al listado</button>
+    </div>
+
+    <!-- Contenedor de información del empleado -->
+    <div *ngIf="claveEmpleado && empleado" class="content-container">
+      <!-- Tarjeta de información personal -->
+      <section class="card">
+        <div class="card-header">
+          <h3>
+            <i class="material-icons">badge</i>
+            Información Personal
+          </h3>
+          
+          <!-- Indicadores de estado -->
+          <div class="status-indicators">
+            <div *ngIf="loading.perfil" class="loading-indicator">
+              <div class="loading-spinner small"></div>
+              <span>Cargando...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="error.perfil" class="alert alert-error card-message">
+          <i class="material-icons">error_outline</i>
+          <span>{{ error.perfil }}</span>
+        </div>
+
+        <!-- Contenido de la tarjeta cuando está cargando -->
+        <div *ngIf="loading.perfil" class="card-loading">
+          <div class="loading-skeleton"></div>
+          <div class="loading-skeleton"></div>
+          <div class="loading-skeleton"></div>
+        </div>
+
+        <!-- Contenido de la tarjeta cuando hay datos -->
+        <div *ngIf="empleado && !loading.perfil" class="card-body">
+          <!-- Diseño en dos columnas para datos personales -->
+          <div class="profile-grid">
+            <!-- Columna izquierda: Foto y datos básicos -->
+            <div class="profile-column">
+              <div class="profile-photo-section">
+                <div class="profile-photo">
+                  <img [src]="empleado.Foto || defaultProfileImage" 
+                       alt="Foto de perfil" 
+                       (error)="handleImageError($event)">
+                  
+                  <!-- URL de la foto (solo en modo edición) -->
+                  <div *ngIf="editMode" class="photo-edit">
+                    <label for="foto">URL de la imagen</label>
+                    <input id="foto" type="text" [(ngModel)]="empleado.Foto" class="form-control">
+                  </div>
+                </div>
+                
+                <!-- Datos básicos del empleado (modo vista) -->
+                <div *ngIf="!editMode" class="employee-summary">
+                  <h4 class="employee-name">{{ empleado.Nombre }} {{ empleado.ApellidoPaterno }} {{ empleado.ApellidoMaterno }}</h4>
+                  <div class="employee-position">
+                    <span class="department">{{ empleado.Departamento }}</span>
+                    <span class="position">{{ empleado.Puesto }}</span>
+                  </div>
+                  <div class="employee-id">
+                    <span class="id-label">ID:</span>
+                    <span class="id-value">{{ empleado.ClaveEmpleado }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Campos personales -->
+              <div class="employee-details">
+                <!-- Modo visualización -->
+                <div *ngIf="!editMode" class="details-section">
+                  <h4 class="section-title">Datos Personales</h4>
+                  
+                  <div class="details-grid">
+                    <div class="detail-item">
+                      <span class="detail-label">RFC:</span>
+                      <span class="detail-value">{{ empleado.RFC }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Fecha de Nacimiento:</span>
+                      <span class="detail-value">{{ empleado.FechaNacimiento | date }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Sexo:</span>
+                      <span class="detail-value">{{ empleado.Sexo }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Modo edición -->
+                <div *ngIf="editMode" class="edit-section">
+                  <h4 class="section-title">Datos Personales</h4>
+                  
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label for="nombre">Nombre</label>
+                      <input id="nombre" type="text" [(ngModel)]="empleado.Nombre" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="apellidoP">Apellido Paterno</label>
+                      <input id="apellidoP" type="text" [(ngModel)]="empleado.ApellidoPaterno" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="apellidoM">Apellido Materno</label>
+                      <input id="apellidoM" type="text" [(ngModel)]="empleado.ApellidoMaterno" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="clave">Clave</label>
+                      <input id="clave" type="text" [(ngModel)]="empleado.ClaveEmpleado" disabled class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="rfc">RFC</label>
+                      <input id="rfc" type="text" [(ngModel)]="empleado.RFC" disabled class="form-control form-control-disabled">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="fechaNac">Fecha de Nacimiento</label>
+                      <input id="fechaNac" type="date" [ngModel]="empleado.FechaNacimiento | date:'yyyy-MM-dd'" 
+                            (ngModelChange)="empleado.FechaNacimiento = $event" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="sexo">Sexo</label>
+                      <select id="sexo" [(ngModel)]="empleado.Sexo" class="form-control">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Columna derecha: Dirección, puesto e información de contacto -->
+            <div class="profile-column">
+              <!-- Información laboral -->
+              <div class="employee-details">
+                <!-- Modo visualización -->
+                <div *ngIf="!editMode" class="details-section">
+                  <h4 class="section-title">Información Laboral</h4>
+                  
+                  <div class="details-grid">
+                    <div class="detail-item">
+                      <span class="detail-label">Departamento:</span>
+                      <span class="detail-value">{{ empleado.Departamento }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Puesto:</span>
+                      <span class="detail-value">{{ empleado.Puesto }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Modo edición -->
+                <div *ngIf="editMode" class="edit-section">
+                  <h4 class="section-title">Información Laboral</h4>
+                  
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label for="departamento">Departamento</label>
+                      <input id="departamento" type="text" [(ngModel)]="empleado.Departamento" disabled class="form-control form-control-disabled">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="puesto">Puesto</label>
+                      <input id="puesto" type="text" [(ngModel)]="empleado.Puesto" disabled class="form-control form-control-disabled">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dirección -->
+              <div class="employee-details">
+                <!-- Modo visualización -->
+                <div *ngIf="!editMode" class="details-section">
+                  <h4 class="section-title">Dirección</h4>
+                  
+                  <div class="address-display">
+                    <p>
+                      {{ empleado.Calle }} {{ empleado.NumeroExterior }}
+                      {{ empleado.NumeroInterior ? ', Int. ' + empleado.NumeroInterior : '' }}
+                    </p>
+                    <p>Col. {{ empleado.Colonia }}</p>
+                    <p>{{ empleado.CodigoPostal }}, {{ empleado.Ciudad }}</p>
+                  </div>
+                </div>
+
+                <!-- Modo edición -->
+                <div *ngIf="editMode" class="edit-section">
+                  <h4 class="section-title">Dirección</h4>
+                  
+                  <div class="form-grid">
+                    <div class="form-group form-group-lg">
+                      <label for="calle">Calle</label>
+                      <input id="calle" type="text" [(ngModel)]="empleado.Calle" class="form-control">
+                    </div>
+                    
+                    <div class="form-group form-group-sm">
+                      <label for="numExt">Número Ext.</label>
+                      <input id="numExt" type="text" [(ngModel)]="empleado.NumeroExterior" class="form-control">
+                    </div>
+                    
+                    <div class="form-group form-group-sm">
+                      <label for="numInt">Número Int.</label>
+                      <input id="numInt" type="text" [(ngModel)]="empleado.NumeroInterior" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="colonia">Colonia</label>
+                      <input id="colonia" type="text" [(ngModel)]="empleado.Colonia" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="cp">Código Postal</label>
+                      <input id="cp" type="text" [(ngModel)]="empleado.CodigoPostal" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="ciudad">Ciudad</label>
+                      <input id="ciudad" type="text" [(ngModel)]="empleado.Ciudad" class="form-control">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tarjeta de información de contacto -->
+      <section class="card">
+        <div class="card-header">
+          <h3>
+            <i class="material-icons">contact_phone</i>
+            Información de Contacto
+          </h3>
+        </div>
+
+        <div class="card-body">
+          <div class="contact-container">
+            <!-- Teléfonos -->
+            <div class="contact-section">
+              <div class="section-header">
+                <h4 class="section-title">Teléfonos</h4>
+                <button *ngIf="editMode" type="button" class="btn-add" (click)="addTelefono()"> 
+                 <i class="material-icons">add</i>
+                  <span>Agregar</span>
+                </button>
+              </div>
+
+              <!-- Lista de teléfonos (modo vista) -->
+              <div *ngIf="!editMode" class="contact-list">
+                <div *ngIf="empleado?.Telefonos && empleado.Telefonos.length > 0" class="contact-items">
+                  <div *ngFor="let telefono of empleado.Telefonos" class="contact-item">
+                    <i class="material-icons">phone</i>
+                    <span>{{ telefono.Lada }} {{ telefono.Numero }}</span>
+                  </div>
+                </div>
+                <div *ngIf="!empleado?.Telefonos || empleado.Telefonos.length === 0" class="empty-contact">
+                  No hay teléfonos registrados
+                </div>
+              </div>
+
+              <!-- Edición de teléfonos (modo edición) -->
+              <div *ngIf="editMode" class="contact-edit-list">
+                <div *ngIf="!empleado?.Telefonos || empleado.Telefonos.length === 0" class="empty-contact">
+                  No hay teléfonos registrados. Haga clic en "Agregar" para añadir uno.
+                </div>
+                <div *ngFor="let telefono of empleado?.Telefonos || []; let i = index" class="contact-edit-item">
+                  <div class="contact-edit-grid">
+                    <div class="form-group">
+                      <label>Lada</label>
+                      <input type="text" [(ngModel)]="telefono.Lada" class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label>Número</label>
+                      <input type="text" [(ngModel)]="telefono.Numero" class="form-control">
+                    </div>
+                    <button class="btn btn-icon btn-danger" (click)="removeTelefono(i)" type="button">
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Correos Electrónicos -->
+            <div class="contact-section">
+              <div class="section-header">
+                <h4 class="section-title">Correos Electrónicos</h4>
+                <button *ngIf="editMode" type="button" class="btn btn-sm btn-outline" (click)="addCorreo()">                 
+                  <i class="material-icons">add</i>
+                  <span>Agregar</span>
+                </button>
+              </div>
+
+              <!-- Lista de correos (modo vista) -->
+              <div *ngIf="!editMode" class="contact-list">
+                <div *ngIf="empleado?.CorreoElectronico && empleado.CorreoElectronico.length > 0" class="contact-items">
+                  <div *ngFor="let correo of empleado.CorreoElectronico" class="contact-item">
+                    <i class="material-icons">email</i>
+                    <span>{{ correo.Direccion }}</span>
+                  </div>
+                </div>
+                <div *ngIf="!empleado?.CorreoElectronico || empleado.CorreoElectronico.length === 0" class="empty-contact">
+                  No hay correos electrónicos registrados
+                </div>
+              </div>
+
+              <!-- Edición de correos (modo edición) -->
+              <div *ngIf="editMode" class="contact-edit-list">
+                <div *ngIf="!empleado?.CorreoElectronico || empleado.CorreoElectronico.length === 0" class="empty-contact">
+                  No hay correos registrados. Haga clic en "Agregar" para añadir uno.
+                </div>
+                <div *ngFor="let correo of empleado?.CorreoElectronico || []; let i = index" class="contact-edit-item">
+                  <div class="contact-edit-grid">
+                    <div class="form-group form-group-lg">
+                      <label>Dirección de correo</label>
+                      <input type="email" [(ngModel)]="correo.Direccion" class="form-control">
+                    </div>
+                    <button class="btn btn-icon btn-danger" (click)="removeCorreo(i)" type="button">
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Tarjeta de referencias familiares -->
+      <section class="card">
+        <div class="card-header">
+          <h3>
+            <i class="material-icons">people</i>
+            Referencias Familiares
+          </h3>
+          <button *ngIf="editMode" type="button" class="btn btn-sm btn-outline" (click)="addReferencia()">
+            <i class="material-icons">add</i>
+            <span>Agregar Referencia</span>
+          </button>
+        </div>
+
+        <div class="card-body">
+          <!-- Referencia familiar (modo vista) -->
+         <!-- Referencia familiar (modo vista) -->
+<div *ngIf="!editMode" class="references-container">
+  <div *ngIf="empleado?.ReferenciaFamiliar && empleado.ReferenciaFamiliar.length > 0" class="references-list">
+    <div *ngFor="let referencia of empleado.ReferenciaFamiliar" class="reference-card">
+      <div class="reference-header">
+        <h4>{{ referencia.NombreCompleto }}</h4>
+        <span class="reference-relation">{{ referencia.Parentesco }}</span>
+      </div>
+      <div class="reference-body">
+        <!-- Teléfonos de la referencia -->
+        <div *ngIf="referencia.Telefono && referencia.Telefono.length > 0" class="reference-item">
+          <i class="material-icons">phone</i>
+          <span>{{ referencia.Telefono[0].Lada }} {{ referencia.Telefono[0].Numero }}</span>
+        </div>
+        
+        <!-- Correos de la referencia: manejo de array -->
+        <div *ngIf="isArray(referencia.CorreoElectronico) && referencia.CorreoElectronico.length > 0" class="reference-item">
+          <i class="material-icons">email</i>
+          <span>{{ referencia.CorreoElectronico[0].Direccion }}</span>
+        </div>
+        
+        <!-- Correos de la referencia: manejo de string -->
+        <div *ngIf="!isArray(referencia.CorreoElectronico) && referencia.CorreoElectronico" class="reference-item">
+          <i class="material-icons">email</i>
+          <span>{{ referencia.CorreoElectronico }}</span>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="navbar-actions">
-    <button class="logout-btn" (click)="cerrarSesion()" type="button" aria-label="Cerrar sesión">
-      <i class="material-icons">exit_to_app</i>
-      <span class="btn-text">Cerrar Sesión</span>
-    </button>
+  <div *ngIf="!empleado?.ReferenciaFamiliar || empleado.ReferenciaFamiliar.length === 0" class="empty-state-small">
+    <i class="material-icons">info</i>
+    <span>No hay referencias familiares registradas</span>
   </div>
 </div>
 
-<main class="dashboard-content">
-  <div class="dashboard-header">
-    <h1>Perfil de Empleado</h1>
-    <p>Visualización y gestión de información personal</p>
-  </div>
-
-  <!-- Loading state -->
-  <div *ngIf="!claveEmpleado" class="message-container">
-    <div class="empty-message">No se ha seleccionado ningún empleado</div>
-  </div>
-
-  <!-- Perfil del Empleado -->
-  <section class="content-section">
-    <div class="section-header">
-      <h2>Datos Personales</h2>
-    </div>
+          <!-- Edición de referencias familiares -->
+          <div *ngIf="editMode" class="references-edit-container">
+            <div *ngIf="!empleado?.ReferenciaFamiliar || empleado.ReferenciaFamiliar.length === 0" class="empty-state-small">
+              <i class="material-icons">info</i>
+              <span>No hay referencias registradas. Haga clic en "Agregar Referencia" para añadir una.</span>
+            </div>
+            
+            <div class="accordion-list">
+              <div *ngFor="let referencia of empleado?.ReferenciaFamiliar || []; let i = index" class="accordion-item">
+                <div class="accordion-header">
+                  <div class="accordion-title">
+                    <span>{{ referencia.NombreCompleto || 'Nueva referencia' }}</span>
+                    <span class="subtitle">{{ referencia.Parentesco }}</span>
+                  </div>
+                  <div class="accordion-actions">
+                    <button class="btn btn-icon btn-danger" (click)="removeReferencia(i)" type="button">
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="accordion-content">
+                  <div class="form-grid">
+                    <div class="form-group form-group-lg">
+                      <label>Nombre Completo</label>
+                      <input type="text" [(ngModel)]="referencia.NombreCompleto" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>Parentesco</label>
+                      <input type="text" [(ngModel)]="referencia.Parentesco" class="form-control">
+                    </div>
+                    
+                    <!-- Teléfono de la referencia -->
+                    <div class="nested-form-section">
+                      <h5>Teléfono</h5>
+                      <div *ngIf="!referencia.Telefono || referencia.Telefono.length === 0" class="form-action">
+                        <button type="button" class="btn-add btn-sm" (click)="addTelefonoReferencia(i)">
+                          <i class="material-icons">add_circle</i> Agregar teléfono
+                        </button>
+                      </div>
+                      
+                      <div *ngFor="let tel of referencia.Telefono || []; let j = index" class="nested-form-grid">
+                        <div class="form-group">
+                          <label>Lada</label>
+                          <input type="text" [(ngModel)]="tel.Lada" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>Número</label>
+                          <input type="text" [(ngModel)]="tel.Numero" class="form-control">
+                        </div>
+                        <button *ngIf="j > 0" class="btn btn-icon btn-sm btn-danger" (click)="referencia.Telefono.splice(j, 1)" type="button">
+                          <i class="material-icons">remove_circle</i>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <!-- Correo de la referencia -->
+                    <div class="nested-form-section">
+                      <h5>Correo Electrónico</h5>
+                      <div *ngIf="!referencia.CorreoElectronico || referencia.CorreoElectronico.length === 0" class="form-action">
+                        <button type="button" class="btn-add btn-sm" (click)="addCorreoReferencia(i)">
+                          <i class="material-icons">add_circle</i> Agregar correo
+                        </button>
+                      </div>
+                      
+                      <div *ngFor="let correo of referencia.CorreoElectronico || []; let j = index" class="nested-form-grid">
+                        <div class="form-group form-group-lg">
+                          <label>Dirección</label>
+                          <input type="email" [(ngModel)]="correo.Direccion" class="form-control">
+                        </div>
+                        <button *ngIf="j > 0" class="btn btn-icon btn-sm btn-danger" (click)="referencia.CorreoElectronico.splice(j, 1)" type="button">
+                          <i class="material-icons">remove_circle</i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Tarjeta de cursos tomados -->
+     <!-- Tarjeta de cursos tomados -->
+<section class="card">
+  <div class="card-header">
+    <h3>
+      <i class="material-icons">school</i>
+      Cursos Tomados
+    </h3>
     
-    <div *ngIf="loading.perfil" class="loading">
-      <i class="material-icons">refresh</i> Cargando perfil...
-    </div>
+    <!-- Botón para agregar curso (visible cuando no está cargando y no se está mostrando el formulario) -->
+    <button *ngIf="!loading.cursos && !showCursoForm" type="button" class="btn-add" (click)="toggleCursoForm()">
+      <i class="material-icons">add</i>
+      <span>Agregar Curso</span>
+    </button>
     
-    <div *ngIf="error.perfil" class="error-message">
-      <i class="material-icons">error_outline</i> {{ error.perfil }}
-    </div>
-    
-    <div *ngIf="empleado && !loading.perfil" class="profile-data">
-      <div class="profile-photo">
-        <!-- Imagen con manejo de errores -->
-        <img [src]="empleado.Foto || defaultProfileImage" 
-             alt="Foto de perfil" 
-             (error)="handleImageError($event)">
+    <!-- Indicadores de estado -->
+    <div class="status-indicators">
+      <div *ngIf="loading.cursos" class="loading-indicator">
+        <div class="loading-spinner small"></div>
+        <span>Cargando...</span>
       </div>
-      <div class="profile-info">
-        <div class="info-group">
-          <p><strong>Clave:</strong> {{ empleado.ClaveEmpleado }}</p>
-          <p><strong>Nombre:</strong> {{ empleado.Nombre }} {{ empleado.ApellidoPaterno }} {{ empleado.ApellidoMaterno }}</p>
-          <p><strong>RFC:</strong> {{ empleado.RFC }}</p>
-          <p><strong>Fecha de Nacimiento:</strong> {{ empleado.FechaNacimiento | date }}</p>
-          <p><strong>Sexo:</strong> {{ empleado.Sexo }}</p>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error.cursos" class="alert alert-error card-message">
+    <i class="material-icons">error_outline</i>
+    <span>{{ error.cursos }}</span>
+  </div>
+
+  <!-- Formulario para agregar nuevo curso -->
+  <div *ngIf="showCursoForm" class="card-body curso-form-container">
+    <h4 class="section-title">Agregar Nuevo Curso</h4>
+    
+    <form [formGroup]="cursoForm" (ngSubmit)="guardarCurso()" class="curso-form">
+      <div class="form-grid">
+        <div class="form-group form-group-lg">
+          <label for="nombrecurso">Nombre del Curso</label>
+          <input id="nombrecurso" type="text" formControlName="nombrecurso" class="form-control">
+          <div *ngIf="cursoForm.controls['nombrecurso'].invalid && cursoForm.controls['nombrecurso'].touched" class="form-error">
+            Nombre del curso es requerido
+          </div>
         </div>
         
-        <div class="info-group">
-          <p><strong>Dirección:</strong> {{ empleado.Calle }} {{ empleado.NumeroExterior }}, 
-            {{ empleado.NumeroInterior ? 'Int. ' + empleado.NumeroInterior + ', ' : '' }}
-            {{ empleado.Colonia }}, {{ empleado.CodigoPostal }}, {{ empleado.Ciudad }}</p>
-          <p><strong>Departamento:</strong> {{ empleado.Departamento }}</p>
-          <p><strong>Puesto:</strong> {{ empleado.Puesto }}</p>
+        <div class="form-group">
+          <label for="fechainicio">Fecha de Inicio</label>
+          <input id="fechainicio" type="date" formControlName="fechainicio" class="form-control">
+          <div *ngIf="cursoForm.controls['fechainicio'].invalid && cursoForm.controls['fechainicio'].touched" class="form-error">
+            Fecha de inicio es requerida
+          </div>
         </div>
         
-        <div *ngIf="empleado.Telefonos && empleado.Telefonos.length > 0" class="info-group">
-          <p><strong>Teléfonos:</strong></p>
-          <ul class="data-list">
-            <li *ngFor="let telefono of empleado.Telefonos">
-              <i class="material-icons">phone</i> {{ telefono.Lada }} {{ telefono.Numero }}
-            </li>
-          </ul>
+        <div class="form-group">
+          <label for="fechatermino">Fecha de Término</label>
+          <input id="fechatermino" type="date" formControlName="fechatermino" class="form-control">
+          <div *ngIf="cursoForm.controls['fechatermino'].invalid && cursoForm.controls['fechatermino'].touched" class="form-error">
+            Fecha de término es requerida
+          </div>
         </div>
         
-        <div *ngIf="empleado.CorreoElectronico && empleado.CorreoElectronico.length > 0" class="info-group">
-          <p><strong>Correo Electrónico:</strong></p>
-          <ul class="data-list">
-            <li *ngFor="let correo of empleado.CorreoElectronico">
-              <i class="material-icons">email</i> {{ correo.Direccion }}
-            </li>
-          </ul>
-        </div>
-        
-        <div *ngIf="empleado.ReferenciaFamiliar && empleado.ReferenciaFamiliar.length > 0" class="info-group">
-          <p><strong>Referencias Familiares:</strong></p>
-          <div *ngFor="let referencia of empleado.ReferenciaFamiliar" class="referencia">
-            <p><i class="material-icons">person</i> {{ referencia.NombreCompleto }} ({{ referencia.Parentesco }})</p>
-            <p *ngIf="referencia.Telefono && referencia.Telefono.length > 0">
-              <i class="material-icons">phone</i> {{ referencia.Telefono[0].Lada }} {{ referencia.Telefono[0].Numero }}
-            </p>
-            <!-- Proteger acceso al correo con verificación de existencia segura -->
-            <p *ngIf="referencia.CorreoElectronico && 
-                     referencia.CorreoElectronico.length > 0 && 
-                     referencia.CorreoElectronico[0] && 
-                     referencia.CorreoElectronico[0].Direccion">
-              <i class="material-icons">email</i> {{ referencia.CorreoElectronico[0].Direccion }}
-            </p>
+        <div class="form-group form-group-lg">
+          <label for="descripcion">Tipo de Documento/Descripción</label>
+          <input id="descripcion" type="text" formControlName="descripcion" class="form-control">
+          <div *ngIf="cursoForm.controls['descripcion'].invalid && cursoForm.controls['descripcion'].touched" class="form-error">
+            Descripción es requerida
           </div>
         </div>
       </div>
-    </div>
-  </section>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success" [disabled]="!cursoForm.valid">
+          <i class="material-icons">save</i>
+          <span>Guardar Curso</span>
+        </button>
 
-  <!-- Cursos Tomados -->
-  <section class="content-section">
-    <div class="section-header">
-      <h2>Cursos Tomados</h2>
-    </div>
-    
-    <div *ngIf="loading.cursos" class="loading">
-      <i class="material-icons">refresh</i> Cargando cursos...
-    </div>
-    
-    <div *ngIf="error.cursos" class="error-message">
-      <i class="material-icons">error_outline</i> {{ error.cursos }}
-    </div>
-    
-    <div *ngIf="cursosTomados && cursosTomados.CursosTomados && cursosTomados.CursosTomados.length > 0 && !loading.cursos" class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Nombre del Curso</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Término</th>
-            <th>Tipo de Documento</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let curso of cursosTomados.CursosTomados">
-            <td>{{ curso.NombreCurso }}</td>
-            <td>{{ curso.FechaInicio | date }}</td>
-            <td>{{ curso.FechaTermino | date }}</td>
-            <td>
-              <span *ngFor="let doc of curso.TipoDocumento || []; let last = last">
-                {{ doc?.Descripcion || 'No especificado' }}{{ !last ? ', ' : '' }}
-              </span>
-              <span *ngIf="!curso.TipoDocumento || curso.TipoDocumento.length === 0">No especificado</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <div *ngIf="(!cursosTomados || !cursosTomados.CursosTomados || cursosTomados.CursosTomados.length === 0) && !loading.cursos" class="message-container">
-      <div class="empty-message">
-        <i class="material-icons">info</i> No hay cursos registrados para este empleado
+        <!-- Indicador de guardado -->
+<div *ngIf="loading.guardando" class="saving-overlay">
+  <div class="saving-spinner"></div>
+  <span>Guardando curso...</span>
+</div>
+
+<!-- Mensaje de éxito más visible -->
+<div *ngIf="successMessage" class="success-message-prominent">
+  <i class="material-icons">check_circle</i>
+  <span>{{ successMessage }}</span>
+</div>
+        
+        <button type="button" class="btn btn-danger" (click)="toggleCursoForm()">
+          <i class="material-icons">cancel</i>
+          <span>Cancelar</span>
+        </button>
       </div>
-    </div>
-  </section>
-
-  <!-- Actividades -->
-  <section class="content-section">
-    <div class="section-header">
-      <h2>Participación en Actividades</h2>
-    </div>
-    
-    <div *ngIf="loading.actividades" class="loading">
-      <i class="material-icons">refresh</i> Cargando actividades...
-    </div>
-    
-    <div *ngIf="error.actividades" class="error-message">
-      <i class="material-icons">error_outline</i> {{ error.actividades }}
-    </div>
-    
-    <div *ngIf="participacionActividad && participacionActividad.ParticipacionActividad && participacionActividad.ParticipacionActividad.length > 0 && !loading.actividades" class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Nombre de la Actividad</th>
-            <th>Fecha de Actividad</th>
-            <th>Estatus</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let actividad of participacionActividad.ParticipacionActividad">
-            <td>{{ actividad.NombreActividad }}</td>
-            <td>{{ actividad.FechaActividad | date }}</td>
-            <td>
-              <span [ngClass]="actividad.Estatus ? 'status-complete' : 'status-pending'">
-                {{ actividad.Estatus ? 'Completada' : 'Pendiente' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <div *ngIf="(!participacionActividad || !participacionActividad.ParticipacionActividad || participacionActividad.ParticipacionActividad.length === 0) && !loading.actividades" class="message-container">
-      <div class="empty-message">
-        <i class="material-icons">info</i> No hay actividades registradas para este empleado
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer class="footer">
-  <div class="footer-content">
-    <div class="footer-info">
-      <p>&copy; Marzo, 2025 Universidad Tecnológica del Norte de Guanajuato</p>
-      <p>Desarrollado por: Chavero Martínez Noé & Leonel Alejandro Torres Pérez</p>
-      <p>Base de Datos para Cómputo en la Nube - Unidad III</p>
-    </div>
-    <div class="footer-links">
-      <a href="#">Términos</a>
-      <a href="#">Privacidad</a>
-      <a href="#">Contacto</a>
-    </div>
+    </form>
   </div>
-</footer>
+
+  <!-- Contenido de la tarjeta cuando está cargando -->
+  <div *ngIf="loading.cursos" class="card-loading">
+    <div class="loading-skeleton"></div>
+    <div class="loading-skeleton"></div>
+  </div>
+
+  <!-- Tabla de cursos -->
+ <!-- Tabla de cursos -->
+<div *ngIf="!loading.cursos && !showCursoForm" class="card-body">
+  <div *ngIf="cursosTomados && cursosTomados?.CursosTomados && cursosTomados.CursosTomados.length > 0" class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre del Curso</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Término</th>
+          <th>Tipo de Documento</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let curso of cursosTomados?.CursosTomados">
+          <td>{{ curso?.NombreCurso || 'Sin nombre' }}</td>
+          <td>{{ curso?.FechaInicio | date:'dd/MM/yyyy' }}</td>
+          <td>{{ curso?.FechaTermino | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <ng-container *ngIf="curso?.TipoDocumento">
+              <ng-container *ngIf="isArray(curso.TipoDocumento) && curso.TipoDocumento.length > 0">
+                <span *ngFor="let doc of curso.TipoDocumento; let last = last">
+                  {{ doc?.Descripcion || 'No especificado' }}{{ !last ? ', ' : '' }}
+                </span>
+              </ng-container>
+              <ng-container *ngIf="!isArray(curso.TipoDocumento)">
+                <!-- Usar casting seguro de tipos -->
+                {{ getTipoDocumentoDescripcion(curso.TipoDocumento) || 'No especificado' }}
+              </ng-container>
+              <ng-container *ngIf="isArray(curso.TipoDocumento) && curso.TipoDocumento.length === 0">
+                No especificado
+              </ng-container>
+            </ng-container>
+            <span *ngIf="!curso?.TipoDocumento">No especificado</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Mensaje cuando no hay cursos -->
+  <div *ngIf="!cursosTomados || !cursosTomados?.CursosTomados || cursosTomados.CursosTomados.length === 0" class="empty-state-small">
+    <i class="material-icons">info</i>
+    <span>No hay cursos registrados para este empleado</span>
+  </div>
+</div>
+</section>
+
+      <!-- Tarjeta de actividades -->
+      <section class="card">
+        <div class="card-header">
+          <h3>
+            <i class="material-icons">event</i>
+            Participación en Actividades
+          </h3>
+          
+          <!-- Indicadores de estado -->
+          <div class="status-indicators">
+            <div *ngIf="loading.actividades" class="loading-indicator">
+              <div class="loading-spinner small"></div>
+              <span>Cargando...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="error.actividades" class="alert alert-error card-message">
+          <i class="material-icons">error_outline</i>
+          <span>{{ error.actividades }}</span>
+        </div>
+
+        <!-- Contenido de la tarjeta cuando está cargando -->
+        <div *ngIf="loading.actividades" class="card-loading">
+          <div class="loading-skeleton"></div>
+          <div class="loading-skeleton"></div>
+        </div>
+
+        <!-- Tabla de actividades -->
+        <div *ngIf="!loading.actividades" class="card-body">
+          <div *ngIf="participacionActividad && participacionActividad?.ParticipacionActividad && participacionActividad.ParticipacionActividad.length > 0" class="table-responsive">            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Nombre de la Actividad</th>
+                  <th>Fecha de Actividad</th>
+                  <th>Estatus</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let actividad of participacionActividad.ParticipacionActividad">
+                  <td>{{ actividad.NombreActividad }}</td>
+                  <td>{{ actividad.FechaActividad | date }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="actividad.Estatus ? 'badge-success' : 'badge-warning'">
+                      {{ actividad.Estatus ? 'Completada' : 'Pendiente' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Mensaje cuando no hay actividades -->
+          <div *ngIf="!participacionActividad || !participacionActividad?.ParticipacionActividad || participacionActividad.ParticipacionActividad.length === 0" class="empty-state-small">            <i class="material-icons">info</i>
+            <span>No hay actividades registradas para este empleado</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <p>&copy; Marzo, 2025 Universidad Tecnológica del Norte de Guanajuato</p>
+        <p>Desarrollado por: Chavero Martínez Noé & Leonel Alejandro Torres Pérez</p>
+        <p>Base de Datos para Cómputo en la Nube - Unidad III</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Términos</a>
+        <a href="#">Privacidad</a>
+        <a href="#">Contacto</a>
+      </div>
+    </div>
+  </footer>
+</div>

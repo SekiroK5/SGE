@@ -1,7 +1,42 @@
 <div class="container mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white text-center">
-      <h2>Gestión de Actividades</h2>
+    <div class="card-header bg-primary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Gestión de Actividades</h2>
+        <button class="btn btn-light" routerLink="/rh/dashboard">
+          <i class="bi bi-arrow-left"></i> Regresar al Dashboard
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="card-body bg-light border-bottom">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Buscar por nombre, clave empleado..." 
+                   [(ngModel)]="busqueda" (keyup)="aplicarFiltros()">
+            <button class="btn btn-outline-secondary" type="button" (click)="resetearFiltros()">
+              <i class="bi bi-x-circle"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select" [(ngModel)]="filtroEstatus" (change)="aplicarFiltros()">
+            <option value="todos">Todos los estados</option>
+            <option value="pendientes">Pendientes</option>
+            <option value="completadas">Completadas</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <div class="d-grid">
+            <button class="btn btn-primary" routerLink="/actividades/registro">
+              <i class="bi bi-plus-circle"></i> Nueva
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Contenido principal -->
@@ -18,25 +53,28 @@
       <div class="alert alert-danger" *ngIf="error">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
         {{ error }}
+        <button type="button" class="btn-close float-end" (click)="error = ''"></button>
       </div>
 
       <!-- Sin resultados -->
-      <div class="alert alert-info" *ngIf="!loading && !error && actividades.length === 0">
+      <div class="alert alert-info" *ngIf="!loading && !error && actividadesFiltradas.length === 0">
         <i class="bi bi-info-circle-fill me-2"></i>
-        No se encontraron actividades
+        No se encontraron actividades con los filtros aplicados
       </div>
 
       <!-- Lista de actividades -->
-      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && !error && actividades.length > 0">
-        <div class="col" *ngFor="let actividad of actividades">
-          <div class="card h-100 shadow-sm">
+      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && !error && actividadesFiltradas.length > 0">
+        <div class="col" *ngFor="let actividad of actividadesFiltradas">
+          <div class="card h-100 shadow-sm" [ngClass]="{'border-success': actividad?.ParticipacionActividad?.[0]?.Estatus === true, 'border-warning': actividad?.ParticipacionActividad?.[0]?.Estatus === false}">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0">{{ actividad?.ClaveEmpleado || 'Sin clave' }}</h5>
-              <h5 class="card-title mb-0">{{ actividad?.NombreCompletoEmpleado || 'Sin nombre' }}</h5>
+              <div>
+                <h5 class="card-title mb-0">{{ actividad?.NombreCompletoEmpleado || 'Sin nombre' }}</h5>
+                <small class="text-muted">{{ actividad?.ClaveEmpleado || 'Sin clave' }}</small>
+              </div>
               <div>
                 <span class="badge rounded-pill me-1" [ngClass]="{
                   'bg-warning text-dark': actividad?.ParticipacionActividad?.[0]?.Estatus === false,
-                  'bg-info text-white': actividad?.ParticipacionActividad?.[0]?.Estatus === true
+                  'bg-success text-white': actividad?.ParticipacionActividad?.[0]?.Estatus === true
                 }">
                   {{ actividad?.ParticipacionActividad?.[0]?.Estatus ? 'Completada' : 'Pendiente' }}
                 </span>
@@ -44,7 +82,7 @@
             </div>
 
             <div class="card-body">
-              
+              <h6 class="card-subtitle mb-2 text-muted">Actividad</h6>
               <p class="card-text">{{ actividad?.ParticipacionActividad?.[0]?.NombreActividad || 'Sin nombre de actividad' }}</p>
 
               <div class="row mt-3">
@@ -55,17 +93,28 @@
               </div>
             </div>
 
-            <div class="card-footer bg-transparent d-flex justify-content-end">
-              <button class="btn btn-outline-primary btn-sm me-2 " routerLink="/actividades/edicion">
-                <i class="bi bi-pencil-fill me-1"></i> Editar
+            <div class="card-footer bg-transparent d-flex justify-content-between">
+              <button class="btn btn-sm" 
+                      [ngClass]="actividad?.ParticipacionActividad?.[0]?.Estatus ? 'btn-outline-warning' : 'btn-outline-success'"
+                      (click)="cambiarEstado(actividad)">
+                <i class="bi" [ngClass]="actividad?.ParticipacionActividad?.[0]?.Estatus ? 'bi-arrow-counterclockwise' : 'bi-check-circle'"></i>
+                {{ actividad?.ParticipacionActividad?.[0]?.Estatus ? 'Reabrir' : 'Completar' }}
               </button>
-              <button class="btn btn-outline-danger btn-sm" (click)="eliminarActividadTomada(actividad._id)">
-                <i class="bi bi-trash-fill me-1"></i> Eliminar
-              </button>
+              
+              <div>
+                <button class="btn btn-outline-danger btn-sm" (click)="eliminarActividadTomada(actividad._id)">
+                  <i class="bi bi-trash-fill me-1"></i> Eliminar
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Footer con resumen -->
+    <div class="card-footer text-muted" *ngIf="!loading && actividadesFiltradas.length > 0">
+      Mostrando {{ actividadesFiltradas.length }} de {{ actividades.length }} actividades
     </div>
   </div>
 </div>

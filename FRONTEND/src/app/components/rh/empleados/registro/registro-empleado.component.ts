@@ -17,6 +17,37 @@ export class RegistroEmpleadoComponent implements OnInit {
   submitted = false;
   success = false;
   error = '';
+  
+  // Propiedades para la dirección
+  callesDisponibles: string[] = [];
+  coloniasDisponibles: string[] = [];
+
+  // Mapeo de códigos postales a ciudades
+  codigoPostalCiudades: { [key: string]: string } = {
+    '44100': 'Guadalajara',
+    '37000': 'León',
+    '20029': 'Aguascalientes',
+    '36010': 'Guanajuato',
+    '01089': 'Ciudad de México'
+  };
+
+  // Mapeo de códigos postales a colonias
+  codigoPostalColonias: { [key: string]: string[] } = {
+    '44100': ['Americana', 'Lafayette', 'Arcos Vallarta', 'Ladrón de Guevara', 'Italia Providencia'],
+    '37000': ['Centro', 'Coecillo', 'San Juan de Dios', 'Zona Piel', 'Arbide'],
+    '20029': ['Colinas del Río', 'Jardines de la Asunción', 'La Herradura', 'Lomas del Campestre', 'Jardines de la Concepción'],
+    '36010': ['Centro Histórico', 'San Javier', 'Pastita', 'La Presa', 'Noria Alta'],
+    '01089': ['Del Valle', 'Narvarte', 'Roma Norte', 'Condesa', 'Polanco']
+  };
+
+  // Mapeo de códigos postales a calles
+  codigoPostalCalles: { [key: string]: string[] } = {
+    '44100': ['Av. México', 'Av. Chapultepec', 'Av. Vallarta', 'Calle Juárez', 'Calle Morelos'],
+    '37000': ['Blvd. Adolfo López Mateos', 'Av. Miguel Alemán', 'Calle Madero', 'Calle Hidalgo', 'Av. Las Torres'],
+    '20029': ['Av. Convención', 'Av. Aguascalientes', 'Av. Universidad', 'Av. López Mateos', 'Calle Zaragoza'],
+    '36010': ['Calle Alonso', 'Av. Juárez', 'Calle Positos', 'Calle Sopeña', 'Calle Sangre de Cristo'],
+    '01089': ['Av. Insurgentes', 'Av. Reforma', 'Av. Revolución', 'Calle Álvaro Obregón', 'Calle Sonora']
+  };
 
   constructor(
     private formBuilder: FormBuilder,
@@ -46,6 +77,40 @@ export class RegistroEmpleadoComponent implements OnInit {
 
   ngOnInit(): void {
     // Se deja vacío intencionalmente o para futuras inicializaciones
+  }
+
+  // Método para manejar el cambio en el código postal
+  onCodigoPostalChange(event: any) {
+    const codigoPostal = event.target.value;
+    
+    if (codigoPostal) {
+      // Actualizar el campo de Ciudad con el valor correspondiente
+      const ciudad = this.codigoPostalCiudades[codigoPostal] || '';
+      this.registroForm.patchValue({
+        Ciudad: ciudad
+      });
+      
+      // Actualizar las calles disponibles para ese código postal
+      this.callesDisponibles = this.codigoPostalCalles[codigoPostal] || [];
+      
+      // Actualizar las colonias disponibles para ese código postal
+      this.coloniasDisponibles = this.codigoPostalColonias[codigoPostal] || [];
+      
+      // Resetear los campos para que el usuario seleccione una de las nuevas opciones
+      this.registroForm.patchValue({
+        Calle: '',
+        Colonia: ''
+      });
+    } else {
+      // Si no hay código postal seleccionado, limpiar los campos relacionados
+      this.registroForm.patchValue({
+        Ciudad: '',
+        Calle: '',
+        Colonia: ''
+      });
+      this.callesDisponibles = [];
+      this.coloniasDisponibles = [];
+    }
   }
 
   get f() { return this.registroForm.controls; }
@@ -213,15 +278,13 @@ export class RegistroEmpleadoComponent implements OnInit {
         console.error('Error completo:', err);
       }
     });
-  
   }
-  // Añade este método a tu componente RegistroEmpleadoComponent
 
-previewImage() {
-  // Este método se invoca cuando cambia el valor del campo Foto
-  // No necesita hacer nada adicional, ya que la imagen se actualiza automáticamente en el HTML
-  // mediante el binding: [src]="registroForm.get('Foto')?.value"
-}
+  previewImage() {
+    // Este método se invoca cuando cambia el valor del campo Foto
+    // No necesita hacer nada adicional, ya que la imagen se actualiza automáticamente en el HTML
+    // mediante el binding: [src]="registroForm.get('Foto')?.value"
+  }
 
   // Método para reiniciar el formulario correctamente incluyendo arrays
   private reiniciarFormulario() {
@@ -240,5 +303,9 @@ previewImage() {
     this.telefonosArray.push(this.crearTelefono());
     this.correosArray.push(this.crearCorreo());
     this.referenciasArray.push(this.crearReferencia());
+    
+    // Limpiar listas de calles y colonias
+    this.callesDisponibles = [];
+    this.coloniasDisponibles = [];
   }
 }

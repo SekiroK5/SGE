@@ -93,66 +93,83 @@
         </div>
         
         <!-- Sección de dirección -->
-        <div class="card mb-4">
-          <div class="card-header bg-light">
-            <h4>Dirección</h4>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="calle" class="form-label">Calle*</label>
-                <input type="text" class="form-control" id="calle" formControlName="Calle"
-                  [ngClass]="{'is-invalid': submitted && f['Calle'].errors}">
-                <div *ngIf="submitted && f['Calle'].errors" class="invalid-feedback">
-                  <div *ngIf="f['Calle'].errors['required']">La calle es requerida</div>
-                </div>
-              </div>
-              
-              <div class="col-md-3 mb-3">
-                <label for="numeroExterior" class="form-label">Número Exterior*</label>
-                <input type="text" class="form-control" id="numeroExterior" formControlName="NumeroExterior"
-                  [ngClass]="{'is-invalid': submitted && f['NumeroExterior'].errors}">
-                <div *ngIf="submitted && f['NumeroExterior'].errors" class="invalid-feedback">
-                  <div *ngIf="f['NumeroExterior'].errors['required']">El número exterior es requerido</div>
-                </div>
-              </div>
-              
-              <div class="col-md-3 mb-3">
-                <label for="numeroInterior" class="form-label">Número Interior</label>
-                <input type="text" class="form-control" id="numeroInterior" formControlName="NumeroInterior">
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label for="colonia" class="form-label">Colonia*</label>
-                <input type="text" class="form-control" id="colonia" formControlName="Colonia"
-                  [ngClass]="{'is-invalid': submitted && f['Colonia'].errors}">
-                <div *ngIf="submitted && f['Colonia'].errors" class="invalid-feedback">
-                  <div *ngIf="f['Colonia'].errors['required']">La colonia es requerida</div>
-                </div>
-              </div>
-              
-              <div class="col-md-4 mb-3">
-                <label for="codigoPostal" class="form-label">Código Postal*</label>
-                <input type="text" class="form-control" id="codigoPostal" formControlName="CodigoPostal"
-                  [ngClass]="{'is-invalid': submitted && f['CodigoPostal'].errors}">
-                <div *ngIf="submitted && f['CodigoPostal'].errors" class="invalid-feedback">
-                  <div *ngIf="f['CodigoPostal'].errors['required']">El código postal es requerido</div>
-                </div>
-              </div>
-              
-              <div class="col-md-4 mb-3">
-                <label for="ciudad" class="form-label">Ciudad*</label>
-                <input type="text" class="form-control" id="ciudad" formControlName="Ciudad"
-                  [ngClass]="{'is-invalid': submitted && f['Ciudad'].errors}">
-                <div *ngIf="submitted && f['Ciudad'].errors" class="invalid-feedback">
-                  <div *ngIf="f['Ciudad'].errors['required']">La ciudad es requerida</div>
-                </div>
-              </div>
-            </div>
-          </div>
+       <!-- Sección de dirección -->
+<div class="card mb-4">
+  <div class="card-header bg-light">
+    <h4>Dirección</h4>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="codigoPostal" class="form-label">Código Postal*</label>
+        <select class="form-select" id="codigoPostal" formControlName="CodigoPostal" 
+          (change)="onCodigoPostalChange($event)"
+          [ngClass]="{'is-invalid': submitted && f['CodigoPostal'].errors}">
+          <option value="" disabled selected>Selecciona un código postal</option>
+          <option value="44100">44100 - Guadalajara Jalisco</option>
+          <option value="37000">37000 - León Guanajuato</option>
+          <option value="20029">20029 - Aguascalientes</option>
+          <option value="36010">36010 - Guanajuato Guanajuato</option>
+          <option value="01089">01089 - Ciudad de México CDMX</option>
+        </select>
+        <div *ngIf="submitted && f['CodigoPostal'].errors" class="invalid-feedback">
+          <div *ngIf="f['CodigoPostal'].errors['required']">El código postal es requerido</div>
         </div>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <label for="ciudad" class="form-label">Ciudad*</label>
+        <input type="text" class="form-control" id="ciudad" formControlName="Ciudad" readonly
+          [ngClass]="{'is-invalid': submitted && f['Ciudad'].errors}">
+        <div *ngIf="submitted && f['Ciudad'].errors" class="invalid-feedback">
+          <div *ngIf="f['Ciudad'].errors['required']">La ciudad es requerida</div>
+        </div>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <label for="colonia" class="form-label">Colonia*</label>
+        <select *ngIf="coloniasDisponibles.length > 0" class="form-select" id="colonia" formControlName="Colonia"
+          [ngClass]="{'is-invalid': submitted && f['Colonia'].errors}">
+          <option value="" disabled selected>Selecciona una colonia</option>
+          <option *ngFor="let colonia of coloniasDisponibles" [value]="colonia">{{colonia}}</option>
+        </select>
+        <input *ngIf="coloniasDisponibles.length === 0" type="text" class="form-control" id="colonia" formControlName="Colonia"
+          [ngClass]="{'is-invalid': submitted && f['Colonia'].errors}">
+        <div *ngIf="submitted && f['Colonia'].errors" class="invalid-feedback">
+          <div *ngIf="f['Colonia'].errors['required']">La colonia es requerida</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="calle" class="form-label">Calle*</label>
+        <select class="form-select" id="calle" formControlName="Calle"
+          [ngClass]="{'is-invalid': submitted && f['Calle'].errors}">
+          <option value="" disabled selected>Selecciona una calle</option>
+          <option *ngFor="let calle of callesDisponibles" [value]="calle">{{calle}}</option>
+        </select>
+        <div *ngIf="submitted && f['Calle'].errors" class="invalid-feedback">
+          <div *ngIf="f['Calle'].errors['required']">La calle es requerida</div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <label for="numeroExterior" class="form-label">Número Exterior*</label>
+        <input type="text" class="form-control" id="numeroExterior" formControlName="NumeroExterior"
+          [ngClass]="{'is-invalid': submitted && f['NumeroExterior'].errors}">
+        <div *ngIf="submitted && f['NumeroExterior'].errors" class="invalid-feedback">
+          <div *ngIf="f['NumeroExterior'].errors['required']">El número exterior es requerido</div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <label for="numeroInterior" class="form-label">Número Interior</label>
+        <input type="text" class="form-control" id="numeroInterior" formControlName="NumeroInterior">
+      </div>
+    </div>
+  </div>
+</div>
         
         <!-- Sección de información laboral -->
         <div class="card mb-4">
@@ -166,7 +183,7 @@
                 <select class="form-select" id="departamento" formControlName="Departamento"
                   [ngClass]="{'is-invalid': submitted && f['Departamento'].errors}">
                   <option value="">Seleccionar</option>
-                  <option value="Recursos Humanos">Recursos Humanos</option>
+                  <option value="RH">Recursos Humanos</option>
                   <option value="Ventas">Ventas</option>
                   <option value="Marketing">Marketing</option>
                   <option value="Finanzas">Finanzas</option>
