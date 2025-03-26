@@ -425,33 +425,40 @@
 
         <div class="card-body">
           <!-- Referencia familiar (modo vista) -->
-          <div *ngIf="!editMode" class="references-container">
-            <div *ngIf="empleado?.ReferenciaFamiliar && empleado.ReferenciaFamiliar.length > 0" class="references-list">
-              <div *ngFor="let referencia of empleado.ReferenciaFamiliar" class="reference-card">
-                <div class="reference-header">
-                  <h4>{{ referencia.NombreCompleto }}</h4>
-                  <span class="reference-relation">{{ referencia.Parentesco }}</span>
-                </div>
-                <div class="reference-body">
-                  <div *ngIf="referencia.Telefono && referencia.Telefono.length > 0" class="reference-item">
-                    <i class="material-icons">phone</i>
-                    <span>{{ referencia.Telefono[0].Lada }} {{ referencia.Telefono[0].Numero }}</span>
-                  </div>
-                  <div *ngIf="referencia.CorreoElectronico && 
-                      referencia.CorreoElectronico.length > 0 && 
-                      referencia.CorreoElectronico[0] && 
-                      referencia.CorreoElectronico[0].Direccion" class="reference-item">
-                    <i class="material-icons">email</i>
-                    <span>{{ referencia.CorreoElectronico[0].Direccion }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="!empleado?.ReferenciaFamiliar || empleado.ReferenciaFamiliar.length === 0" class="empty-state-small">
-              <i class="material-icons">info</i>
-              <span>No hay referencias familiares registradas</span>
-            </div>
-          </div>
+         <!-- Referencia familiar (modo vista) -->
+<div *ngIf="!editMode" class="references-container">
+  <div *ngIf="empleado?.ReferenciaFamiliar && empleado.ReferenciaFamiliar.length > 0" class="references-list">
+    <div *ngFor="let referencia of empleado.ReferenciaFamiliar" class="reference-card">
+      <div class="reference-header">
+        <h4>{{ referencia.NombreCompleto }}</h4>
+        <span class="reference-relation">{{ referencia.Parentesco }}</span>
+      </div>
+      <div class="reference-body">
+        <!-- Teléfonos de la referencia -->
+        <div *ngIf="referencia.Telefono && referencia.Telefono.length > 0" class="reference-item">
+          <i class="material-icons">phone</i>
+          <span>{{ referencia.Telefono[0].Lada }} {{ referencia.Telefono[0].Numero }}</span>
+        </div>
+        
+        <!-- Correos de la referencia: manejo de array -->
+        <div *ngIf="isArray(referencia.CorreoElectronico) && referencia.CorreoElectronico.length > 0" class="reference-item">
+          <i class="material-icons">email</i>
+          <span>{{ referencia.CorreoElectronico[0].Direccion }}</span>
+        </div>
+        
+        <!-- Correos de la referencia: manejo de string -->
+        <div *ngIf="!isArray(referencia.CorreoElectronico) && referencia.CorreoElectronico" class="reference-item">
+          <i class="material-icons">email</i>
+          <span>{{ referencia.CorreoElectronico }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!empleado?.ReferenciaFamiliar || empleado.ReferenciaFamiliar.length === 0" class="empty-state-small">
+    <i class="material-icons">info</i>
+    <span>No hay referencias familiares registradas</span>
+  </div>
+</div>
 
           <!-- Edición de referencias familiares -->
           <div *ngIf="editMode" class="references-edit-container">
@@ -610,6 +617,18 @@
           <i class="material-icons">save</i>
           <span>Guardar Curso</span>
         </button>
+
+        <!-- Indicador de guardado -->
+<div *ngIf="loading.guardando" class="saving-overlay">
+  <div class="saving-spinner"></div>
+  <span>Guardando curso...</span>
+</div>
+
+<!-- Mensaje de éxito más visible -->
+<div *ngIf="successMessage" class="success-message-prominent">
+  <i class="material-icons">check_circle</i>
+  <span>{{ successMessage }}</span>
+</div>
         
         <button type="button" class="btn btn-danger" (click)="toggleCursoForm()">
           <i class="material-icons">cancel</i>
@@ -626,39 +645,51 @@
   </div>
 
   <!-- Tabla de cursos -->
-  <div *ngIf="!loading.cursos && !showCursoForm" class="card-body">
-    <div *ngIf="cursosTomados && cursosTomados?.CursosTomados && cursosTomados.CursosTomados.length > 0" class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Nombre del Curso</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Término</th>
-            <th>Tipo de Documento</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let curso of cursosTomados?.CursosTomados">
-            <td>{{ curso.NombreCurso }}</td>
-            <td>{{ curso.FechaInicio | date }}</td>
-            <td>{{ curso.FechaTermino | date }}</td>
-            <td>
-              <span *ngFor="let doc of curso.TipoDocumento || []; let last = last">
-                {{ doc?.Descripcion || 'No especificado' }}{{ !last ? ', ' : '' }}
-              </span>
-              <span *ngIf="!curso.TipoDocumento || curso.TipoDocumento.length === 0">No especificado</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <!-- Mensaje cuando no hay cursos -->
-    <div *ngIf="!cursosTomados || !cursosTomados?.CursosTomados || cursosTomados.CursosTomados.length === 0" class="empty-state-small">
-      <i class="material-icons">info</i>
-      <span>No hay cursos registrados para este empleado</span>
-    </div>
+ <!-- Tabla de cursos -->
+<div *ngIf="!loading.cursos && !showCursoForm" class="card-body">
+  <div *ngIf="cursosTomados && cursosTomados?.CursosTomados && cursosTomados.CursosTomados.length > 0" class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre del Curso</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Término</th>
+          <th>Tipo de Documento</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let curso of cursosTomados?.CursosTomados">
+          <td>{{ curso?.NombreCurso || 'Sin nombre' }}</td>
+          <td>{{ curso?.FechaInicio | date:'dd/MM/yyyy' }}</td>
+          <td>{{ curso?.FechaTermino | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <ng-container *ngIf="curso?.TipoDocumento">
+              <ng-container *ngIf="isArray(curso.TipoDocumento) && curso.TipoDocumento.length > 0">
+                <span *ngFor="let doc of curso.TipoDocumento; let last = last">
+                  {{ doc?.Descripcion || 'No especificado' }}{{ !last ? ', ' : '' }}
+                </span>
+              </ng-container>
+              <ng-container *ngIf="!isArray(curso.TipoDocumento)">
+                <!-- Usar casting seguro de tipos -->
+                {{ getTipoDocumentoDescripcion(curso.TipoDocumento) || 'No especificado' }}
+              </ng-container>
+              <ng-container *ngIf="isArray(curso.TipoDocumento) && curso.TipoDocumento.length === 0">
+                No especificado
+              </ng-container>
+            </ng-container>
+            <span *ngIf="!curso?.TipoDocumento">No especificado</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+  
+  <!-- Mensaje cuando no hay cursos -->
+  <div *ngIf="!cursosTomados || !cursosTomados?.CursosTomados || cursosTomados.CursosTomados.length === 0" class="empty-state-small">
+    <i class="material-icons">info</i>
+    <span>No hay cursos registrados para este empleado</span>
+  </div>
+</div>
 </section>
 
       <!-- Tarjeta de actividades -->

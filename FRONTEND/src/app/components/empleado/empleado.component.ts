@@ -114,7 +114,24 @@ export class EmpleadoComponent implements OnInit {
     this.loading.cursos = true;
     this.cursosTomadosService.getCursosTomadosbyId(id).subscribe({
       next: (data: CursosTomados) => {
+        console.log('Datos originales recibidos:', data);
         this.cursosTomados = data;
+        
+        // Asegurémonos de que CursosTomados sea un array
+        if (this.cursosTomados) {
+          if (!this.cursosTomados.CursosTomados) {
+            this.cursosTomados.CursosTomados = [];
+            console.log('CursosTomados era nulo, creado array vacío');
+          } 
+          else if (!Array.isArray(this.cursosTomados.CursosTomados)) {
+            console.log('CursosTomados no es un array, convirtiendo...');
+            console.log('Tipo:', typeof this.cursosTomados.CursosTomados);
+            // Si es un objeto único, ponerlo en un array
+            this.cursosTomados.CursosTomados = [this.cursosTomados.CursosTomados];
+          }
+        }
+        
+        console.log('Cursos formateados para mostrar:', this.cursosTomados);
         this.loading.cursos = false;
       },
       error: (err: any) => {
@@ -140,6 +157,17 @@ export class EmpleadoComponent implements OnInit {
     });
   }
 
+  // Método auxiliar para acceder a la descripción de TipoDocumento
+getTipoDocumentoDescripcion(tipoDoc: any): string {
+  if (!tipoDoc) return '';
+  
+  // Si es un objeto simple
+  if (typeof tipoDoc === 'object' && !Array.isArray(tipoDoc) && tipoDoc.Descripcion) {
+    return tipoDoc.Descripcion;
+  }
+  
+  return '';
+}
   // Método para alternar el modo de edición
   toggleEditMode(): void {
     if (this.editMode) {
@@ -173,10 +201,11 @@ export class EmpleadoComponent implements OnInit {
       return;
     }
     
-    // Asignar la clave a una constante verificada para evitar errores de tipo
+    // Mostrar un indicador de carga mientras se guarda
+    this.loading.guardando = true;
+    
     const claveEmpleado = this.empleado.ClaveEmpleado as string;
     
-    // Usar esta constante en vez de acceder directamente a la propiedad
     const nuevoCursoTomado: CursosTomados = {
       ClaveEmpleado: claveEmpleado,
       NombreCompletoEmpleado: `${this.empleado.Nombre || ''} ${this.empleado.ApellidoPaterno || ''} ${this.empleado.ApellidoMaterno || ''}`.trim(),
@@ -190,24 +219,59 @@ export class EmpleadoComponent implements OnInit {
       }]
     };
     
-    // Y usar la misma constante cuando creamos cursosTomados
     this.cursosTomadosService.saveCursoTomado(nuevoCursoTomado).subscribe({
       next: (response: any) => {
+        console.log('Curso guardado exitosamente:', response);
+        
         // Actualizar la lista de cursos
         if (this.cursosTomados && this.cursosTomados.CursosTomados) {
           this.cursosTomados.CursosTomados.push(nuevoCursoTomado.CursosTomados[0]);
         } else {
           this.cursosTomados = {
-            ClaveEmpleado: claveEmpleado, // Usar la constante aquí también
+            ClaveEmpleado: claveEmpleado,
             NombreCompletoEmpleado: nuevoCursoTomado.NombreCompletoEmpleado,
             CursosTomados: [...nuevoCursoTomado.CursosTomados]
           };
         }
         
-        // Resto del código...
+        // Mostrar mensaje de éxito muy visible
+        this.successMessage = '¡Curso agregado correctamente!';
+        
+        // Desactivar indicador de carga
+        this.loading.guardando = false;
+        
+        // Cerrar el formulario
+        this.showCursoForm = false;
+        
+        // Resetear el formulario
+        this.cursoForm.reset();
+        
+        // Quitar el mensaje después de un tiempo
+        setTimeout(() => {
+          this.successMessage = null;
+        }, 5000);
+        
+        // Opcionalmente, desplazar la pantalla al mensaje o a la lista de cursos
+        setTimeout(() => {
+          const cursosList = document.querySelector('.table-responsive');
+          if (cursosList) {
+            cursosList.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
       },
       error: (err: any) => {
-        // Manejo de errores...
+        console.error('Error al guardar el curso:', err);
+        
+        // Mostrar mensaje de error visible
+        this.error.guardado = 'Error al guardar el curso: ' + (err.message || 'Error de conexión');
+        
+        // Desactivar indicador de carga
+        this.loading.guardando = false;
+        
+        // Quitar el mensaje de error después de un tiempo
+        setTimeout(() => {
+          this.error.guardado = null;
+        }, 5000);
       }
     });
   }
