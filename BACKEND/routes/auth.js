@@ -31,7 +31,7 @@ router.get("/buscar", authController.getEmpleadoByFilters);
 router.post("/cursosTomados/registrar-cursos", validateRegisterCursos, authControllerCursos.registrarCurso);
 router.get('/cursosTomados', authControllerCursos.getCursosTomados);
 router.get('/cursosTomados/:claveEmpleado', authControllerCursos.getCursoTomadoById);
-router.put('/cursosTomados/:id', verifyToken, authControllerCursos.updateCursoTomado);
+router.put('/cursosTomados/:id', authControllerCursos.updateCursoTomado);
 router.delete('/cursosTomados/:id', authControllerCursos.deleteCursoTomado);
 
 // Participación en actividad

@@ -1,7 +1,25 @@
 <div class="container mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white text-center">
-      <h2>Gestión de Cursos</h2>
+    <div class="card-header bg-primary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Gestión de Cursos</h2>
+        <button class="btn btn-light" (click)="irAlDashboard()">
+          <i class="bi bi-arrow-left"></i> Regresar al Dashboard
+        </button>
+      </div>
+    </div>
+
+    <!-- Mensajes de éxito y error -->
+    <div class="alert alert-success alert-dismissible fade show m-3" *ngIf="successMessage">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      {{ successMessage }}
+      <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+    </div>
+
+    <div class="alert alert-danger alert-dismissible fade show m-3" *ngIf="error">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
     </div>
 
     <!-- Contenido principal -->
@@ -14,12 +32,6 @@
         <p class="mt-2">Cargando Cursos...</p>
       </div>
 
-      <!-- Mensaje de error -->
-      <div class="alert alert-danger" *ngIf="error">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        {{ error }}
-      </div>
-
       <!-- Sin resultados -->
       <div class="alert alert-info" *ngIf="!loading && !error && cursostomados.length === 0">
         <i class="bi bi-info-circle-fill me-2"></i>
@@ -27,49 +39,101 @@
       </div>
 
       <!-- Lista de Cursos Tomados -->
-      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && !error && cursostomados.length > 0">
+      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && cursostomados.length > 0">
         <div class="col" *ngFor="let ctomado of cursostomados">
-          <div class="card h-100 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0">{{ ctomado.ClaveEmpleado }}</h5>
-              <h5 class="card-title mb-0">{{ ctomado.NombreCompletoEmpleado }}</h5>
+          <!-- Formulario de edición de fechas -->
+          <div class="card h-100 shadow-sm" *ngIf="cursoEditando && cursoEditando._id === ctomado._id">
+            <div class="card-header bg-info text-white">
+              <h5 class="card-title mb-0">Editar Fechas del Curso</h5>
+            </div>
+            
+            <div class="card-body">
+              <form>
+                <div class="mb-3">
+                  <label for="nombreCurso" class="form-label">Nombre del Curso:</label>
+                  <input type="text" class="form-control" id="nombreCurso" 
+                         [value]="ctomado.CursosTomados && ctomado.CursosTomados.length > 0 ? ctomado.CursosTomados[0].NombreCurso : 'Sin nombre'" disabled>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                  <input type="date" class="form-control" id="fechaInicio" 
+                         [(ngModel)]="nuevaFechaInicio" name="fechaInicio">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="fechaTermino" class="form-label">Fecha de Término:</label>
+                  <input type="date" class="form-control" id="fechaTermino" 
+                         [(ngModel)]="nuevaFechaTermino" name="fechaTermino">
+                </div>
+              </form>
+            </div>
+            
+            <div class="card-footer bg-transparent d-flex justify-content-end">
+              <button class="btn btn-secondary me-2" (click)="cancelarEdicion()">
+                <i class="bi bi-x-circle me-1"></i> Cancelar
+              </button>
+              <button class="btn btn-success" (click)="guardarFechas()">
+                <i class="bi bi-check-circle me-1"></i> Guardar
+              </button>
+            </div>
+          </div>
+
+          <!-- Vista normal del curso -->
+          <div class="card h-100 shadow-sm" *ngIf="!cursoEditando || cursoEditando._id !== ctomado._id">
+            <div class="card-header d-flex justify-content-between align-items-center"
+                 [ngClass]="{'bg-light text-muted': esCursoEditado(ctomado._id)}">
+              <div>
+                <h5 class="card-title mb-0">{{ ctomado.NombreCompletoEmpleado }}</h5>
+                <small class="text-muted">{{ ctomado.ClaveEmpleado }}</small>
+              </div>
+              <div *ngIf="esCursoEditado(ctomado._id)" class="badge bg-secondary">Editado</div>
             </div>
 
             <div class="card-body">
               <!-- Mostrar Nombre del Curso -->
-              <h5 class="card-title mb-0">
-                Nombre del Curso: {{ ctomado.CursosTomados[0].NombreCurso || 'No disponible' }}
+              <h5 class="card-title" *ngIf="ctomado.CursosTomados && ctomado.CursosTomados.length > 0">
+                {{ ctomado.CursosTomados[0].NombreCurso || 'No disponible' }}
+              </h5>
+              <h5 class="card-title text-muted" *ngIf="!ctomado.CursosTomados || ctomado.CursosTomados.length === 0">
+                Información de curso no disponible
               </h5>
 
               <!-- Mostrar Descripción del Tipo de Documento -->
-              <h5 class="card-title mb-0">
-                Descripción: {{ ctomado.CursosTomados[0].TipoDocumento[0].Descripcion }} 
-              </h5>
+              <p class="card-text" *ngIf="ctomado.CursosTomados && ctomado.CursosTomados.length > 0 && 
+                                         ctomado.CursosTomados[0].TipoDocumento && 
+                                         ctomado.CursosTomados[0].TipoDocumento.length > 0">
+                <strong>Descripción:</strong> {{ ctomado.CursosTomados[0].TipoDocumento[0].Descripcion }}
+              </p>
+              <p class="card-text text-muted" *ngIf="!ctomado.CursosTomados || 
+                                                   ctomado.CursosTomados.length === 0 || 
+                                                   !ctomado.CursosTomados[0].TipoDocumento || 
+                                                   ctomado.CursosTomados[0].TipoDocumento.length === 0">
+                <strong>Descripción:</strong> No disponible
+              </p>
 
-              <div class="row mt-3">
-                <div class="col-6">
-                  <small class="text-muted">Fecha de Inicio:</small>
-                  <p class="mb-0">
-                    {{ ctomado.CursosTomados[0].FechaInicio | date: 'yyyy/MM/dd'  }}
-                  </p>
-                  
-                  
-                
-              </div>
-              <div class="col-6">
-                <small class="text-muted">Fecha de Termino:</small>
-                <p class="mb-0">
-                  {{ ctomado.CursosTomados[0].FechaTermino | date: 'yyyy/MM/dd' }}
-                </p>
-                
+              <div class="row mt-3" *ngIf="ctomado.CursosTomados && ctomado.CursosTomados.length > 0">
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <strong class="text-muted">Fecha de Inicio:</strong>
+                    <p>{{ ctomado.CursosTomados[0].FechaInicio | date: 'yyyy/MM/dd' }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <strong class="text-muted">Fecha de Término:</strong>
+                    <p>{{ ctomado.CursosTomados[0].FechaTermino | date: 'yyyy/MM/dd' }}</p>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div class="card-footer bg-transparent d-flex justify-content-end">
-              <button class="btn btn-outline-primary btn-sm me-2" routerLink="/cursos/edicion">
-                <i class="bi bi-pencil-fill me-1"></i> Editar
-                
-                
+              <button class="btn btn-outline-primary btn-sm me-2" 
+                      (click)="editarFechas(ctomado)"
+                      [disabled]="esCursoEditado(ctomado._id) || !ctomado.CursosTomados || ctomado.CursosTomados.length === 0">
+                <i class="bi bi-calendar-date me-1"></i> 
+                {{ esCursoEditado(ctomado._id) ? 'Ya Editado' : 'Editar Fechas' }}
               </button>
               <button class="btn btn-outline-danger btn-sm" (click)="eliminarCurso(ctomado._id)">
                 <i class="bi bi-trash-fill me-1"></i> Eliminar

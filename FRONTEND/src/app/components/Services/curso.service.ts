@@ -11,17 +11,14 @@ export interface CursosTomados {
 }
 
 export interface TipoDocumento {
-  
   Descripcion: string;
-  
 }
+
 export interface CursosTomado{
   NombreCurso: string;
   FechaInicio: string;
   FechaTermino: string;
   TipoDocumento: TipoDocumento[];
- 
-
 }
 
 @Injectable({
@@ -57,23 +54,32 @@ export class CursosTomadosService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
   
-  
+  // Método específico para actualizar sólo las fechas de un curso
+ // Método específico para actualizar sólo las fechas de un curso
+actualizarFechasCurso(id: string, claveEmpleado: string, nombreCompleto: string, 
+  fechaInicio: string, fechaTermino: string): Observable<any> {
+// Creamos un objeto que contiene solo los datos necesarios para actualizar las fechas
+const updateData = {
+_id: id,
+ClaveEmpleado: claveEmpleado,
+NombreCompletoEmpleado: nombreCompleto,
+actualizarFechas: true, // Indicador para el backend de que solo actualizamos fechas
+CursosTomados: [{
+FechaInicio: fechaInicio,
+FechaTermino: fechaTermino
+}]
+};
+
+return this.http.put<any>(`${this.apiUrl}/${id}`, updateData);
+}
+
   saveCursoTomado(curso: CursosTomados): Observable<any> {
-
     const httpOptions = {
-
       headers: new HttpHeaders({
-
         'Content-Type': 'application/json'
-
       })
-
     };
-
     
-
     return this.http.post<any>(`${this.apiUrl}/registrar-cursos`, curso, httpOptions);
-
   }
-
 }

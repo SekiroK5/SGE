@@ -61,8 +61,8 @@
         <label for="estatus" class="form-label">Estatus:</label>
         <select id="estatus" formControlName="estatus"  
                   [ngClass]="{ 'invalid': submitted && f['estatus'].errors }">
-          <option [value]="true">Activo</option>
-          <option [value]="false">Inactivo</option>
+          <option [value]="true">Completada</option>
+          <option [value]="false">Pendiente</option>
         </select>
         <div *ngIf="formulario.get('estatus')?.touched && formulario.get('estatus')?.invalid" class="text-danger">
           Se necesita un Estatus. Seleccione uno

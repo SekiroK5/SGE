@@ -285,3 +285,161 @@ img.img-thumbnail {
   margin-top: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+/* Mejoras específicas para el contraste de botones */
+.btn {
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #ffffff; /* Asegurar que el texto de los botones sea blanco */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Agregar sombra al texto para mejorar legibilidad */
+}
+
+/* Botón principal */
+.btn-primary {
+  background-color: #2563eb; /* Azul más intenso */
+  border-color: #2563eb;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón secundario */
+.btn-secondary {
+  background-color: #64748b; /* Gris más oscuro */
+  border-color: #64748b;
+  color: white;
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+  background-color: #475569;
+  border-color: #475569;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón de peligro */
+.btn-danger {
+  background-color: #ef4444; /* Rojo */
+  border-color: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover, .btn-danger:focus {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón de éxito */
+.btn-success {
+  background-color: #22c55e; /* Verde */
+  border-color: #22c55e;
+  color: white;
+}
+
+.btn-success:hover, .btn-success:focus {
+  background-color: #16a34a;
+  border-color: #16a34a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Para botones outline, asegurar que sean visibles */
+.btn-outline-primary {
+  color: #2563eb;
+  border-color: #2563eb;
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.btn-outline-danger {
+  color: #ef4444;
+  border-color: #ef4444;
+  background-color: transparent;
+}
+
+.btn-outline-danger:hover, .btn-outline-danger:focus {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.btn-outline-success {
+  color: #22c55e;
+  border-color: #22c55e;
+  background-color: transparent;
+}
+
+.btn-outline-success:hover, .btn-outline-success:focus {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+/* Mejora para botones pequeños */
+.btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Estilos para iconos en botones */
+.btn i {
+  font-size: 1rem;
+}
+
+/* Botones deshabilitados */
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Mejora para botones con contraste en cabeceras de card */
+.card-header .btn {
+  background-color: #ffffff;
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+.card-header .btn:hover, .card-header .btn:focus {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.card-header .btn-success {
+  background-color: #22c55e;
+  color: #ffffff;
+  border-color: #22c55e;
+}
+
+.card-header .btn-success:hover, .card-header .btn-success:focus {
+  background-color: #16a34a;
+  border-color: #16a34a;
+}
+
+.card-header .btn-danger {
+  background-color: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.card-header .btn-danger:hover, .card-header .btn-danger:focus {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Mejora específica para botones de agregar en cabeceras */
+.card-header .btn-sm {
+  font-weight: 600;
+  border-width: 2px;
+}
