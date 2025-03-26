@@ -125,7 +125,7 @@ exports.login = async (req, res) => {
                 puesto: empleado.Puesto
             },
             JWT_SECRET,
-            { expiresIn: '20s' } // El token expira en 8 horas
+            { expiresIn: '5h' } // El token expira en 8 horas
         );
 
         // Devolver token y datos básicos del empleado
@@ -169,16 +169,60 @@ exports.getEmpleadoById = async (req, res) => {
     }
 };
 
+// En authController.js al inicio del archivo
+const Empleado = require('../models/empleado'); // Ajusta la ruta según tu estructura
+
 exports.updateEmpleado = async (req, res) => {
     try {
-        const updatedEmpleado = await empleadoService.updateEmpleado(req.params.claveEmpleado, req.body);
+        console.log("Recibida solicitud para actualizar empleado:", req.params.claveEmpleado);
+        console.log("Datos recibidos:", req.body);
+        
+        // Creamos una copia de los datos recibidos para no modificar el objeto original
+        const datosActualizados = { ...req.body };
+        
+        // Procesamos las referencias familiares si existen
+        if (datosActualizados.ReferenciaFamiliar && Array.isArray(datosActualizados.ReferenciaFamiliar)) {
+            datosActualizados.ReferenciaFamiliar = datosActualizados.ReferenciaFamiliar.map(ref => {
+                const referenciaActualizada = { ...ref };
+                
+                // Procesar CorreoElectronico si es un array
+                if (Array.isArray(referenciaActualizada.CorreoElectronico)) {
+                    // Si es un array de objetos con propiedad Direccion
+                    if (referenciaActualizada.CorreoElectronico.length > 0 && 
+                        referenciaActualizada.CorreoElectronico[0] && 
+                        referenciaActualizada.CorreoElectronico[0].Direccion) {
+                        referenciaActualizada.CorreoElectronico = referenciaActualizada.CorreoElectronico[0].Direccion;
+                    } 
+                    // Si es un array vacío, asignar valor por defecto
+                    else {
+                        referenciaActualizada.CorreoElectronico = "sin.correo@example.com";
+                    }
+                }
+                // Si CorreoElectronico no existe o es null/undefined, asignar valor por defecto
+                else if (!referenciaActualizada.CorreoElectronico) {
+                    referenciaActualizada.CorreoElectronico = "sin.correo@example.com";
+                }
+                
+                return referenciaActualizada;
+            });
+        }
+        
+        console.log("Datos procesados para actualizar:", datosActualizados);
+        
+        const updatedEmpleado = await Empleado.findOneAndUpdate(
+            { ClaveEmpleado: req.params.claveEmpleado },
+            datosActualizados,
+            { new: true }
+        );
+        
         if (!updatedEmpleado) {
             return res.status(404).json({ error: "Empleado no encontrado" });
         }
+        
         res.status(200).json({ message: "Empleado actualizado con éxito", empleado: updatedEmpleado });
     } catch (error) {
         console.error("Error al actualizar empleado:", error);
-        res.status(500).json({ error: "Error interno del servidor" });
+        res.status(500).json({ error: "Error interno del servidor: " + error.message });
     }
 };
 
