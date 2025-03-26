@@ -22,6 +22,77 @@
       <button type="button" class="btn-close" (click)="error = ''"></button>
     </div>
 
+    <!-- Filtros y búsqueda -->
+    <div class="card-body border-bottom pb-3">
+      <div class="row g-3">
+        <!-- Búsqueda -->
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text bg-light">
+              <i class="bi bi-search"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Buscar por nombre o clave..." 
+              [(ngModel)]="terminoBusqueda"
+              (input)="aplicarFiltros()">
+            <button 
+              *ngIf="terminoBusqueda" 
+              class="btn btn-outline-secondary" 
+              type="button" 
+              (click)="limpiarBusqueda()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtro por año -->
+        <div class="col-md-3">
+          <div class="input-group">
+            <span class="input-group-text bg-light">
+              <i class="bi bi-calendar-year"></i>
+            </span>
+            <select class="form-select" [(ngModel)]="filtroAnio" (change)="aplicarFiltros()">
+              <option value="">Todos los años</option>
+              <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filtro por mes -->
+        <div class="col-md-3">
+          <div class="input-group">
+            <span class="input-group-text bg-light">
+              <i class="bi bi-calendar-month"></i>
+            </span>
+            <select class="form-select" [(ngModel)]="filtroMes" (change)="aplicarFiltros()">
+              <option value="">Todos los meses</option>
+              <option value="0">Enero</option>
+              <option value="1">Febrero</option>
+              <option value="2">Marzo</option>
+              <option value="3">Abril</option>
+              <option value="4">Mayo</option>
+              <option value="5">Junio</option>
+              <option value="6">Julio</option>
+              <option value="7">Agosto</option>
+              <option value="8">Septiembre</option>
+              <option value="9">Octubre</option>
+              <option value="10">Noviembre</option>
+              <option value="11">Diciembre</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botón para reiniciar filtros -->
+        <div class="col-md-2">
+          <button class="btn btn-outline-secondary w-100" (click)="reiniciarFiltros()">
+            <i class="bi bi-arrow-repeat me-1"></i> Reiniciar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Contenido principal -->
     <div class="card-body">
       <!-- Mensaje de carga -->
@@ -33,14 +104,14 @@
       </div>
 
       <!-- Sin resultados -->
-      <div class="alert alert-info" *ngIf="!loading && !error && cursostomados.length === 0">
+      <div class="alert alert-info" *ngIf="!loading && !error && cursosFiltrados.length === 0">
         <i class="bi bi-info-circle-fill me-2"></i>
-        No se encontraron Cursos
+        No se encontraron Cursos con los filtros aplicados
       </div>
 
       <!-- Lista de Cursos Tomados -->
-      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && cursostomados.length > 0">
-        <div class="col" *ngFor="let ctomado of cursostomados">
+      <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="!loading && cursosFiltrados.length > 0">
+        <div class="col" *ngFor="let ctomado of cursosFiltrados">
           <!-- Formulario de edición de fechas -->
           <div class="card h-100 shadow-sm" *ngIf="cursoEditando && cursoEditando._id === ctomado._id">
             <div class="card-header bg-info text-white">
@@ -141,6 +212,29 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Paginación si hay muchos cursos -->
+      <div class="d-flex justify-content-center mt-4" *ngIf="cursosFiltrados.length > 0">
+        <nav aria-label="Navegación de páginas">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="paginaActual === 1">
+              <a class="page-link" href="javascript:void(0);" (click)="cambiarPagina(paginaActual - 1)">
+                <i class="bi bi-chevron-left"></i>
+              </a>
+            </li>
+            <li class="page-item" *ngFor="let pagina of obtenerPaginas()" 
+                [class.active]="pagina === paginaActual">
+              <a class="page-link" href="javascript:void(0);" 
+                 (click)="cambiarPagina(pagina)">{{ pagina }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+              <a class="page-link" href="javascript:void(0);" (click)="cambiarPagina(paginaActual + 1)">
+                <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>

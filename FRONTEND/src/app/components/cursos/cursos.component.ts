@@ -13,15 +13,31 @@ import { HttpClientModule } from '@angular/common/http';
   styleUrls: ['./cursos.component.css']
 })
 export class CursosTomadosComponent implements OnInit {
+  // Datos de cursos
   cursostomados: CursosTomados[] = [];
+  cursosFiltrados: CursosTomados[] = [];
   cursoEditando: CursosTomados | null = null;
+  
+  // Campos para edición
   nuevaFechaInicio: string = '';
   nuevaFechaTermino: string = '';
+  
+  // Estados
   loading = true;
   error = '';
   successMessage = '';
-  // Lista de cursos que ya han sido editados (solo para UI)
   cursosEditados: Set<string> = new Set<string>();
+  
+  // Filtros
+  terminoBusqueda: string = '';
+  filtroAnio: string = '';
+  filtroMes: string = '';
+  aniosDisponibles: string[] = [];
+  
+  // Paginación
+  itemsPorPagina: number = 10;
+  paginaActual: number = 1;
+  totalPaginas: number = 1;
 
   constructor(
     private cursosTomadosService: CursosTomadosService,
@@ -38,7 +54,8 @@ export class CursosTomadosComponent implements OnInit {
       (data) => {
         console.log('Cursos recibidos:', data);
         this.cursostomados = data;
-        // Limpiar la lista de cursos editados cuando se recarga
+        this.extraerAniosDisponibles();
+        this.aplicarFiltros();
         this.cursosEditados.clear();
         this.loading = false;
       },
@@ -48,6 +65,139 @@ export class CursosTomadosComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  // Extraer años disponibles de los cursos para el filtro
+  extraerAniosDisponibles(): void {
+    const anios = new Set<string>();
+    
+    this.cursostomados.forEach(curso => {
+      if (curso.CursosTomados && curso.CursosTomados.length > 0) {
+        // Obtener año de inicio
+        const fechaInicio = new Date(curso.CursosTomados[0].FechaInicio);
+        anios.add(fechaInicio.getFullYear().toString());
+        
+        // Obtener año de término
+        const fechaTermino = new Date(curso.CursosTomados[0].FechaTermino);
+        anios.add(fechaTermino.getFullYear().toString());
+      }
+    });
+    
+    this.aniosDisponibles = Array.from(anios).sort((a, b) => parseInt(b) - parseInt(a));
+  }
+
+  // Filtrar cursos según criterios
+  aplicarFiltros(): void {
+    // Reiniciar a la primera página cuando se aplica un filtro
+    this.paginaActual = 1;
+    
+    // Aplicar filtros
+    this.cursosFiltrados = this.cursostomados.filter(curso => {
+      // Si no hay información de curso, no incluir
+      if (!curso.CursosTomados || curso.CursosTomados.length === 0) {
+        return false;
+      }
+      
+      let cumpleFiltros = true;
+      
+      // Filtrar por término de búsqueda (nombre de empleado o clave)
+      if (this.terminoBusqueda.trim() !== '') {
+        const terminoLower = this.terminoBusqueda.toLowerCase();
+        const nombreEmpleado = curso.NombreCompletoEmpleado?.toLowerCase() || '';
+        const claveEmpleado = curso.ClaveEmpleado?.toLowerCase() || '';
+        const nombreCurso = curso.CursosTomados[0].NombreCurso?.toLowerCase() || '';
+        
+        if (!nombreEmpleado.includes(terminoLower) && 
+            !claveEmpleado.includes(terminoLower) &&
+            !nombreCurso.includes(terminoLower)) {
+          cumpleFiltros = false;
+        }
+      }
+      
+      // Filtrar por año
+      if (this.filtroAnio !== '' && cumpleFiltros) {
+        const fechaInicio = new Date(curso.CursosTomados[0].FechaInicio);
+        const fechaTermino = new Date(curso.CursosTomados[0].FechaTermino);
+        const anioInicio = fechaInicio.getFullYear().toString();
+        const anioTermino = fechaTermino.getFullYear().toString();
+        
+        if (anioInicio !== this.filtroAnio && anioTermino !== this.filtroAnio) {
+          cumpleFiltros = false;
+        }
+      }
+      
+      // Filtrar por mes
+      if (this.filtroMes !== '' && cumpleFiltros) {
+        const fechaInicio = new Date(curso.CursosTomados[0].FechaInicio);
+        const fechaTermino = new Date(curso.CursosTomados[0].FechaTermino);
+        const mesInicio = fechaInicio.getMonth().toString();
+        const mesTermino = fechaTermino.getMonth().toString();
+        
+        if (mesInicio !== this.filtroMes && mesTermino !== this.filtroMes) {
+          cumpleFiltros = false;
+        }
+      }
+      
+      return cumpleFiltros;
+    });
+    
+    // Actualizar el total de páginas
+    this.totalPaginas = Math.ceil(this.cursosFiltrados.length / this.itemsPorPagina);
+    if (this.totalPaginas === 0) this.totalPaginas = 1;
+    
+    // Aplicar paginación
+    this.aplicarPaginacion();
+  }
+  
+  // Limpiar la búsqueda
+  limpiarBusqueda(): void {
+    this.terminoBusqueda = '';
+    this.aplicarFiltros();
+  }
+  
+  // Reiniciar todos los filtros
+  reiniciarFiltros(): void {
+    this.terminoBusqueda = '';
+    this.filtroAnio = '';
+    this.filtroMes = '';
+    this.paginaActual = 1;
+    this.aplicarFiltros();
+  }
+
+  // Métodos de paginación
+  cambiarPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginas) {
+      this.paginaActual = pagina;
+      this.aplicarPaginacion();
+    }
+  }
+  
+  aplicarPaginacion(): void {
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = Math.min(inicio + this.itemsPorPagina, this.cursosFiltrados.length);
+    
+    // No modificamos this.cursosFiltrados directamente para mantener todos los resultados filtrados
+    // y solo mostramos los de la página actual
+    this.cursosFiltrados = this.cursosFiltrados.slice(inicio, fin);
+  }
+  
+  obtenerPaginas(): number[] {
+    const paginas: number[] = [];
+    const maxPaginasMostradas = 5;
+    
+    let inicio = Math.max(1, this.paginaActual - Math.floor(maxPaginasMostradas / 2));
+    let fin = Math.min(this.totalPaginas, inicio + maxPaginasMostradas - 1);
+    
+    // Ajustar inicio si fin está limitado
+    if (fin - inicio + 1 < maxPaginasMostradas) {
+      inicio = Math.max(1, fin - maxPaginasMostradas + 1);
+    }
+    
+    for (let i = inicio; i <= fin; i++) {
+      paginas.push(i);
+    }
+    
+    return paginas;
   }
 
   eliminarCurso(id: string | undefined): void {
@@ -66,6 +216,7 @@ export class CursosTomadosComponent implements OnInit {
           if (this.cursosEditados.has(id)) {
             this.cursosEditados.delete(id);
           }
+          this.aplicarFiltros();
           setTimeout(() => this.successMessage = '', 3000);
         },
         (error) => {
@@ -176,6 +327,8 @@ export class CursosTomadosComponent implements OnInit {
         
         this.successMessage = 'Fechas actualizadas correctamente';
         this.cancelarEdicion();
+        // Volver a aplicar filtros para actualizar la vista
+        this.aplicarFiltros();
         setTimeout(() => this.successMessage = '', 3000);
       },
       (error) => {

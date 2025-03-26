@@ -1,4 +1,7 @@
-/* Variables de colores corporativos */
+/* Variables de colores corporativos mejorados */
+/* Importación de fuentes para mayor consistencia */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
@@ -11,37 +14,52 @@
   --border: #e2e8f0;
   --white: #ffffff;
   --shadow: rgba(0, 0, 0, 0.1);
+  --text-shadow: rgba(0, 0, 0, 0.15);
 }
+
+
 
 body {
   background-color: #f8fafc;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   color: #334155;
+  line-height: 1.5;
 }
 
 /* Mejoras al contenedor principal */
 .container {
   max-width: 1200px;
   padding: 2rem 1rem;
+  margin: 0 auto;
 }
 
 /* Estilos mejorados para las tarjetas */
 .card {
   border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
   margin-bottom: 2rem;
   overflow: hidden;
+  transition: box-shadow 0.3s ease;
 }
 
+.card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08), 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+/* Mejora específica para el encabezado de la tarjeta */
 .card-header {
-  padding: 1rem 1.5rem;
+  padding: 1.2rem 1.5rem;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .card-header.bg-primary {
   background-color: var(--primary) !important;
   background-image: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: var(--white);
 }
 
 .card-header.bg-light {
@@ -49,352 +67,201 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.card-header h2, .card-header h4, .card-header h6 {
-  font-weight: 600;
-  margin-bottom: 0;
+/* Mejoras para títulos en encabezados */
+.card-header h2, 
+.card-header h4, 
+.card-header h6 {
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .card-header h2 {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  text-shadow: 0 1px 1px var(--text-shadow);
+  line-height: 1.3;
 }
 
 .card-header h4 {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: var(--dark);
 }
 
 .card-header h6 {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--dark);
 }
 
 .card-body {
-  padding: 1.5rem;
+  padding: 1.75rem;
 }
 
-/* Estilos para formularios */
+/* Estilos mejorados para formularios */
 .form-label {
-  font-weight: 500;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.95rem;
   margin-bottom: 0.5rem;
   color: var(--dark);
+  display: block;
 }
 
 .form-control, .form-select {
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  padding: 0.625rem 0.75rem;
-  font-size: 0.95rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  border: 1.5px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+  background-color: var(--white);
+  color: var(--dark);
+  width: 100%;
+  height: auto;
 }
 
 .form-control:focus, .form-select:focus {
   border-color: var(--primary-light);
-  box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  outline: none;
 }
 
 .form-control.is-invalid, .form-select.is-invalid {
   border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
 .invalid-feedback {
   font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--danger);
+  margin-top: 0.5rem;
 }
 
-/* Estilos para botones */
+/* Estilo para campos obligatorios */
+.form-label.required:after {
+  content: "*";
+  color: var(--danger);
+  margin-left: 4px;
+}
+
+/* Estilos mejorados para botones */
 .btn {
-  font-weight: 500;
-  padding: 0.5rem 1.25rem;
-  border-radius: 0.375rem;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  border-radius: 0.5rem;
   transition: all 0.2s ease-in-out;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  color: #ffffff; 
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón principal */
 .btn-primary {
   background-color: var(--primary);
-  border-color: var(--primary);
+  border: 1px solid var(--primary);
 }
 
 .btn-primary:hover, .btn-primary:focus {
   background-color: var(--primary-dark);
   border-color: var(--primary-dark);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.btn-secondary {
-  background-color: var(--secondary);
-  border-color: var(--secondary);
-}
-
-.btn-secondary:hover, .btn-secondary:focus {
-  background-color: #475569;
-  border-color: #475569;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.btn-danger {
-  background-color: var(--danger);
-  border-color: var(--danger);
-}
-
-.btn-danger:hover, .btn-danger:focus {
-  background-color: #dc2626;
-  border-color: #dc2626;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.btn-outline-primary {
-  color: var(--primary);
-  border-color: var(--primary);
-}
-
-.btn-outline-primary:hover, .btn-outline-primary:focus {
-  background-color: var(--primary);
-  color: var(--white);
-}
-
-.btn-outline-danger {
-  color: var(--danger);
-  border-color: var(--danger);
-}
-
-.btn-outline-danger:hover, .btn-outline-danger:focus {
-  background-color: var(--danger);
-  color: var(--white);
-}
-
-.btn-sm {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.875rem;
-}
-
-.btn i {
-  font-size: 1rem;
-}
-
-/* Alertas */
-.alert {
-  border-radius: 0.375rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid transparent;
-}
-
-.alert-success {
-  background-color: rgba(34, 197, 94, 0.1);
-  border-color: rgba(34, 197, 94, 0.2);
-  color: #16803f;
-}
-
-.alert-danger {
-  background-color: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.2);
-  color: #b91c1c;
-}
-
-/* Estilos para la previsualización de imagen */
-.img-thumbnail {
-  border-radius: 0.375rem;
-  border: 2px solid var(--border);
-  padding: 0.25rem;
-  background-color: var(--white);
-  transition: border-color 0.15s ease-in-out;
-}
-
-.img-thumbnail:hover {
-  border-color: var(--primary-light);
-}
-
-/* Secciones anidadas (referencias) */
-.border {
-  border-color: var(--border) !important;
-}
-
-.border.p-3 {
-  border-radius: 0.5rem;
-  background-color: rgba(241, 245, 249, 0.5);
-}
-
-.border.p-3 h5 {
-  color: var(--dark);
-  margin-bottom: 1.25rem;
-  font-weight: 600;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0.5rem;
-}
-
-/* Diseño responsive */
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem 0.5rem;
-  }
-  
-  .card-header {
-    padding: 0.75rem 1rem;
-  }
-  
-  .card-body {
-    padding: 1rem;
-  }
-  
-  .col-md-4, .col-md-6, .col-md-8 {
-    margin-bottom: 1rem;
-  }
-  
-  .btn {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-  
-  .d-flex.justify-content-between {
-    flex-direction: column;
-  }
-}
-
-/* Mejoras para visualización de campos */
-.row {
-  margin-bottom: 0.75rem;
-}
-
-/* Estilo para campos obligatorios */
-.form-label:after {
-  content: "*";
-  color: var(--danger);
-  margin-left: 2px;
-}
-
-/* Ocultar el asterisco en labels no obligatorios */
-label[for="numeroInterior"]:after,
-label[for="foto"]:after {
-  content: none;
-}
-
-/* Animación para botones y elementos interactivos */
-.btn, .form-control, .img-thumbnail {
-  transition: all 0.2s ease-in-out;
-}
-
-/* Mejora para la previsualización de imagen */
-img.img-thumbnail {
-  object-fit: cover;
-  width: 100px;
-  height: 100px;
-  margin-top: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Mejoras específicas para el contraste de botones */
-.btn {
-  font-weight: 500;
-  padding: 0.5rem 1.25rem;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease-in-out;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: #ffffff; /* Asegurar que el texto de los botones sea blanco */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Agregar sombra al texto para mejorar legibilidad */
-}
-
-/* Botón principal */
-.btn-primary {
-  background-color: #2563eb; /* Azul más intenso */
-  border-color: #2563eb;
-}
-
-.btn-primary:hover, .btn-primary:focus {
-  background-color: #1d4ed8;
-  border-color: #1d4ed8;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Botón secundario */
 .btn-secondary {
-  background-color: #64748b; /* Gris más oscuro */
-  border-color: #64748b;
-  color: white;
+  background-color: var(--secondary);
+  border: 1px solid var(--secondary);
 }
 
 .btn-secondary:hover, .btn-secondary:focus {
   background-color: #475569;
   border-color: #475569;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Botón de peligro */
 .btn-danger {
-  background-color: #ef4444; /* Rojo */
-  border-color: #ef4444;
-  color: white;
+  background-color: var(--danger);
+  border: 1px solid var(--danger);
 }
 
 .btn-danger:hover, .btn-danger:focus {
   background-color: #dc2626;
   border-color: #dc2626;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Botón de éxito */
 .btn-success {
-  background-color: #22c55e; /* Verde */
-  border-color: #22c55e;
-  color: white;
+  background-color: var(--success);
+  border: 1px solid var(--success);
 }
 
 .btn-success:hover, .btn-success:focus {
   background-color: #16a34a;
   border-color: #16a34a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Para botones outline, asegurar que sean visibles */
 .btn-outline-primary {
-  color: #2563eb;
-  border-color: #2563eb;
+  color: var(--primary);
   background-color: transparent;
+  border: 1.5px solid var(--primary);
+  text-shadow: none;
 }
 
 .btn-outline-primary:hover, .btn-outline-primary:focus {
-  background-color: #2563eb;
+  background-color: var(--primary);
   color: #ffffff;
 }
 
 .btn-outline-danger {
-  color: #ef4444;
-  border-color: #ef4444;
+  color: var(--danger);
   background-color: transparent;
+  border: 1.5px solid var(--danger);
+  text-shadow: none;
 }
 
 .btn-outline-danger:hover, .btn-outline-danger:focus {
-  background-color: #ef4444;
+  background-color: var(--danger);
   color: #ffffff;
 }
 
 .btn-outline-success {
-  color: #22c55e;
-  border-color: #22c55e;
+  color: var(--success);
   background-color: transparent;
+  border: 1.5px solid var(--success);
+  text-shadow: none;
 }
 
 .btn-outline-success:hover, .btn-outline-success:focus {
-  background-color: #22c55e;
+  background-color: var(--success);
   color: #ffffff;
 }
 
 /* Mejora para botones pequeños */
 .btn-sm {
-  padding: 0.25rem 0.75rem;
+  padding: 0.4rem 0.85rem;
   font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* Estilos para iconos en botones */
-.btn i {
-  font-size: 1rem;
+  border-radius: 0.375rem;
 }
 
 /* Botones deshabilitados */
@@ -404,42 +271,391 @@ img.img-thumbnail {
   pointer-events: none;
 }
 
-/* Mejora para botones con contraste en cabeceras de card */
+/* Texto dentro de botones */
+.btn-text {
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Alertas mejoradas */
+.alert {
+  border-radius: 0.5rem;
+  padding: 1.1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.alert-success {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-left: 4px solid var(--success);
+  color: #16803f;
+}
+
+.alert-danger {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid var(--danger);
+  color: #b91c1c;
+}
+
+.alert-info {
+  background-color: rgba(37, 99, 235, 0.1);
+  border-left: 4px solid var(--primary);
+  color: #1d4ed8;
+}
+
+.alert-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-left: 4px solid #f59e0b;
+  color: #b45309;
+}
+
+.alert i, .alert .bi {
+  font-size: 1.2rem;
+}
+
+/* Botones de cierre para alertas */
+.alert .btn-close {
+  margin-left: auto;
+  opacity: 0.5;
+  font-size: 0.9rem;
+  padding: 0.3rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.alert .btn-close:hover {
+  opacity: 0.75;
+}
+
+/* Badges mejorados */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+}
+
+.badge.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+.badge.bg-success {
+  background-color: var(--success) !important;
+}
+
+.badge.bg-danger {
+  background-color: var(--danger) !important;
+}
+
+.badge.bg-warning {
+  background-color: #f59e0b !important;
+  color: #000 !important;
+}
+
+.badge.bg-info {
+  background-color: var(--primary-light) !important;
+  color: var(--primary-dark) !important;
+}
+
+.badge.bg-secondary {
+  background-color: var(--secondary) !important;
+}
+
+/* Estilos para la previsualización de imagen */
+.img-thumbnail {
+  border-radius: 0.5rem;
+  border: 2px solid var(--border);
+  padding: 0.25rem;
+  background-color: var(--white);
+  transition: border-color 0.15s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.img-thumbnail:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Animación de carga */
+.spinner-border {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-width: 0.25em;
+  color: var(--primary);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.loading-container p {
+  margin-top: 1.25rem;
+  color: #475569;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Diseño responsive */
+@media (max-width: 992px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .card-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.25rem 0.75rem;
+  }
+  
+  .row {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+  
+  .col, .col-md-4, .col-md-6, .col-md-8, .col-lg-4, .col-lg-6, .col-lg-8 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .card-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .card-header h2 {
+    font-size: 1.4rem;
+  }
+  
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .card-header {
+    padding: 0.85rem 1rem;
+  }
+  
+  .card-header h2 {
+    font-size: 1.3rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .form-label {
+    font-size: 0.9rem;
+  }
+  
+  .form-control, .form-select {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.6rem 1rem;
+  }
+  
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .card-header .d-flex.justify-content-between {
+    align-items: center;
+  }
+}
+
+/* Fix específico para asegurar que los encabezados de tarjetas se vean correctamente */
+.text-white {
+  color: #ffffff !important;
+}
+
+.card-header.bg-primary h2,
+.card-header.bg-primary h3,
+.card-header.bg-primary h4 {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Mejorar la visibilidad del texto en general */
+p, li, td, th, .form-text {
+  color: #334155;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+strong, b, .fw-bold {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Mejoras específicas para botones con mejor contraste */
+.btn {
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: 0.01em;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  /* Quitar sombra de texto predeterminada */
+  text-shadow: none;
+}
+
+/* Botón principal con mejor contraste */
+.btn-primary {
+  background-color: #1e40af; /* Azul más oscuro */
+  border: 1px solid #1e40af;
+  color: #ffffff;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #1e3a8a; /* Todavía más oscuro al hacer hover */
+  border-color: #1e3a8a;
+  color: #ffffff;
+}
+
+/* Botón secundario con mejor contraste */
+.btn-secondary {
+  background-color: #475569; /* Gris más oscuro */
+  border: 1px solid #475569;
+  color: #ffffff;
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+  background-color: #334155;
+  border-color: #334155;
+  color: #ffffff;
+}
+
+/* Botones outline con mejor contraste */
+.btn-outline-primary {
+  color: #1e40af; /* Color de texto más oscuro */
+  background-color: #ffffff; /* Fondo blanco */
+  border: 2px solid #1e40af; /* Borde más grueso y más oscuro */
+  font-weight: 700; /* Texto más grueso */
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background-color: #1e40af;
+  color: #ffffff;
+}
+
+/* Botones en card-header (específico para encabezados con fondo claro) */
 .card-header .btn {
-  background-color: #ffffff;
-  color: #2563eb;
-  border-color: #2563eb;
+  background-color: #f8fafc; /* Fondo claro */
+  color: #1e40af; /* Texto azul oscuro */
+  border: 2px solid #1e40af;
+  font-weight: 700;
 }
 
 .card-header .btn:hover, .card-header .btn:focus {
-  background-color: #2563eb;
+  background-color: #1e40af;
   color: #ffffff;
 }
 
-.card-header .btn-success {
-  background-color: #22c55e;
+/* Mejora específica para encabezados de tarjetas con fondo azul */
+.card-header.bg-primary {
+  background-color: #1e40af !important; /* Azul más oscuro */
+  background-image: none; /* Quitar el gradiente que podría afectar la visibilidad */
+  padding: 1.5rem; /* Más padding para dar más espacio al texto */
+}
+
+.card-header.bg-primary h2,
+.card-header.bg-primary h3,
+.card-header.bg-primary h4 {
   color: #ffffff;
-  border-color: #22c55e;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em; /* Mayor espaciado entre letras */
+  text-align: center;
+  width: 100%; /* Asegurar que ocupe todo el ancho */
 }
 
-.card-header .btn-success:hover, .card-header .btn-success:focus {
-  background-color: #16a34a;
-  border-color: #16a34a;
-}
-
-.card-header .btn-danger {
-  background-color: #ef4444;
-  color: #ffffff;
-  border-color: #ef4444;
-}
-
-.card-header .btn-danger:hover, .card-header .btn-danger:focus {
-  background-color: #dc2626;
-  border-color: #dc2626;
-}
-
-/* Mejora específica para botones de agregar en cabeceras */
-.card-header .btn-sm {
+/* Botones en card-header con fondo azul */
+.card-header.bg-primary .btn {
+  background-color: #ffffff;
+  color: #1e40af;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   font-weight: 600;
-  border-width: 2px;
+}
+
+.card-header.bg-primary .btn:hover {
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Fix para textos en general */
+.card-header, .card-body, .form-label, .btn, p, h1, h2, h3, h4, h5, h6 {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fix específico para encabezados de registro */
+.card-header.bg-primary h2 {
+  display: block;
+  margin: 0 auto;
+  padding: 0.5rem 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Asegurar un buen contraste en todos los textos */
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-dark {
+  color: #1e293b !important;
+}
+
+/* Fix específico para textos en botones */
+.btn .btn-text {
+  display: inline-block !important;
+  font-weight: 600;
+  white-space: nowrap;
 }
